@@ -4,6 +4,7 @@ import MallHeader from "@/components/MallHeader";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
+import Menu from "@/components/mall/menu";
 
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -13,6 +14,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       {path ? <MallHeader  /> : <Header />}
+      {path ? <Menu  /> : <Header />}
       <Component {...pageProps} />
       <Footer />
     </>
