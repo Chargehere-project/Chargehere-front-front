@@ -13,8 +13,9 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <>
+
       {path ? <MallHeader  /> : <Header />}
-      {path ? <Menu  /> : <Header />}
+      {path ? <Menu  /> : <div />}
       <Component {...pageProps} />
       <Footer />
     </>
