@@ -1,8 +1,10 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import MallHeader from "@/components/MallHeader";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
+
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter(); // router 사용
@@ -10,8 +12,8 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <>
-      {path ? "여기에 헤더를 추가하세요~~" : <Header />}
-      <Component {...pageProps} />;
+      {path ? <MallHeader  /> : <Header />}
+      <Component {...pageProps} />
       <Footer />
     </>
   );
