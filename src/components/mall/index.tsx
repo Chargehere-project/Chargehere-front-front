@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swipe from './Swipe';
-import Menu from './menu';
 import { ArrowUpOutlined } from '@ant-design/icons';
 interface Product {
   ProductID: number;
@@ -48,7 +47,6 @@ const MallIndex= () => {
   }, []);
   return (
     <div>
-      <Menu />
       <Swipe />
       {/* Best 섹션 */}
       <section style={{ marginTop: '40px', textAlign: 'center' }}>
