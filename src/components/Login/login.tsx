@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
+
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import styles from './login.module.css';
 
+
 const Login = () => {
   const [id, setId] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+
   const router = useRouter();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+
     event.preventDefault();
     
     try {
@@ -33,30 +37,38 @@ const Login = () => {
   return (
     <div className={styles.loginContainer}>
       <h2 className={styles.title}>Login</h2>
+
       <form onSubmit={handleSubmit}>
         <div className={styles.formGroup}>
           <label className={styles.formLabel} htmlFor="id">아이디:</label>
+
           <input
             className={styles.formInput}
             type="text"
             id="id"
             value={id}
             onChange={(e) => setId(e.target.value)}
+            className={styles.formInput}
             required
           />
         </div>
         <div className={styles.formGroup}>
+
           <label className={styles.formLabel} htmlFor="password">비밀번호:</label>
+
           <input
             className={styles.formInput}
             type="password"
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            className={styles.formInput}
             required
           />
         </div>
+
         <button className={styles.formButton} type="submit">로그인</button>
+
       </form>
     </div>
   );
