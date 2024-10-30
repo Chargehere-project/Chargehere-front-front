@@ -17,8 +17,8 @@ const MallIndex= () => {
     // 주문이 많은 상품 8개 가져오기
     const fetchBestProducts = async () => {
       try {
-        const response = await axios.get('/api/best-products'); // API 엔드포인트 맞춤
-        setBestProducts(response.data);
+        const response = await axios.get('http://localhost:8000/products'); // API 엔드포인트 맞춤
+        setBestProducts(response.data.data);
       } catch (error) {
         console.error('Best 상품 데이터를 불러오는 중 오류가 발생했습니다.', error);
       }
@@ -26,8 +26,8 @@ const MallIndex= () => {
     // 신상품 8개 (ID 역순) 가져오기
     const fetchNewProducts = async () => {
       try {
-        const response = await axios.get('/api/new-products'); // 신상품 API 엔드포인트 맞춤
-        setNewProducts(response.data);
+        const response = await axios.get('http://localhost:8000/products'); // 신상품 API 엔드포인트 맞춤
+        setNewProducts(response.data.data);
       } catch (error) {
         console.error('신상품 데이터를 불러오는 중 오류가 발생했습니다.', error);
       }
@@ -35,8 +35,8 @@ const MallIndex= () => {
     // 할인율이 높은 상품 8개 가져오기
     const fetchSaleProducts = async () => {
       try {
-        const response = await axios.get('/api/sale-products'); // 할인율 높은 상품 API
-        setSaleProducts(response.data);
+        const response = await axios.get('http://localhost:8000/products'); // 할인율 높은 상품 API
+        setSaleProducts(response.data.data);
       } catch (error) {
         console.error('Sale 상품 데이터를 불러오는 중 오류가 발생했습니다.', error);
       }
