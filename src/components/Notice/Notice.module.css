@@ -40,16 +40,16 @@
     width: 60%;
     position: relative; /* 아이콘 배치를 위해 */
   }
-  /* 제목 앞에 아이콘 추가 */
-  .noticeTable td:nth-child(2)::before {
-    content: ":압정:"; /* 아이콘 변경 해야함 */
+  /* 제목 앞에 아이콘 추가 (아이콘 변경 필요) */
+  /* .noticeTable td:nth-child(2)::before {
+    content: ":압정:"; 
     position: absolute;
     left: 0;
     top: 50%;
     transform: translateY(-50%);
     font-size: 1.2em;
     margin-right: 10px;
-  }
+  } */
   /* 새 공지 표시 */
   .newBadge {
     display: inline-block;

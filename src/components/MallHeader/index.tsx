@@ -32,7 +32,7 @@ const MallHeader = () => {
     <header style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 20px', alignItems: 'center' }}>
       {/* 로고 */}
       <div style={{ display: 'flex', alignItems: 'center' }} onClick={logo}>
-        <Image src="/main.png" alt="logo" width={100} height={50} />
+        <Image src="http://localhost:8000/uploads/main.png" alt="logo" width={100} height={50} />
       </div>
       {/* 아이콘이랑 검색 영역 */}
       <div style={{ display: 'flex', alignItems: 'center' }}>

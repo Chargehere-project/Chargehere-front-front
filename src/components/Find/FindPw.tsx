@@ -10,9 +10,9 @@ const FindPw = () => {
     const handleResetPassword = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5005/api/reset-password', { id, name, phone });
-            if (response.data.success) {
-                setMessage('비밀번호 재설정 링크가 전송되었습니다.');
+            const response = await axios.post('http://localhost:8000/findpw', { id, name, phone });
+            if (response.data.data) {
+                setMessage(`비밀번호: ${response.data.data.Password}`);
                 setErrorMessage('');
             } else {
                 setMessage('');

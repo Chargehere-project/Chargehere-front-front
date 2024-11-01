@@ -22,7 +22,7 @@ const Header = () => {
         const user = token()
         if(!user){
             alert('로그인이 필요합니다.')
-            return
+            Router.push('/login')
         }else{
             Router.push('/profile')
         }
@@ -36,7 +36,13 @@ const Header = () => {
     }
     return (
         <header style={{ display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
-            <Image src="/main.png" alt="logo" width={100} height={50} onClick={logo}/>
+           <Image 
+    src="http://localhost:8000/uploads/main.png"
+    alt="logo" 
+    width={100} 
+    height={50} 
+    onClick={logo}
+/>
             <div>
                 <UserOutlined style={{ fontSize: '30px', marginRight: '20px' }} onClick={profile}/>
                 <ShopOutlined style={{ fontSize: '30px' }} onClick={mall}/>

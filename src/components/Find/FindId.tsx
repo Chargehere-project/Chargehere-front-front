@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Input, Button } from 'antd';
 import axios from 'axios';
-const FindId= () => {
+const FindId = () => {
     const [name, setName] = useState<string>('');
     const [phone, setPhone] = useState<string>('');
     const [result, setResult] = useState<string>('');
@@ -9,9 +9,10 @@ const FindId= () => {
     const handleFindId = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5005/api/find-id', { name, phone });
-            if (response.data.success) {
-                setResult(`아이디: ${response.data.id}`);
+            const response = await axios.post('http://localhost:8000/findid', { name, phone });
+            console.log(response.data.data);
+            if (response.data.data) {
+                setResult(`아이디: ${response.data.data.LoginID}`);
                 setErrorMessage('');
             } else {
                 setResult('');
@@ -31,7 +32,9 @@ const FindId= () => {
                 <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
             </Form.Item>
             <Form.Item>
-                <Button type="primary" htmlType="submit">아이디 찾기</Button>
+                <Button type="primary" htmlType="submit">
+                    아이디 찾기
+                </Button>
             </Form.Item>
             {result && <div style={{ color: 'green' }}>{result}</div>}
             {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}

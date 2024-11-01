@@ -11,17 +11,13 @@
   text-align: center;
   margin-bottom: 20px;
 }
-
-
 .formGroup {
   margin-bottom: 15px;
 }
-
 .formLabel {
   display: block;
   margin-bottom: 5px;
 }
-
 .formInput {
   width: 100%;
   padding: 10px;
@@ -30,7 +26,6 @@
   border: 1px solid #ccc;
   border-radius: 5px;
 }
-
 .formButton {
   width: 100%;
   padding: 10px;
@@ -40,9 +35,6 @@
   border-radius: 5px;
   cursor: pointer;
 }
-
-
 .formButton:hover {
   background-color: #0056B3;
 }
-
