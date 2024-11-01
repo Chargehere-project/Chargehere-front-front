@@ -5,7 +5,7 @@ const MallHeader = () => {
     <header style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 20px', alignItems: 'center' }}>
       {/* 로고 */}
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <Image src="/main.png" alt="logo" width={100} height={50} />
+        <Image src="/main.jpg" alt="logo" width={150} height={100} />
       </div>
       {/* 아이콘이랑 검색 영역 */}
       <div style={{ display: 'flex', alignItems: 'center' }}>

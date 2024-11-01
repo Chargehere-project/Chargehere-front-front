@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from './login.module.css';  // CSS 모듈로 가져오기
+import styles from './login.module.css';
 
 const Login = () => {
   const [id, setId] = useState<string>('');
