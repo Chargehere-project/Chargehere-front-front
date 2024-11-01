@@ -2,10 +2,18 @@ import Image from 'next/image';
 import { UserOutlined, ShopOutlined } from '@ant-design/icons';
 import Router from 'next/router';
 import {jwtDecode} from 'jwt-decode';
+import { useEffect, useState } from 'react';
 
 
 
 const Header = () => {
+     const [logoUrl, setLogoUrl] = useState<string | null>(null);
+
+    useEffect(() => {
+        const savedLogoUrl = localStorage.getItem('logoUrl');
+        setLogoUrl(savedLogoUrl || '/main.png'); // 기본 로고 설정
+    }, []);
+
     const token = () => {
         const token = localStorage.getItem('token');
         if (!token) return null;
@@ -36,7 +44,7 @@ const Header = () => {
     }
     return (
         <header style={{ display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
-            <Image src="/main.png" alt="logo" width={100} height={50} onClick={logo}/>
+            <Image src={logoUrl || '/main.png'} alt="logo" width={100} height={50} onClick={logo}/>
             <div>
                 <UserOutlined style={{ fontSize: '30px', marginRight: '20px' }} onClick={profile}/>
                 <ShopOutlined style={{ fontSize: '30px' }} onClick={mall}/>

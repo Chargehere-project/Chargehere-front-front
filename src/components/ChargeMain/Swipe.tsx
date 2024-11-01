@@ -7,7 +7,13 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React from 'react';
 import styles from './Swipe.module.css';
-const MainSwipe = () => {
+
+interface MainSwipeProps {
+    banners: string[]; // 배너 이미지 URL을 담은 배열
+}
+
+
+const MainSwipe: React.FC<MainSwipeProps> = ({ banners }) => {
     const router = useRouter();
     return (
         <div className={styles.swiperContainer}>
@@ -19,23 +25,21 @@ const MainSwipe = () => {
                 navigation
                 pagination={{ clickable: true }}
                 modules={[Pagination, Navigation, Autoplay]}
-                className={styles.swiper}
-            >
-                <SwiperSlide onClick={() => router.push('/event/1')}>
-                    <Image src="/colla.png" alt="Slide 1" width={1200} height={600} />
-                </SwiperSlide>
-                <SwiperSlide onClick={() => router.push('/event/2')}>
-                    <Image src="/game.png" alt="Slide 2" width={1200} height={600} />
-                </SwiperSlide>
-                <SwiperSlide onClick={() => router.push('/event/3')}>
-                    <Image src="/style.png" alt="Slide 3" width={1200} height={600} />
-                    <div className={styles.slideContent}>
-                        <h2>당신을 위한 쇼핑몰</h2>
-                        <p>쉽고 빠른 스타일링 이제 on style과 함께하세요</p>
-                    </div>
-                </SwiperSlide>
+                className={styles.swiper}>
+                {banners.map((banner, index) => (
+                    <SwiperSlide key={index} onClick={() => router.push(`/event/${index + 1}`)}>
+                        <Image src={banner} alt={`Slide ${index + 1}`} width={1200} height={600} />
+                        {index === 2 && (
+                            <div className={styles.slideContent}>
+                                <h2>당신을 위한 쇼핑몰</h2>
+                                <p>쉽고 빠른 스타일링 이제 on style과 함께하세요</p>
+                            </div>
+                        )}
+                    </SwiperSlide>
+                ))}
             </Swiper>
         </div>
     );
 };
+
 export default MainSwipe;

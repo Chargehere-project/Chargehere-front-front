@@ -6,8 +6,21 @@ import { RobotFilled } from '@ant-design/icons';
 import Coupon from './Coupon';
 import Roulette from '../Roulette';
 import styles from './Index.module.css';
-const Main= () => {
+
+const Main = () => {
     const [announcement, setAnnouncement] = useState<string>('');
+    const [banners, setBanners] = useState<string[]>(['/colla.png', '/game.png', '/style.png']); // 초기값 설정
+
+    // 로컬 스토리지에서 배너 데이터를 가져오는 함수
+    useEffect(() => {
+        const storedBanners = JSON.parse(localStorage.getItem('banners') || 'null');
+        if (storedBanners) {
+            setBanners(storedBanners);
+        }
+    }, []);
+
+
+    // 공지사항 데이터를 가져오는 함수
     useEffect(() => {
         const fetchAnnouncement = async () => {
             try {
@@ -18,25 +31,27 @@ const Main= () => {
             }
         };
         fetchAnnouncement();
-    }, []);
+    }, []); // 빈 배열로 설정하여 한 번만 실행
+
     const handleNavigation = (path: string) => {
         Router.push(path);
     };
-    const charge = () => {
-        Router.push('/charge');
-    };
-    const notice = () =>{
-        Router.push('/notice')
-    }
+
     return (
         <>
             <div className={styles.container}>
                 <p className={styles.loginNotice}>로그인 후 이용 가능합니다.</p>
-                <MainSwipe />
+                <MainSwipe banners={banners} /> {/* banners 상태를 props로 전달 */}
                 <div className={styles.buttonContainer}>
-                    <div className={styles.button} onClick={() => handleNavigation('/map')}>충전소 찾기</div>
-                    <div className={styles.button} onClick={() => handleNavigation('/cash')}>요금 안내</div>
-                    <div className={styles.button} onClick={() => handleNavigation('/charge')}>충전하기</div>
+                    <div className={styles.button} onClick={() => handleNavigation('/map')}>
+                        충전소 찾기
+                    </div>
+                    <div className={styles.button} onClick={() => handleNavigation('/cash')}>
+                        요금 안내
+                    </div>
+                    <div className={styles.button} onClick={() => handleNavigation('/charge')}>
+                        충전하기
+                    </div>
                 </div>
                 <div className={styles.announcementContainer}>
                     <h2>공지</h2>
@@ -51,10 +66,11 @@ const Main= () => {
                 </div>
                 <div>
                     <p>출석만 해도 포인트가!</p>
-                    <Roulette/>
+                    <Roulette />
                 </div>
             </div>
         </>
     );
 };
+
 export default Main;
