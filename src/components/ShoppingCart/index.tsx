@@ -139,46 +139,53 @@ const ShoppingCart = () => {
             alert('주문할 상품을 선택해주세요');
             return;
         }
-
+    
         try {
             const selectedProducts = cart.filter((item) => selectedItems.includes(item.CartID));
-            const token = () => {
-                const token = localStorage.getItem('token');
-                if (!token) return null;
-                try {
-                    const decoded: any = jwtDecode(token);
-                    return {
-                        userId: decoded.UserID,
-                        name: decoded.UserName,
-                        phone: decoded.UserPhone,
-                        address: decoded.UserAddress,
-                    };
-                } catch (error) {
-                    console.error('토큰 디코드 에러:', error);
-                    return null;
-                }
-            };
-            const userInfo = token();
-            if (userInfo) {
-                const { userId, name, phone, address } = userInfo;
-                
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                alert('로그인이 필요합니다.');
+                Router.push('/login');
+                return;
             }
+    
+            // 1. 토큰에서 기본 정보 추출
+            const decoded: any = jwtDecode(token);
+            
+            // 2. 세션에서 사용자 상세 정보 가져오기
+            const sessionResponse = await axios.get('http://localhost:8000/check-session', {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+    
+            if (!sessionResponse.data.result) {
+                alert('세션 정보가 없습니다.');
+                return;
+            }
+    
+            const { phoneNumber, address } = sessionResponse.data.userDetails;
+    
+            // 3. 주문 준비 요청 보내기
             const response = await axios.post(
                 'http://localhost:8000/orders/prepare',
                 {
-                    userId: userInfo?.userId,
-                    name: userInfo?.name,
-                    phone:userInfo?.phone,
-                    address:userInfo?.address,
+                    userId: decoded.UserID,
+                    name: decoded.UserName,
+                    phone: phoneNumber,     // 세션에서 가져온 전화번호
+                    address: address,       // 세션에서 가져온 주소
                     cartItems: selectedProducts,
                 },
                 {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                        Authorization: `Bearer ${token}`,
                     },
+                    withCredentials: true
                 }
             );
-
+    
             if (response.data.result) {
                 Router.push(`/order/${response.data.orderListId}`);
             }
