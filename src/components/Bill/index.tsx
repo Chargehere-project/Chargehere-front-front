@@ -35,10 +35,9 @@ const BillPage = () => {
     const [userData, setUserData] = useState({ name: '', phone: '', address: '' }); // 사용자 정보
     const [useSameInfo, setUseSameInfo] = useState(true); // 배송지 정보 동일 여부
     const [recipientData, setRecipientData] = useState({ name: '', phone: '', address: '' }); // 배송지 정보
-    const router = useRouter();
+          
+   const router = useRouter();
     const { id } = router.query;
-
-
     useEffect(() => {
         // 주문 데이터를 가져오는 함수
         const fetchOrderData = async () => {
@@ -53,39 +52,38 @@ const BillPage = () => {
                 console.error('주문 데이터를 가져오는 중 오류 발생:', error);
             }
         };
-        const fetchPoints = async () => {
+
+        // 사용자 정보를 가져오는 함수
+        const fetchUserData = async () => {
             try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    alert('로그인이 필요합니다.');
-                    return;
-                }
-        
-                const decoded: any = jwtDecode(token);
-                const userId = decoded.UserID;
-        
-                const response = await axios.post(
-                    'http://localhost:8000/point',
-                    { userId },  // userId를 객체 형태로 전송
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        }
-                    }
-                );
-        
-                console.log('포인트 응답:', response.data);
-                
-                if (response.data.result && response.data.data) {
-                    setPoints(response.data.data.Points || 0);
-                } else {
-                    setPoints(0);
+                const response = await axios.get('/api/userInfo', { params: { userId: 'user123' } });
+                setUserData(response.data);
+                if (useSameInfo) {
+                    setRecipientData(response.data); // 초기 설정에서 회원 정보와 동일하게 설정
                 }
             } catch (error) {
-                console.error('포인트 조회 중 오류 발생:', error);
-                setPoints(0);
+                console.error('사용자 데이터를 가져오는 중 오류 발생:', error);
             }
         };
+
+        // 사용 가능한 포인트를 가져오는 함수
+        const fetchPoints = async () => {
+            try {
+                // router가 준비되었는지 확인
+                if (!router.isReady) return;
+                
+                // id가 있는지 확인
+                if (!id) return;
+    
+                const response = await axios.get(`http://localhost:8000/order/${id}`);
+                console.log(response.data)
+                setOrder(response.data.data);
+            } catch (error) {
+                console.error('주문 데이터를 가져오는 중 오류 발생:', error);
+            }
+        };
+
+    
                 const fetchCoupons = async () => {
                     try {
                         const token = localStorage.getItem('token');
