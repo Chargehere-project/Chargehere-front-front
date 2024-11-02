@@ -2,49 +2,56 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swipe from './Swipe';
 import { ArrowUpOutlined } from '@ant-design/icons';
+
 interface Product {
-  ProductID: number;
-  ProductName: string;
-  Price: number;
-  Discount: number;
-  Image: string;
+    ProductID: number;
+    ProductName: string;
+    Price: number;
+    Discount: number;
+    Image: string;
 }
-const MallIndex= () => {
+
+const MallIndex = () => {
   const [bestProducts, setBestProducts] = useState<Product[]>([]);
   const [newProducts, setNewProducts] = useState<Product[]>([]);
   const [saleProducts, setSaleProducts] = useState<Product[]>([]);
+
   useEffect(() => {
     // 주문이 많은 상품 8개 가져오기
     const fetchBestProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/products'); // API 엔드포인트 맞춤
-        setBestProducts(response.data.data);
+        const response = await axios.get('http://localhost:8000/products/best');
+        setBestProducts(response.data.data.slice(0, 8)); // 8개로 제한하기
       } catch (error) {
         console.error('Best 상품 데이터를 불러오는 중 오류가 발생했습니다.', error);
       }
     };
+
     // 신상품 8개 (ID 역순) 가져오기
     const fetchNewProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/products'); // 신상품 API 엔드포인트 맞춤
-        setNewProducts(response.data.data);
+        const response = await axios.get('http://localhost:8000/products/new');
+        setNewProducts(response.data.data.slice(0, 8)); // 8개로 제한하기
       } catch (error) {
         console.error('신상품 데이터를 불러오는 중 오류가 발생했습니다.', error);
       }
     };
+
     // 할인율이 높은 상품 8개 가져오기
     const fetchSaleProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/products'); // 할인율 높은 상품 API
-        setSaleProducts(response.data.data);
+        const response = await axios.get('http://localhost:8000/products/sale');
+        setSaleProducts(response.data.data.slice(0, 8)); // 8개로 제한하기
       } catch (error) {
         console.error('Sale 상품 데이터를 불러오는 중 오류가 발생했습니다.', error);
       }
     };
+
     fetchBestProducts();
     fetchNewProducts();
     fetchSaleProducts();
   }, []);
+
   return (
     <div>
       <Swipe />
@@ -150,4 +157,5 @@ const MallIndex= () => {
     </div>
   );
 };
+
 export default MallIndex;

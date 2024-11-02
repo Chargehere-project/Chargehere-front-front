@@ -1,8 +1,10 @@
 import Image from 'next/image';
 import Router from 'next/router';
 import { jwtDecode } from 'jwt-decode';
+
 import { UserOutlined, ShoppingOutlined, LoginOutlined } from '@ant-design/icons';
 import { Input, Button } from 'antd'; // antd 컴포넌트 import
+
 
 const MallHeader = () => {
     const token = () => {
@@ -21,7 +23,8 @@ const MallHeader = () => {
         const user = token();
         if (!user) {
             alert('로그인이 필요합니다.');
-            return;
+
+            Router.push('/login');
         } else {
             Router.push('/profile');
         }
@@ -30,11 +33,23 @@ const MallHeader = () => {
     const logo = () => {
         Router.push('/mall');
     };
-
-    const search = () => {
+               const search = () => {
         // 검색 처리 로직 추가 필요
         console.log('Search initiated'); // 예시 로그
     };
+
+
+    const handleLogout = () => {
+        // 사용자에게 로그아웃 확인
+        if (window.confirm('로그아웃 하시겠습니까?')) {
+            // localStorage에서 토큰 제거
+            localStorage.removeItem('token');
+            // 메인 페이지로 이동
+            Router.push('/');
+            alert('로그아웃 되었습니다.');
+        }
+    };
+
 
     return (
         <header
@@ -46,7 +61,8 @@ const MallHeader = () => {
             </div>
             {/* 아이콘이랑 검색 영역 */}
             <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Input
+
+            <Input
                     placeholder="상품 또는 브랜드를 입력하세요"
                     onKeyPress={(event) => {
                         if (event.key === 'Enter') {
@@ -56,19 +72,23 @@ const MallHeader = () => {
                     }}
                     style={{ width: 500, marginRight: '10px' }} // 스타일 추가
                 />
-                <Button onClick={search}>검색</Button>
                 {/* 장바구니 */}
-                <div style={{ textAlign: 'center', marginLeft: '20px' }}>
+                <div style={{ textAlign: 'center', marginRight: '20px' }}>
                     <ShoppingOutlined style={{ fontSize: '30px' }} />
                 </div>
                 {/* 마이페이지 */}
-                <div style={{ textAlign: 'center', marginLeft: '20px' }} onClick={profile}>
+                <div style={{ textAlign: 'center', marginRight: '20px' }} onClick={profile}>
                     <UserOutlined style={{ fontSize: '30px' }} />
                 </div>
-                {/* 로그인 */}
-                <div style={{ textAlign: 'center', marginLeft: '20px' }}>
+                {/* 로그아웃 */}
+                <div style={{ textAlign: 'center', marginRight: '20px' }} onClick={handleLogout}>
                     <LoginOutlined style={{ fontSize: '30px' }} />
                 </div>
+                {/* 검색 */}
+                <div style={{ display: 'flex', alignItems: 'center', marginRight: '20px' }}>
+                    <SearchOutlined style={{ fontSize: '30px' }} />
+                </div>
+
             </div>
         </header>
     );
