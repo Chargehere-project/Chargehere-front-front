@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 interface OrderItem {
   productID: string;
@@ -30,47 +32,99 @@ const BillPage = () => {
     const [pointsToUse, setPointsToUse] = useState(0); // 사용할 포인트
     const [availableCoupons, setAvailableCoupons] = useState<Coupon[]>([]); // 사용 가능한 쿠폰
     const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null); // 선택한 쿠폰
-  
+    const router = useRouter();
+    const { id } = router.query;
 
-        useEffect(() => {
-            // 주문 데이터를 가져오는 함수
-            const fetchOrderData = async () => {
+
+    useEffect(() => {
+        // 주문 데이터를 가져오는 함수
+        const fetchOrderData = async () => {
             try {
-                const response = await axios.get('/api/order', {
-                params: {
-                    orderListId: '12345', // 예시로 주문 ID 전달
-                },
-                });
-                setOrder(response.data);
+                // router가 준비되었는지 확인
+                if (!router.isReady) return;
+                
+                // id가 있는지 확인
+                if (!id) return;
+    
+                const response = await axios.get(`http://localhost:8000/order/${id}`);
+                console.log(response.data)
+                setOrder(response.data.data);
             } catch (error) {
                 console.error('주문 데이터를 가져오는 중 오류 발생:', error);
             }
-            };
-
-            // 사용 가능한 포인트를 가져오는 함수
-            const fetchPoints = async () => {
+        };
+        const fetchPoints = async () => {
             try {
-                const response = await axios.get('/api/points', { params: { userId: 'user123' } });
-                setPoints(response.data.points);
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('로그인이 필요합니다.');
+                    return;
+                }
+        
+                const decoded: any = jwtDecode(token);
+                const userId = decoded.UserID;
+        
+                const response = await axios.post(
+                    'http://localhost:8000/point',
+                    { userId },  // userId를 객체 형태로 전송
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        }
+                    }
+                );
+        
+                console.log('포인트 응답:', response.data);
+                
+                if (response.data.result && response.data.data) {
+                    setPoints(response.data.data.Points || 0);
+                } else {
+                    setPoints(0);
+                }
             } catch (error) {
-                console.error('포인트 데이터를 가져오는 중 오류 발생:', error);
+                console.error('포인트 조회 중 오류 발생:', error);
+                setPoints(0);
             }
+        };
+                const fetchCoupons = async () => {
+                    try {
+                        const token = localStorage.getItem('token');
+                        if (!token) {
+                            alert('로그인이 필요합니다.');
+                            return;
+                        }
+                
+                        const decoded: any = jwtDecode(token);
+                        const userId = decoded.UserID;
+                
+                        const response = await axios.post(
+                            'http://localhost:8000/usercoupon',
+                            { userId },  // userId를 객체 형태로 전송
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${token}`,
+                                }
+                            }
+                        );
+                
+                        console.log('포인트 응답:', response.data);
+                        
+                        if (response.data.result && response.data.data) {
+                            setAvailableCoupons(response.data.data);
+                        } else {
+                            setAvailableCoupons([]);
+                        }
+                    } catch (error) {
+                        console.error('포인트 조회 중 오류 발생:', error);
+                        setAvailableCoupons([]);
+                    }
             };
 
-        // 사용 가능한 쿠폰을 가져오기
-            const fetchCoupons = async () => {
-            try {
-                const response = await axios.get('/api/coupons', { params: { userId: 'user123' } });
-                setAvailableCoupons(response.data);
-            } catch (error) {
-                console.error('쿠폰 데이터를 가져오는 중 오류 발생:', error);
-            }
-            };
-
-            fetchOrderData();
-            fetchPoints();
-            fetchCoupons();
-        }, []);
+    
+        fetchOrderData();
+        fetchPoints()
+        fetchCoupons()
+    }, [router.isReady, id]); 
 
     // 포인트 사용 부분
         const handleUsePoints = () => {
