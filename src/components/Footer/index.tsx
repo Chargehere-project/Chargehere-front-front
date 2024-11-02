@@ -17,7 +17,7 @@ const Footer = () => {
                 <p>주소: 서울특별시 마포구 도화2길 53</p>
                 <p>
                     <a
-                        href="/terms"
+                        href="laws/terms" target="_blank" 
                         style={{
                             color: '#fff',
                             textDecoration: 'none',
@@ -29,7 +29,7 @@ const Footer = () => {
                         이용약관
                     </a>
                     <a
-                        href="/privacy"
+                        href="laws/privacy" target="_blank" 
                         style={{
                             color: '#fff',
                             textDecoration: 'none',
