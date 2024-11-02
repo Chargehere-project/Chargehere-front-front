@@ -80,6 +80,7 @@ const SignUp = () => {
                 setErrorMessage('아이디를 입력해주세요');
                 return;
             }
+            console.log('검사할 ID:', userId); // 요청 전 확인용 로그
 
             const response = await axios.post('http://localhost:8000/checkid', { userId });
             console.log('데이터확인', response.data);
@@ -140,12 +141,14 @@ const SignUp = () => {
                     },
                 ]}
             >
-                <Input.Group compact>
+                <Space.Compact>
                     <Input style={{ width: 'calc(100% - 100px)' }} />
                     <Button onClick={check} htmlType="button">
                         중복검사
                     </Button>
-                </Input.Group>
+                    <div>{errorMessage}</div>
+                    <div>{checkId}</div>
+                </Space.Compact>
             </Form.Item>
             <Form.Item
                 name="password"
@@ -166,7 +169,7 @@ const SignUp = () => {
                     {
                         pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/,
                         message: '비밀번호는 영문 대/소문자, 숫자, 특수문자를 각각 하나 이상 포함해야 합니다',
-                    },
+                    }
                 ]}
                 hasFeedback
                 extra={
@@ -207,7 +210,7 @@ const SignUp = () => {
                 <Input />
             </Form.Item>
             <Form.Item label="생년월일" required>
-                <Input.Group compact>
+                <Space.Compact>
                     <Form.Item name="birthYear" noStyle rules={[{ required: true, message: '년도를 입력해 주세요' }]}>
                         <Input style={{ width: '30%' }} placeholder="YYYY" />
                     </Form.Item>
@@ -217,7 +220,7 @@ const SignUp = () => {
                     <Form.Item name="birthDay" noStyle rules={[{ required: true, message: '일을 입력해 주세요' }]}>
                         <Input style={{ width: '25%' }} placeholder="DD" />
                     </Form.Item>
-                </Input.Group>
+                </Space.Compact>
             </Form.Item>
             <Form.Item
                 name="phone"
@@ -227,7 +230,7 @@ const SignUp = () => {
                 <Input style={{ width: '100%' }} />
             </Form.Item>
             <Form.Item name="residence" label="주소" rules={[{ required: true, message: '주소를 입력해 주세요' }]}>
-                <Input.Group compact>
+                <Space.Compact>
                     <Input
                         style={{ width: 'calc(100% - 100px)' }}
                         readOnly
@@ -238,7 +241,7 @@ const SignUp = () => {
                         }}
                     />
                     <Button onClick={() => setIsModalVisible(true)}>주소찾기</Button>
-                </Input.Group>
+                </Space.Compact>
             </Form.Item>
             <Form.Item name="detailAddress" label="상세 주소">
                 <Input
