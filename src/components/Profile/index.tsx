@@ -2,6 +2,7 @@ import axios from 'axios';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
+import Router from 'next/router';
 
 interface ChargeItem {
     Amount: number;
@@ -18,14 +19,17 @@ interface CouponItem {
     isUsed: boolean;
 }
 interface Product {
+    ProductID: number;
     ProductName: string;
 }
 
 interface OrderItem {
+    OrderID: number;
     Amonut: number;
     OrderDate: string;
     OrderStatus: 'Pending' | 'Completed' | 'Cancelled';
     Product: Product;
+    hasReview: boolean;
 }
 
 const Profile = () => {
@@ -116,9 +120,12 @@ const Profile = () => {
         };
         NamePoint();
     }, []);
+    const handleReviewClick = (orderId: number, productId: number) => {
+        Router.push(`/review/write?orderId=${orderId}&productId=${productId}`);
+    };
 
     const StatusText = (status: string) => {
-        switch(status) {
+        switch (status) {
             case 'Pending':
                 return '배송중';
             case 'Completed':
@@ -128,8 +135,8 @@ const Profile = () => {
             default:
                 return '알 수 없음';
         }
-    }
-    
+    };
+
     return (
         <>
             <Image src="/main.png" alt="logo" width={100} height={100} />
@@ -144,6 +151,36 @@ const Profile = () => {
                             <div>주문일자: {item.OrderDate}</div>
                             <div>총 금액: {item.Amonut}</div>
                             <div>주문상태: {StatusText(item.OrderStatus)}</div>
+                            {item.OrderStatus === 'Completed' &&
+                                !item.hasReview && ( 
+                                    <div
+                                        onClick={() => handleReviewClick(item.OrderID, item.Product.ProductID)}
+                                        style={{
+                                            cursor: 'pointer',
+                                            color: '#7196DB',
+                                            marginTop: '10px',
+                                            padding: '8px',
+                                            border: '1px solid #7196DB',
+                                            borderRadius: '4px',
+                                            textAlign: 'center',
+                                        }}
+                                    >
+                                        리뷰 작성하기
+                                    </div>
+                                )}
+                            {item.OrderStatus === 'Completed' &&
+                                item.hasReview && (
+                                    <div
+                                        style={{
+                                            marginTop: '10px',
+                                            padding: '8px',
+                                            color: 'gray',
+                                            textAlign: 'center',
+                                        }}
+                                    >
+                                        리뷰 작성 완료
+                                    </div>
+                                )}
                         </div>
                     ))
                 ) : (

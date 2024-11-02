@@ -4,11 +4,11 @@ import Swipe from './Swipe';
 import { ArrowUpOutlined } from '@ant-design/icons';
 
 interface Product {
-  ProductID: number;
-  ProductName: string;
-  Price: number;
-  Discount: number;
-  Image: string;
+    ProductID: number;
+    ProductName: string;
+    Price: number;
+    Discount: number;
+    Image: string;
 }
 
 const MallIndex = () => {
