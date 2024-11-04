@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swipe from './Swipe';
 import { ArrowUpOutlined } from '@ant-design/icons';
+import { useRouter } from 'next/router';
 
 interface Product {
     ProductID: number;
@@ -15,6 +16,8 @@ const MallIndex = () => {
   const [bestProducts, setBestProducts] = useState<Product[]>([]);
   const [newProducts, setNewProducts] = useState<Product[]>([]);
   const [saleProducts, setSaleProducts] = useState<Product[]>([]);
+
+  const router = useRouter(); 
 
   useEffect(() => {
     // 주문이 많은 상품 8개 가져오기
@@ -51,6 +54,9 @@ const MallIndex = () => {
     fetchNewProducts();
     fetchSaleProducts();
   }, []);
+  const handleProductClick = (productId: number) => {
+    router.push(`/product/${productId}`);
+  };
 
   return (
     <div>
@@ -69,7 +75,9 @@ const MallIndex = () => {
                 padding: '10px',
                 textAlign: 'center',
                 borderRadius: '10px',
+                cursor: 'pointer'  // 커서 스타일 추가
               }}
+              onClick={() => handleProductClick(product.ProductID)}
             >
               <img
                 src={product.Image}
@@ -96,7 +104,9 @@ const MallIndex = () => {
                 padding: '10px',
                 textAlign: 'center',
                 borderRadius: '10px',
+                cursor: 'pointer'  // 커서 스타일 추가
               }}
+              onClick={() => handleProductClick(product.ProductID)}
             >
               <img
                 src={product.Image}
@@ -123,7 +133,9 @@ const MallIndex = () => {
                 padding: '10px',
                 textAlign: 'center',
                 borderRadius: '10px',
+                cursor: 'pointer'  // 커서 스타일 추가
               }}
+              onClick={() => handleProductClick(product.ProductID)}
             >
               <img
                 src={product.Image}
