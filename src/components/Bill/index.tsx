@@ -206,7 +206,7 @@ const BillPage = () => {
 
   return (
     <div className={style.billPage}>
-      <h2>주문서</h2>
+      <h2 className={style.headerTitle}>주문서</h2>
       {order.items.map((item) => (
         <div key={item.productID} className={style.orderItem}>
           <img src={item.image} alt={item.productName} className={style.itemImage} />
