@@ -45,13 +45,13 @@
     font-size: 18px;
 }
 
-label {
+.label {
     display: block;
     margin: 8px 0;
     color: #444;
 }
 
-input[type="text"], input[type="number"] {
+.inputText, .inputNumber {
     width: 100%;
     padding: 8px;
     margin-top: 4px;
@@ -60,7 +60,7 @@ input[type="text"], input[type="number"] {
     font-size: 14px;
 }
 
-input[type="radio"] {
+.radioButton {
     margin-right: 8px;
 }
 

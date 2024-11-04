@@ -207,6 +207,8 @@ const BillPage = () => {
   return (
     <div className={style.billPage}>
       <h2 className={style.headerTitle}>주문서</h2>
+      
+      {/* 주문 아이템 목록 */}
       {order.items.map((item) => (
         <div key={item.productID} className={style.orderItem}>
           <img src={item.image} alt={item.productName} className={style.itemImage} />
@@ -227,51 +229,56 @@ const BillPage = () => {
 
       <div className={style.recipientInfo}>
         <h3>배송지 정보</h3>
-        <label>
+        <label className={style.label}>
           <input
             type="radio"
             value="same"
             checked={useSameInfo}
             onChange={handleUseSameInfoChange}
+            className={style.radioButton}
           />
           회원정보와 동일
         </label>
-        <label>
+        <label className={style.label}>
           <input
             type="radio"
             value="different"
             checked={!useSameInfo}
             onChange={handleUseSameInfoChange}
+            className={style.radioButton}
           />
           직접 입력
         </label>
 
         <div>
-          <label>
+          <label className={style.label}>
             이름:{" "}
             <input
               type="text"
               value={recipientData.name}
               onChange={(e) => handleRecipientDataChange("name", e.target.value)}
               disabled={useSameInfo}
+              className={style.inputText}
             />
           </label>
-          <label>
+          <label className={style.label}>
             전화번호:{" "}
             <input
               type="text"
               value={recipientData.phone}
               onChange={(e) => handleRecipientDataChange("phone", e.target.value)}
               disabled={useSameInfo}
+              className={style.inputText}
             />
           </label>
-          <label>
+          <label className={style.label}>
             주소:{" "}
             <input
               type="text"
               value={recipientData.address}
               onChange={(e) => handleRecipientDataChange("address", e.target.value)}
               disabled={useSameInfo}
+              className={style.inputText}
             />
           </label>
         </div>
@@ -290,6 +297,7 @@ const BillPage = () => {
           value={pointsToUse}
           onChange={(e) => setPointsToUse(Number(e.target.value))}
           placeholder="사용할 포인트 입력"
+          className={style.inputNumber}
         />
         <button onClick={handleUsePoints}>포인트 사용</button>
       </div>
