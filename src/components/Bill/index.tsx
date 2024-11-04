@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/router';
 
 interface OrderItem {
   productID: string;
@@ -26,20 +27,21 @@ interface Coupon {
 
 const BillPage = () => {
     const [order, setOrder] = useState<Order | null>(null);
-    const [points, setPoints] = useState(0); // 사용 가능한 포인트
-    const [pointsToUse, setPointsToUse] = useState(0); // 사용할 포인트
-    const [availableCoupons, setAvailableCoupons] = useState<Coupon[]>([]); // 사용 가능한 쿠폰
-    const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null); // 선택한 쿠폰
-    const [userData, setUserData] = useState({ name: '', phone: '', address: '' }); // 사용자 정보
-    const [useSameInfo, setUseSameInfo] = useState(true); // 배송지 정보 동일 여부
-    const [recipientData, setRecipientData] = useState({ name: '', phone: '', address: '' }); // 배송지 정보
+    const [points, setPoints] = useState(0);
+    const [pointsToUse, setPointsToUse] = useState(0);
+    const [availableCoupons, setAvailableCoupons] = useState<Coupon[]>([]);
+    const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+    const [userData, setUserData] = useState({ name: '', phone: '', address: '' });
+    const [useSameInfo, setUseSameInfo] = useState(true);
+    const [recipientData, setRecipientData] = useState({ name: '', phone: '', address: '' });
+    
+    const router = useRouter();
 
     useEffect(() => {
-        // 주문 데이터를 가져오는 함수
         const fetchOrderData = async () => {
             try {
                 const response = await axios.get('/api/order', {
-                    params: { orderListId: '12345' }, // 예시 주문 ID
+                    params: { orderListId: '12345' },
                 });
                 setOrder(response.data);
             } catch (error) {
@@ -47,7 +49,6 @@ const BillPage = () => {
             }
         };
 
-        // 사용자 정보를 가져오는 함수
         const fetchUserData = async () => {
             try {
                 const response = await axios.get('/api/userInfo', { params: { userId: 'user123' } });
@@ -60,7 +61,6 @@ const BillPage = () => {
             }
         };
 
-        // 사용 가능한 포인트를 가져오는 함수
         const fetchPoints = async () => {
             try {
                 const response = await axios.get('/api/points', { params: { userId: 'user123' } });
@@ -70,7 +70,6 @@ const BillPage = () => {
             }
         };
 
-        // 사용 가능한 쿠폰을 가져오기
         const fetchCoupons = async () => {
             try {
                 const response = await axios.get('/api/coupons', { params: { userId: 'user123' } });
@@ -86,7 +85,6 @@ const BillPage = () => {
         fetchCoupons();
     }, [useSameInfo]);
 
-    // 포인트 사용 함수
     const handleUsePoints = () => {
         if (pointsToUse > points) {
             alert('사용 가능한 포인트보다 더 많은 포인트를 사용할 수 없습니다.');
@@ -101,23 +99,20 @@ const BillPage = () => {
         }
     };
 
-    // 배송지 정보 동일 여부 변경 핸들러
     const handleUseSameInfoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const isSame = event.target.value === 'same';
         setUseSameInfo(isSame);
         if (isSame) {
-            setRecipientData(userData); // 회원 정보를 배송지 정보로 설정
+            setRecipientData(userData);
         } else {
-            setRecipientData({ name: '', phone: '', address: '' }); // 빈 값으로 초기화
+            setRecipientData({ name: '', phone: '', address: '' });
         }
     };
 
-    // 배송지 정보 수동 입력 핸들러
     const handleRecipientDataChange = (field: keyof typeof recipientData, value: string) => {
         setRecipientData((prev) => ({ ...prev, [field]: value }));
     };
 
-    // 쿠폰을 선택하는 부분
     const handleCouponSelection = (coupon: Coupon) => {
         setSelectedCoupon(coupon);
         if (order) {
@@ -127,6 +122,10 @@ const BillPage = () => {
                 paymentAmount: discountedAmount - coupon.discountAmount,
             });
         }
+    };
+
+    const handlePayment = () => {
+        router.push('/pay');
     };
 
     if (!order) {
@@ -154,7 +153,6 @@ const BillPage = () => {
                 <p>주소: {userData.address}</p>
             </div>
 
-            {/* 배송지 정보 섹션 */}
             <div className="recipient-info">
                 <h3>배송지 정보</h3>
                 <label>
@@ -213,7 +211,6 @@ const BillPage = () => {
                 <p>총 결제 금액: ₩{order.paymentAmount}</p>
             </div>
 
-            {/* 포인트 사용 섹션 */}
             <div className="points-section">
                 <p>사용 가능한 포인트: {points}</p>
                 <input
@@ -225,7 +222,6 @@ const BillPage = () => {
                 <button onClick={handleUsePoints}>포인트 사용</button>
             </div>
 
-            {/* 쿠폰 선택 섹션 */}
             <div className="coupon-section">
                 <h3>쿠폰 선택</h3>
                 <select onChange={(e) => handleCouponSelection(availableCoupons[e.target.selectedIndex])}>
@@ -240,7 +236,9 @@ const BillPage = () => {
                 {selectedCoupon && <p>선택한 쿠폰: {selectedCoupon.couponName}</p>}
             </div>
 
-            <button style={{ padding: '10px', backgroundColor: 'green', color: 'white' }}>결제하기</button>
+            <button onClick={handlePayment} style={{ padding: '10px', backgroundColor: 'green', color: 'white' }}>
+                결제하기
+            </button>
         </div>
     );
 };
