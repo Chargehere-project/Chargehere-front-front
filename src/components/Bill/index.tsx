@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-
+import { loadTossPayments } from '@tosspayments/payment-sdk'
 
 interface OrderItem {
   productID: string;
@@ -132,48 +132,7 @@ const BillPage = () => {
             console.error('쿠폰 조회 중 오류 발생:', error);
         }
     };
-
-    // 결제 처리 - POST /transaction
-    const handlePayment = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                alert('로그인이 필요합니다.');
-                return;
-            }
-
-            const decoded: any = jwtDecode(token);
-            const userId = decoded.UserID;
-
-            const paymentData = {
-                orderListId: order?.orderListId,
-                userId,
-                totalAmount: order?.totalAmount,
-                paymentAmount: order?.paymentAmount,
-                pointUsed: pointsToUse,
-                paymentMethod: 'CARD',
-                status: 'PENDING'
-
-            };
-
-            const response = await axios.post(
-                'http://localhost:8000/transaction',
-                paymentData
-            );
-            
-            console.log('결제 결과:', response.data);
-
-
-            if (response.data.result) {
-                alert(`결제가 완료되었습니다. ${response.data.earnedPoints}포인트가 적립되었습니다.`);
-                router.push('/ordercomplete');
-            }
-        } catch (error) {
-            console.error('결제 처리 중 오류 발생:', error);
-            alert('결제 처리 중 오류가 발생했습니다.');
-        }
-    };
-
+    
     // 포인트 사용 처리
 
     const handleUsePoints = () => {
@@ -345,7 +304,7 @@ const BillPage = () => {
                 {selectedCoupon && <p>선택한 쿠폰: {selectedCoupon.couponName}</p>}
             </div>
 
-            <button onClick={handlePayment} style={{ padding: '10px', backgroundColor: 'green', color: 'white' }}>
+            <button style={{ padding: '10px', backgroundColor: 'green', color: 'white' }}>
                 결제하기
             </button>
         </div>
