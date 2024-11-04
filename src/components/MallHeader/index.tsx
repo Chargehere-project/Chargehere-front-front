@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Router from 'next/router';
 import { jwtDecode } from 'jwt-decode';
 
-import { UserOutlined, ShoppingOutlined, LoginOutlined } from '@ant-design/icons';
+import { UserOutlined, ShoppingOutlined, LoginOutlined, SearchOutlined } from '@ant-design/icons';
 import { Input, Button } from 'antd'; // antd 컴포넌트 import
 
 
