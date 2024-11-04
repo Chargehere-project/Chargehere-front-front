@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
+
 interface OrderItem {
   productID: string;
   productName: string;
@@ -29,6 +30,7 @@ interface Coupon {
 
 const BillPage = () => {
     const [order, setOrder] = useState<Order | null>(null);
+
     const [points, setPoints] = useState(0);
     const [pointsToUse, setPointsToUse] = useState(0);
     const [availableCoupons, setAvailableCoupons] = useState<Coupon[]>([]);
@@ -57,6 +59,7 @@ const BillPage = () => {
             
             if (response.data.result) {
                 setOrder(response.data.data);
+
             }
         } catch (error) {
             console.error('주문 데이터를 가져오는 중 오류 발생:', error);
@@ -76,6 +79,7 @@ const BillPage = () => {
             const decoded: any = jwtDecode(token);
             const userId = decoded.UserID;
 
+
             const response = await axios.post('http://localhost:8000/point', 
                 { userId }
             );
@@ -90,6 +94,7 @@ const BillPage = () => {
                     Phone: userData.PhoneNumber,
                     Address: userData.Address
                 });
+
                 if (useSameInfo) {
                     setRecipientData({
                         name: userData.Name,
@@ -98,6 +103,7 @@ const BillPage = () => {
                     });
                 }
             }
+
         } catch (error) {
             console.error('포인트 조회 중 오류 발생:', error);
         }
@@ -120,6 +126,7 @@ const BillPage = () => {
 
             if (response.data.result && response.data.data) {
                 setAvailableCoupons(Array.isArray(response.data.data) ? response.data.data : [response.data.data]);
+
             }
         } catch (error) {
             console.error('쿠폰 조회 중 오류 발생:', error);
@@ -146,6 +153,7 @@ const BillPage = () => {
                 pointUsed: pointsToUse,
                 paymentMethod: 'CARD',
                 status: 'PENDING'
+
             };
 
             const response = await axios.post(
@@ -154,6 +162,7 @@ const BillPage = () => {
             );
             
             console.log('결제 결과:', response.data);
+
 
             if (response.data.result) {
                 alert(`결제가 완료되었습니다. ${response.data.earnedPoints}포인트가 적립되었습니다.`);
@@ -166,6 +175,7 @@ const BillPage = () => {
     };
 
     // 포인트 사용 처리
+
     const handleUsePoints = () => {
         if (!order) return;
 
@@ -181,6 +191,7 @@ const BillPage = () => {
             discount: pointsToUse + (selectedCoupon?.discountAmount || 0)
         });
     };
+
 
     // 쿠폰 선택 처리
     const handleCouponSelection = (coupon: Coupon) => {
@@ -199,10 +210,12 @@ const BillPage = () => {
         return <div>주문 정보를 불러오는 중입니다...</div>;
     }
 
+
     const handleUseSameInfoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const isSame = event.target.value === 'same';
         setUseSameInfo(isSame);
         if (isSame) {
+
             // userData의 필드명이 대문자로 시작하므로 그에 맞게 설정
             setRecipientData({
                 name: userData.UserName,
@@ -227,6 +240,7 @@ const BillPage = () => {
         }));
     };
 
+
     return (
         <div className="bill-page">
             <h2>주문서</h2>
@@ -248,7 +262,6 @@ const BillPage = () => {
                 <p>주소: {userData.Address}</p>
             </div>
 
-            {/* 배송지 정보 섹션 */}
             <div className="recipient-info">
                 <h3>배송지 정보</h3>
                 <label>
@@ -307,7 +320,6 @@ const BillPage = () => {
                 <p>총 결제 금액: ₩{order.paymentAmount}</p>
             </div>
 
-            {/* 포인트 사용 섹션 */}
             <div className="points-section">
                 <p>사용 가능한 포인트: {points}</p>
                 <input
@@ -319,7 +331,6 @@ const BillPage = () => {
                 <button onClick={handleUsePoints}>포인트 사용</button>
             </div>
 
-            {/* 쿠폰 선택 섹션 */}
             <div className="coupon-section">
                 <h3>쿠폰 선택</h3>
                 <select onChange={(e) => handleCouponSelection(availableCoupons[e.target.selectedIndex])}>
@@ -334,7 +345,9 @@ const BillPage = () => {
                 {selectedCoupon && <p>선택한 쿠폰: {selectedCoupon.couponName}</p>}
             </div>
 
-            <button style={{ padding: '10px', backgroundColor: 'green', color: 'white' }}>결제하기</button>
+            <button onClick={handlePayment} style={{ padding: '10px', backgroundColor: 'green', color: 'white' }}>
+                결제하기
+            </button>
         </div>
     );
 };
