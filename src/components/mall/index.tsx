@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swipe from './Swipe';
 import { ArrowUpOutlined } from '@ant-design/icons';
+import { useRouter } from 'next/router';
 
 interface Product {
     ProductID: number;
@@ -16,11 +17,13 @@ const MallIndex = () => {
   const [newProducts, setNewProducts] = useState<Product[]>([]);
   const [saleProducts, setSaleProducts] = useState<Product[]>([]);
 
+  const router = useRouter(); 
+
   useEffect(() => {
     // 주문이 많은 상품 8개 가져오기
     const fetchBestProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/products/best');
+        const response = await axios.get('http://localhost:8000/products');
         setBestProducts(response.data.data.slice(0, 8)); // 8개로 제한하기
       } catch (error) {
         console.error('Best 상품 데이터를 불러오는 중 오류가 발생했습니다.', error);
@@ -30,7 +33,7 @@ const MallIndex = () => {
     // 신상품 8개 (ID 역순) 가져오기
     const fetchNewProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/products/new');
+        const response = await axios.get('http://localhost:8000/products');
         setNewProducts(response.data.data.slice(0, 8)); // 8개로 제한하기
       } catch (error) {
         console.error('신상품 데이터를 불러오는 중 오류가 발생했습니다.', error);
@@ -40,7 +43,7 @@ const MallIndex = () => {
     // 할인율이 높은 상품 8개 가져오기
     const fetchSaleProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/products/sale');
+        const response = await axios.get('http://localhost:8000/products');
         setSaleProducts(response.data.data.slice(0, 8)); // 8개로 제한하기
       } catch (error) {
         console.error('Sale 상품 데이터를 불러오는 중 오류가 발생했습니다.', error);
@@ -51,6 +54,9 @@ const MallIndex = () => {
     fetchNewProducts();
     fetchSaleProducts();
   }, []);
+  const handleProductClick = (productId: number) => {
+    router.push(`/product/${productId}`);
+  };
 
   return (
     <div>
@@ -69,7 +75,9 @@ const MallIndex = () => {
                 padding: '10px',
                 textAlign: 'center',
                 borderRadius: '10px',
+                cursor: 'pointer'  // 커서 스타일 추가
               }}
+              onClick={() => handleProductClick(product.ProductID)}
             >
               <img
                 src={product.Image}
@@ -96,7 +104,9 @@ const MallIndex = () => {
                 padding: '10px',
                 textAlign: 'center',
                 borderRadius: '10px',
+                cursor: 'pointer'  // 커서 스타일 추가
               }}
+              onClick={() => handleProductClick(product.ProductID)}
             >
               <img
                 src={product.Image}
@@ -123,7 +133,9 @@ const MallIndex = () => {
                 padding: '10px',
                 textAlign: 'center',
                 borderRadius: '10px',
+                cursor: 'pointer'  // 커서 스타일 추가
               }}
+              onClick={() => handleProductClick(product.ProductID)}
             >
               <img
                 src={product.Image}

@@ -43,7 +43,9 @@ const BillPage = () => {
         const fetchOrderData = async () => {
             try {
                 const response = await axios.get('/api/order', {
-                    params: { orderListId: '12345' }, // 예시 주문 ID
+                params: {
+                    orderListId: '12345', // 예시로 주문 ID 전달
+                },
                 });
                 setOrder(response.data);
             } catch (error) {
@@ -81,41 +83,7 @@ const BillPage = () => {
             }
         };
 
-        // 사용 가능한 쿠폰을 가져오기
-        const fetchCoupons = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    alert('로그인이 필요합니다.');
-                    return;
-                }
-        
-                const decoded: any = jwtDecode(token);
-                const userId = decoded.UserID;
-        
-                const response = await axios.post(
-                    'http://localhost:8000/point',
-                    { userId },  // userId를 객체 형태로 전송
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        }
-                    }
-                );
-        
-                console.log('포인트 응답:', response.data);
-                
-                if (response.data.result && response.data.data) {
-                    setPoints(response.data.data.Points || 0);
-                } else {
-                    setPoints(0);
-                }
-            } catch (error) {
-                console.error('포인트 조회 중 오류 발생:', error);
-                setPoints(0);
-            }
-        };
-
+    
                 const fetchCoupons = async () => {
                     try {
                         const token = localStorage.getItem('token');
@@ -155,7 +123,6 @@ const BillPage = () => {
         fetchPoints()
         fetchCoupons()
     }, [router.isReady, id]); 
-
 
     // 포인트 사용 함수
     const handleUsePoints = () => {
