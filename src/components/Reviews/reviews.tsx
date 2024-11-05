@@ -32,23 +32,23 @@ const ReviewItem= ({
     return stars;
   };
   return (
-    <div>
-      <Menu />
-      <div style={styles.reviewItem}>
-        <div style={styles.reviewHeader}>
-          <img src={userImage} alt={`${userName} profile`} style={styles.userImage} />
-          <div>
-            <h3>{userName}</h3>
-            <p>{new Date(reviewDate).toLocaleDateString()}</p>
+      <div>
+        <Menu />
+        <div style={styles.reviewItem}>
+          <div style={styles.reviewHeader}>
+            <img src={userImage} alt={`${userName} profile`} style={styles.userImage} />
+            <div>
+              <h3>{userName}</h3>
+              <p>{new Date(reviewDate).toLocaleDateString()}</p>
+            </div>
+          </div>
+          <div style={styles.reviewBody}>
+            <p style={styles.productInfo}>상품: {productName}</p>
+            <div style={styles.rating}>{renderStars(rating)} ({rating} / 5)</div>
+            <p>{content}</p>
           </div>
         </div>
-        <div style={styles.reviewBody}>
-          <p style={styles.productInfo}>상품: {productName}</p>
-          <div style={styles.rating}>{renderStars(rating)} ({rating} / 5)</div>
-          <p>{content}</p>
-        </div>
       </div>
-    </div>
   );
 };
 // Pagination을 위한 인터페이스
