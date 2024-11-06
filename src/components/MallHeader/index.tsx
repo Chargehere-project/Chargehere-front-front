@@ -58,6 +58,16 @@ const handleSearch = async () => {
             return null;
         }
     };
+    const cart = () => {
+        const user = token();
+        if (!user) {
+            alert('로그인이 필요합니다.');
+            Router.push('/login');
+        } else {
+            // 로그인된 사용자의 장바구니로 이동
+            Router.push(`/cart/${user}`);  // 또는 그냥 '/cart'로 이동하고 서버에서 처리
+        }
+    };
 
     const profile = () => {
         const user = token();
@@ -113,7 +123,7 @@ const handleSearch = async () => {
                     style={{ width: 500, marginRight: '10px' }} // 스타일 추가
                 />
                 {/* 장바구니 */}
-                <div style={{ textAlign: 'center', marginRight: '20px' }}>
+                <div style={{ textAlign: 'center', marginRight: '20px' }}  onClick={cart}>
                     <ShoppingOutlined style={{ fontSize: '30px' }} />
                 </div>
                 {/* 마이페이지 */}

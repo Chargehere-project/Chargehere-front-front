@@ -87,7 +87,7 @@ const Profile = () => {
 
             try {
                 const response = await axios.post(
-                    'http://localhost:8000/pointlist',
+                    'http://localhost:8000/chargelist',
                     { userId },
                     {
                         headers: {
