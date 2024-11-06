@@ -1,0 +1,108 @@
+.billPage {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+.headerTitle {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.orderItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.itemImage {
+    width: 80px;
+    height: 80px;
+    border-radius: 4px;
+    margin-right: 15px;
+}
+
+.userInfo, .recipientInfo, .pointsSection, .couponSection, .orderSummary {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.userInfo h3, .recipientInfo h3, .pointsSection h3, .couponSection h3 {
+    margin-top: 0;
+    color: #444;
+    font-size: 18px;
+}
+
+.label {
+    display: block;
+    margin: 8px 0;
+    color: #444;
+}
+
+.inputText, .inputNumber {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.radioButton {
+    margin-right: 8px;
+}
+
+.orderSummary p {
+    font-weight: bold;
+}
+
+.pointsSection p, .pointsSection input, .couponSection select {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+    font-size: 14px;
+}
+
+.paymentButton {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #28a745;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.paymentButton:hover {
+    background-color: #218838;
+}
+
+.couponSection select {
+    width: calc(100% - 20px);
+    padding: 10px;
+    font-size: 14px;
+    margin-top: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.couponSection p {
+    font-size: 14px;
+    color: #888;
+    margin-top: 8px;
+}
