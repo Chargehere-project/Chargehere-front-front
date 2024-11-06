@@ -15,7 +15,6 @@
 
 .selectAllContainer {
     display: flex;
-    align-items: center;
     justify-content: space-between;
     margin-bottom: 15px;
 }
@@ -48,6 +47,20 @@
     margin-right: 15px;
 }
 
+.itemImageContainer {
+    width: 80px;
+    height: 80px;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-right: 15px;
+}
+
+.itemImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .itemDetails {
     flex: 1;
 }
@@ -59,14 +72,15 @@
 }
 
 .itemPrice {
-    color: rgb(143, 142, 142);
+    color: #8f8e8e;
     font-size: 16px;
+    margin-bottom: 5px;
 }
 
 .itemQuantity {
     display: flex;
     align-items: center;
-    margin-top: 10px;
+    margin-top: 5px;
 }
 
 .quantitySelector {
@@ -79,9 +93,11 @@
     color: #fa3c3c;
     cursor: pointer;
     margin-left: 15px;
+    transition: color 0.2s;
 }
 
 .deleteButton:hover {
+    color: #c00000;
     text-decoration: underline;
 }
 
