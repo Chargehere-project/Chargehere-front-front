@@ -33,7 +33,7 @@ const MallIndex = () => {
     // 신상품 8개 (ID 역순) 가져오기
     const fetchNewProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/products');
+        const response = await axios.get('http://localhost:8000/newproducts');
         setNewProducts(response.data.data.slice(0, 8)); // 8개로 제한하기
       } catch (error) {
         console.error('신상품 데이터를 불러오는 중 오류가 발생했습니다.', error);
@@ -43,7 +43,7 @@ const MallIndex = () => {
     // 할인율이 높은 상품 8개 가져오기
     const fetchSaleProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/products');
+        const response = await axios.get('http://localhost:8000/saleproducts');
         setSaleProducts(response.data.data.slice(0, 8)); // 8개로 제한하기
       } catch (error) {
         console.error('Sale 상품 데이터를 불러오는 중 오류가 발생했습니다.', error);

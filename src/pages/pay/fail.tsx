@@ -1,14 +1,23 @@
-import { useSearchParams } from "react-router-dom"
+import { useRouter } from "next/router";
 
-export function FailPage() {
-  const [searchParams] = useSearchParams()
+const FailPage = () => {
+  const router = useRouter();
+  
+  // useSearchParams 대신 router.query 사용
+  const { message, code } = router.query;
 
-  // 고객에게 실패 사유 알려주고 다른 페이지로 이동
+  if (!router.isReady) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
       <h1>결제 실패</h1>
-      <div>{`사유: ${searchParams.get("message")}`}</div>
+      {message && <p>사유: {message}</p>}
+      {code && <p>에러 코드: {code}</p>}
+      <button onClick={() => router.push('/')}>홈으로 돌아가기</button>
     </div>
-  )
-}
+  );
+};
+
+export default FailPage;
