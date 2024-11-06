@@ -1,0 +1,77 @@
+.profileContainer {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.username {
+    font-size: 20px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.points {
+    color: #666;
+    font-size: 16px;
+}
+
+.sectionTitle {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+.sectionContainer {
+    margin-top: 10px;
+    padding: 10px;
+    background: #ffffff;
+    border-radius: 8px;
+}
+
+.orderItem, .pointItem, .couponItem {
+    margin-bottom: 15px;
+}
+
+.itemTitle {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.itemInfo {
+    color: #333;
+    margin-top: 5px;
+}
+
+.reviewButton {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+}
+
+.statusPending {
+    color: orange;
+}
+
+.statusCompleted {
+    color: green;
+}
+
+.statusCancelled {
+    color: red;
+}
+
+.couponStatusUsed {
+    color: gray;
+}
+
+.couponStatusUnused {
+    color: green;
+}
