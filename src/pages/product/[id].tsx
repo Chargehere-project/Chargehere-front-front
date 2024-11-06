@@ -1,4 +1,4 @@
-import Product from '@/components/Products';
+import Product from '@/components/Detail';
 import React from 'react';
 
 // import Footer from '@/components/ChargeMain/Footer';
