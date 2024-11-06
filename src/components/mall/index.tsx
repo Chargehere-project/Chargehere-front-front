@@ -55,7 +55,7 @@ const MallIndex = () => {
     fetchSaleProducts();
   }, []);
   const handleProductClick = (productId: number) => {
-    router.push(`/product/${productId}`);
+    router.push(`mall/product/${productId}`);
   };
 
   return (

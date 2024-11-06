@@ -1,34 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ProductItem from './ProductItem';
 import { Input } from 'antd';
+import axios from 'axios';
 
 interface ProductData {
-    id: number;
-    image: string;
-    name: string;
-    discount: number;
-    price: number;
-    details: string;
+    ProductID: number;
+    Image: string;      // 백엔드 컬럼명에 맞게 수정
+    ProductName: string;  // 백엔드 컬럼명에 맞게 수정
+    Discount: number;    // 백엔드 컬럼명에 맞게 수정
+    Price: number;      // 백엔드 컬럼명에 맞게 수정
 }
 
-const Product: React.FC = () => {
+const Product  = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
-    const itemsPerPage = 20; // 한 페이지에 보여줄 아이템 수
+    const [products, setProducts] = useState<ProductData[]>([]);
+    const [loading, setLoading] = useState(true);
+    const itemsPerPage = 20;
 
-    // 더미 데이터 (총 30개)
-    const products: ProductData[] = Array.from({ length: 30 }, (_, i) => ({
-        id: i + 1,
-        image: `/images/product${(i % 10) + 1}.jpg`, // 이미지 경로
-        name: `Product ${i + 1}`,
-        discount: (i % 10) * 5,
-        price: (i + 1) * 10,
-        details: `Details about product ${i + 1}`,
-    }));
+    // 데이터 가져오기
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/products');
+                setProducts(response.data.data);
+                setLoading(false);
+            } catch (error) {
+                console.error('제품 데이터를 가져오는데 실패했습니다:', error);
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, []); // 컴포넌트 마운트 시 한 번만 실행
 
     // 검색 필터링 로직
     const filteredProducts = products.filter((product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        product.ProductName.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     // 현재 페이지에 보여줄 데이터 slice
@@ -44,8 +52,12 @@ const Product: React.FC = () => {
     // 검색어 업데이트 함수
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
-        setCurrentPage(1); // 검색 시 항상 첫 페이지로 돌아감
+        setCurrentPage(1);
     };
+
+    if (loading) {
+        return <div>로딩중...</div>;
+    }
 
     return (
         <div>
@@ -67,8 +79,7 @@ const Product: React.FC = () => {
             <div
                 style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(5, 1fr)', // 가로 5개
-                    gridTemplateRows: 'repeat(4, auto)', // 세로 4개
+                    gridTemplateColumns: 'repeat(5, 1fr)',
                     gap: '16px',
                     justifyContent: 'center',
                 }}
@@ -76,21 +87,19 @@ const Product: React.FC = () => {
                 {currentProducts.length > 0 ? (
                     currentProducts.map((product) => (
                         <ProductItem
-                            key={product.id}
-                            id={product.id} // id 추가
-                            image={product.image}
-                            name={product.name}
-                            discount={product.discount}
-                            price={product.price}
-                            details={product.details}
-                        />
+                        key={product.ProductID}
+                        ProductID={product.ProductID}    // id -> ProductID
+                        Image={product.Image}           // image -> Image
+                        ProductName={product.ProductName} // name -> ProductName
+                        Discount={product.Discount}     // discount -> Discount
+                        Price={product.Price}           // price -> Price
+                    />
                     ))
                 ) : (
                     <p style={{ gridColumn: 'span 5', textAlign: 'center' }}>검색 결과가 없습니다.</p>
                 )}
             </div>
             <div style={{ marginTop: '20px', textAlign: 'center' }}>
-                {/* 페이지네이션 버튼 */}
                 {totalPages > 1 &&
                     Array.from({ length: totalPages }, (_, i) => (
                         <button

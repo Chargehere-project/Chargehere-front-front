@@ -8,7 +8,7 @@ const Menu = () => {
                     <a href="/mall">홈</a>
                 </li>
                 <li className={styles.navItem}>
-                    <a href="/mall/Product">제품</a>
+                    <a href="/mall/product">제품</a>
                 </li>
                 <li className={styles.navItem}>
                     <a href="/mall/review">리뷰</a>

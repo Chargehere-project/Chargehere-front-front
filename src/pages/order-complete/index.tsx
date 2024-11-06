@@ -1,4 +1,4 @@
-import CompleteOrder from '@/components/CompleteOrder';
+import CompleteOrder from '@/components/Comp';
 import React from 'react';
 
 
