@@ -6,7 +6,9 @@ import style from './shoppingcart.module.css';
 
 interface Product {
     ProductName: string;
+    ProductImage: string; // 이미지 URL 추가
 }
+
 interface CartItem {
     CartID: number;
     Quantity: number;
@@ -194,6 +196,13 @@ const ShoppingCart = () => {
                                 onChange={() => handleSelectItem(item.CartID)}
                                 className={style.itemCheckbox}
                             />
+                            <div className={style.itemImageContainer}>
+                                <img
+                                    src={item.Product.ProductImage} 
+                                    alt={item.Product.ProductName}
+                                    className={style.itemImage}
+                                />
+                            </div>
                             <div className={style.itemDetails}>
                                 <div className={style.itemName}>{item.Product.ProductName}</div>
                                 <div className={style.itemPrice}>{item.Price.toLocaleString()}원</div>
