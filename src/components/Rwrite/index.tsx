@@ -11,8 +11,9 @@ const StarSection = styled.div`
     gap: 5px;
 `;
 
-const StarIcon = styled.span<{ isFilled: boolean }>`
-    color: ${(props) => (props.isFilled ? '#FEE500' : '#ccc')};
+// Styled component에서 isFilled를 직접 사용하지 않도록 필터링
+const StarIcon = styled.span<{ $isFilled: boolean }>`
+    color: ${(props) => (props.$isFilled ? '#FEE500' : '#ccc')};
     font-size: 30px;
     cursor: pointer;
     transition: color 0.2s;
@@ -79,7 +80,7 @@ function Rwrite() {
                     {[1, 2, 3, 4, 5].map((star) => (
                         <StarIcon
                             key={star}
-                            isFilled={star <= rating}
+                            $isFilled={star <= rating}
                             onClick={() => handleStarClick(star)}
                         >
                             {star <= rating ? <FaStar /> : <FaRegStar />}
