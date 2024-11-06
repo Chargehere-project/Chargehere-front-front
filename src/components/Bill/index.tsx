@@ -462,7 +462,7 @@ const BillPage = () => {
                     const { transactionId } = transactionResponse.data;
 
                     // 2. 토스페이먼츠 결제 요청
-                    const formattedOrderId = `ORDER-${String(order.orderListId)}`;
+                    const formattedOrderId = `ORDER-${String(order.orderListId)}-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
 
                     await widgets.requestPayment({
                         orderId: formattedOrderId,
