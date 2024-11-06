@@ -1,12 +1,12 @@
-import Product from '@/components/Detail';
+import Detail from '@/components/Detail';
 import React from 'react';
 
 // import Footer from '@/components/ChargeMain/Footer';
-const productPage = () => {
+const DetailPage = () => {
   return (
     <div>
-        <Product />
+        < Detail/>
     </div>
   );
 };
-export default productPage;
+export default DetailPage;

@@ -1,31 +1,39 @@
 import React from 'react';
+import Router from 'next/router';
 
 interface ProductItemProps {
-    id: number; // id 추가
-    image: string;
-    name: string;
-    discount: number;
-    price: number;
-    details: string;
+    ProductID: number;
+    Image: string;      // 백엔드 컬럼명에 맞게 수정
+    ProductName: string;  // 백엔드 컬럼명에 맞게 수정
+    Discount: number;    // 백엔드 컬럼명에 맞게 수정
+    Price: number;      // 백엔드 컬럼명에 맞게 수정
 }
 
-const ProductItem: React.FC<ProductItemProps> = ({ id, image, name, discount, price, details }) => {
+const ProductItem: React.FC<ProductItemProps> = ({ ProductID, Image, ProductName,  Discount, Price }) => {
     const defaultImage = '/images/default.jpg'; // 기본 이미지 경로
 
+    const Click = () => {
+        Router.push(`product/${ProductID}`);
+    };
     return (
-        <div>
+        <div onClick={Click}  style={{
+            border: '1px solid #ddd',
+            borderRadius: '8px',
+            padding: '16px',
+            cursor: 'pointer',
+            transition: 'transform 0.2s',
+        }}>
             <img
-                src={image}
-                alt={name}
+                src={Image}
+                alt={ProductName}
                 onError={(e) => {
                     e.currentTarget.src = defaultImage; // 이미지 로드 실패 시 기본 이미지로 대체
                 }}
                 style={{ width: '100%', height: 'auto' }}
             />
-            <h3>{name}</h3>
-            <p>{discount}% 할인</p>
-            <p>{price}원</p>
-            <p>{details}</p>
+            <h3>{ProductName}</h3>
+            <p>{Discount}% 할인</p>
+            <p>{Price}원</p>
         </div>
     );
 };
