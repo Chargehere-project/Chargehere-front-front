@@ -65,7 +65,7 @@ const MallHeader = () => {
             Router.push('/mall/login');
         } else {
             // 로그인된 사용자의 장바구니로 이동
-            Router.push(`/mall/cart${user}`); // 또는 그냥 '/cart'로 이동하고 서버에서 처리
+            Router.push(`/mall/cart/${user}`); // 또는 그냥 '/cart'로 이동하고 서버에서 처리
         }
     };
 
