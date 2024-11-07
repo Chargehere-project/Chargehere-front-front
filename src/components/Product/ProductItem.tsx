@@ -1,5 +1,7 @@
 import React from 'react';
 import Router from 'next/router';
+import style from './profile.module.css';
+
 
 interface ProductItemProps {
     ProductID: number;
