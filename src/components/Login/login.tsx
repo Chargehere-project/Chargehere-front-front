@@ -5,7 +5,7 @@ import styles from './login.module.css';
 
 // axios 인스턴스 생성
 const api = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: `${process.env.NEXT_PUBLIC_API_URL}`,
   withCredentials: true,  // 중요! 쿠키 전송을 위해 필요
   headers: {
     'Content-Type': 'application/json'

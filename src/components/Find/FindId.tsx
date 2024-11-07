@@ -9,7 +9,7 @@ const FindId = () => {
     const handleFindId = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const response = await axios.post('http://localhost:8000/findid', { name, phone });
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/findid`, { name, phone });
             console.log(response.data.data);
             if (response.data.data) {
                 setResult(`아이디: ${response.data.data.LoginID}`);

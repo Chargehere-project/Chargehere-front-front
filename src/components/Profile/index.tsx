@@ -56,7 +56,7 @@ const Profile = () => {
 
             try {
                 const response = await axios.post(
-                    'http://localhost:8000/name',
+                    `${process.env.NEXT_PUBLIC_API_URL}/name`,
                     { userId },
                     {
                         headers: {
@@ -72,7 +72,7 @@ const Profile = () => {
 
             try {
                 const response = await axios.post(
-                    'http://localhost:8000/orderlist',
+                    `${process.env.NEXT_PUBLIC_API_URL}/orderlist`,
                     { userId },
                     {
                         headers: {
@@ -87,7 +87,7 @@ const Profile = () => {
 
             try {
                 const response = await axios.post(
-                    'http://localhost:8000/chargelist',
+                    `${process.env.NEXT_PUBLIC_API_URL}/chargelist`,
                     { userId },
                     {
                         headers: {
@@ -105,7 +105,7 @@ const Profile = () => {
 
             try {
                 const response = await axios.post(
-                    'http://localhost:8000/couponlist',
+                    `${process.env.NEXT_PUBLIC_API_URL}/couponlist`,
                     { userId },
                     {
                         headers: {

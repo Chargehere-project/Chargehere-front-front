@@ -54,7 +54,7 @@ const SignUp = () => {
     const onFinish = async (values: any) => {
         console.log('Received values of form: ', values);
         try {
-            const response = await axios.post('http://localhost:8000/signup', {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/signup`, {
                 id: values.id,
                 password: values.password,
                 name: values.name,
@@ -82,7 +82,7 @@ const SignUp = () => {
             }
             console.log('검사할 ID:', userId); // 요청 전 확인용 로그
 
-            const response = await axios.post('http://localhost:8000/checkid', { userId });
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/checkid`, { userId });
             console.log('데이터확인', response.data);
             if (response.data.result === true) {
                 setCheckId(response.data.message);

@@ -49,7 +49,7 @@ const MapComponent = () => {
     }, []);
     const fetchChargerData = async (map: any) => {
         try {
-            const response = await axios.get('http://localhost:8000/chargers', {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/chargers`, {
                 params: {
                     pageNo: 1,
                     numOfRows: 10,
