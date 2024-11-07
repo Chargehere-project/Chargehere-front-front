@@ -121,7 +121,7 @@ const BillPage = () => {
     const fetchOrderData = async () => {
         try {
             if (!id) return;
-            const response = await axios.get(`http://localhost:8000/order/${id}`);
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/order/${id}`);
             console.log('주문 데이터:', response.data);
 
             if (response.data.result) {
@@ -150,7 +150,7 @@ const BillPage = () => {
             const decoded: any = jwtDecode(token);
             const userId = decoded.UserID;
 
-            const response = await axios.post('http://localhost:8000/point', { userId });
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/point`, { userId });
             console.log('포인트 데이터:', response.data);
 
             if (response.data.result) {
@@ -183,7 +183,7 @@ const BillPage = () => {
             const decoded: any = jwtDecode(token);
             const userId = decoded.UserID;
 
-            const response = await axios.post('http://localhost:8000/usercoupon', { userId });
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/usercoupon`, { userId });
             console.log('쿠폰 데이터:', response.data);
 
             if (response.data.result && response.data.data) {
@@ -227,7 +227,7 @@ const BillPage = () => {
               paymentMethod: 'Card',
           };
   
-          const transactionResponse = await axios.post('http://localhost:8000/transaction', paymentData);
+          const transactionResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/transaction`, paymentData);
           
           if (!transactionResponse.data.success) {
               throw new Error('거래 정보 생성 실패');
@@ -453,7 +453,7 @@ const BillPage = () => {
                         status: 'PENDING'  // 상태를 PENDING으로 변경
                     };
 
-                    const transactionResponse = await axios.post('http://localhost:8000/transaction', paymentData);
+                    const transactionResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/transaction`, paymentData);
                     
                     if (!transactionResponse.data.success) {
                         throw new Error('거래 정보 생성 실패');

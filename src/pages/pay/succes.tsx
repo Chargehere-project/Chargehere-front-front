@@ -1,17 +1,36 @@
-import { useSearchParams } from "react-router-dom"
+// pages/pay/success.js
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 
-export function SuccessPage() {
-  const [searchParams] = useSearchParams()
+const SuccessPage = () => {
+  const router = useRouter();
+  
+  // useSearchParams 대신 router.query 사용
+  const { orderId, amount, paymentKey } = router.query;
 
-  // 서버로 승인 요청
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    const requestData = {
+      orderId,
+      amount,
+      paymentKey,
+    };
+
+    // ... 나머지 코드
+  }, [router.isReady, orderId, amount, paymentKey]);
+
+  if (!router.isReady) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
       <h1>결제 성공</h1>
-      <div>{`주문 아이디: ${searchParams.get("orderId")}`}</div>
-      <div>{`결제 금액: ${Number(
-        searchParams.get("amount")
-      ).toLocaleString()}원`}</div>
+      <p>주문번호: {orderId}</p>
+      <p>결제금액: {amount}</p>
     </div>
-  )
-}
+  );
+};
+
+export default SuccessPage;
