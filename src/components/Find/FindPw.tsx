@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, Typography } from 'antd';
 import axios from 'axios';
+import styles from './Find.module.css';
+
+const { Title, Text } = Typography;
+
 const FindPw = () => {
     const [id, setId] = useState<string>('');
     const [name, setName] = useState<string>('');
@@ -10,7 +14,7 @@ const FindPw = () => {
     const handleResetPassword = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/findpw`, { id, name, phone });
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/findpw`, { id, name, phone });
             if (response.data.data) {
                 setMessage(`비밀번호: ${response.data.data.Password}`);
                 setErrorMessage('');
@@ -24,27 +28,60 @@ const FindPw = () => {
         }
     };
     return (
-        <Form onSubmitCapture={handleResetPassword} style={{ maxWidth: 400 }}>
-            <h2>비밀번호 찾기</h2>
-            <Form.Item label="아이디" required>
-                <Input value={id} onChange={(e) => setId(e.target.value)} />
-            </Form.Item>
-            <Form.Item label="이름" required>
-                <Input value={name} onChange={(e) => setName(e.target.value)} />
-            </Form.Item>
-            <Form.Item label="핸드폰 번호" required>
-                <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
-            </Form.Item>
-            <Form.Item>
-                <Button type="primary" htmlType="submit">비밀번호 찾기</Button>
-            </Form.Item>
-            {message && <div style={{ color: 'green' }}>{message}</div>}
-            {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
+        <div className={styles.container}>
+            <Form onSubmitCapture={handleResetPassword} className={styles.form}>
+            <Title level={2} className={styles.title}>비밀번호 찾기</Title>
 
-            <p>
-                아이디를 잊으셨나요? <a href="../../mall/findid">아이디 찾기</a>
-            </p>
+
+            <Form.Item label="아이디" required className={styles.formItem}>
+                <Input 
+                    placeholder="아이디를 입력하세요"
+                    value={id} 
+                    onChange={(e) => setId(e.target.value)}
+                    className={styles.input}
+                     />
+            </Form.Item>
+
+
+            <Form.Item label="이름" required className={styles.formItem}>
+                    <Input
+                        placeholder="이름을 입력하세요"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className={styles.input}
+                    />
+                </Form.Item>
+
+
+                <Form.Item label="핸드폰 번호" required className={styles.formItem}>
+                    <Input
+                        placeholder="핸드폰 번호를 입력하세요"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className={styles.input}
+                    />
+                </Form.Item>
+
+
+                <Form.Item>
+                    <Button type="primary" htmlType="submit" block className={styles.button}>
+                        비밀번호 찾기
+                    </Button>
+                </Form.Item>
+
+                {message && <Text type="success" className={styles.successText}>{message}</Text>}
+                {errorMessage && <Text type="danger" className={styles.errorText}>{errorMessage}</Text>}
+
+                <Text className={styles.footerText}>
+                    아이디를 잊으셨나요? <a href="../../mall/findid" className={styles.link}>아이디 찾기</a>
+                </Text>
         </Form>
+
+
+        </div>
+
+
+        
     );
 };
 export default FindPw;

@@ -19,7 +19,7 @@ const Main = () => {
         const fetchAnnouncements = async () => {
             setIsLoading(true);
             try {
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/notice`);
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/notice`);
                 console.log('서버 응답:', response.data); // 전체 응답 데이터 확인
                 
                 if (response.data.result) {
