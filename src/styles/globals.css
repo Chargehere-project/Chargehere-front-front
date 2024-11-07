@@ -34,6 +34,26 @@ a {
   color: inherit;
   text-decoration: none;
 }
+/* src/styles/globals.css */
+:root {
+  --button-color: #0597F2; /* 버튼 색상 */
+  --button-hover-color: #BBDDF2; /* 버튼 호버 색상 */
+}
+
+button {
+  background-color: var(--button-color);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: var(--button-hover-color);
+}
+
 
 @media (prefers-color-scheme: dark) {
   html {

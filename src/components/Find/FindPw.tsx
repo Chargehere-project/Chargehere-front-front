@@ -25,6 +25,7 @@ const FindPw = () => {
     };
     return (
         <Form onSubmitCapture={handleResetPassword} style={{ maxWidth: 400 }}>
+            <h2>비밀번호 찾기</h2>
             <Form.Item label="아이디" required>
                 <Input value={id} onChange={(e) => setId(e.target.value)} />
             </Form.Item>
@@ -39,6 +40,10 @@ const FindPw = () => {
             </Form.Item>
             {message && <div style={{ color: 'green' }}>{message}</div>}
             {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
+
+            <p>
+                아이디를 잊으셨나요? <a href="../../mall/findid">아이디 찾기</a>
+            </p>
         </Form>
     );
 };
