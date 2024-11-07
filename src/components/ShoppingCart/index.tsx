@@ -37,7 +37,7 @@ const ShoppingCart = () => {
             const userId = token();
             try {
                 const response = await axios.post(
-                    'http://localhost:8000/cart',
+                    `${process.env.NEXT_PUBLIC_API_URL}/cart`,
                     { userId },
                     {
                         headers: {
@@ -56,7 +56,7 @@ const ShoppingCart = () => {
     const quantityChange = async (cartId: number, newQuantity: number) => {
         try {
             await axios.post(
-                'http://localhost:8000/cart/quantity',
+                `${process.env.NEXT_PUBLIC_API_URL}/cart/quantity`,
                 {
                     cartId,
                     quantity: newQuantity,
@@ -107,7 +107,7 @@ const ShoppingCart = () => {
     const deleteItem = async (cartId: number) => {
         try {
             const response = await axios.post(
-                'http://localhost:8000/cart/deletecart',
+                `${process.env.NEXT_PUBLIC_API_URL}/cart/deletecart`,
                 { cartId },
                 {
                     headers: {
@@ -144,7 +144,7 @@ const ShoppingCart = () => {
 
             const decoded: any = jwtDecode(token);
 
-            const sessionResponse = await axios.get('http://localhost:8000/check-session', {
+            const sessionResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/check-session`, {
                 withCredentials: true,
                 headers: { 'Content-Type': 'application/json' }
             });

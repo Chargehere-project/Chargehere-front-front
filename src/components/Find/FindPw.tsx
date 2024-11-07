@@ -10,7 +10,7 @@ const FindPw = () => {
     const handleResetPassword = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const response = await axios.post('http://localhost:8000/findpw', { id, name, phone });
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/findpw`, { id, name, phone });
             if (response.data.data) {
                 setMessage(`비밀번호: ${response.data.data.Password}`);
                 setErrorMessage('');

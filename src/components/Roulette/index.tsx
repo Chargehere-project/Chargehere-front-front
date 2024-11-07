@@ -72,7 +72,7 @@ const awardPoints = async (reward: string) => {
           points = 700;
       }
       if (points > 0) {
-          const response = await axios.post('http://localhost:8000/everydayevent', {
+          const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/everydayevent`, {
               userId: userId,  // 실제 사용자 ID 사용
               points: points,
               reward: reward

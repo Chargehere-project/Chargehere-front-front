@@ -8,7 +8,7 @@ const Coupon = () => {
     useEffect(() => {
         const useCoupon = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/coupon');
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/coupon`);
                 console.log(response.data, '데이터');
                 setCouponName(response.data.data);
                 setCouponDate(response.data.date);
