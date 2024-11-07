@@ -10,6 +10,8 @@ const MallHeader = () => {
     const [searchInput, setSearchInput] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
             if (searchInput) {
@@ -70,8 +72,6 @@ const MallHeader = () => {
     const profile = () => {
         const user = token();
         if (!user) {
-            alert('로그인이 필요합니다.');
-
             Router.push('/login');
         } else {
             Router.push('/profile');
@@ -86,20 +86,22 @@ const MallHeader = () => {
         console.log('Search initiated'); // 예시 로그
     };
 
+    const car = () => {
+        Router.push('/chargemain');
+    };
+    useEffect(() => {
+        const userToken = localStorage.getItem('token');
+        setIsLoggedIn(!!userToken);
+    }, []);
+
     const handleLogout = () => {
-        // 사용자에게 로그아웃 확인
         if (window.confirm('로그아웃 하시겠습니까?')) {
-            // localStorage에서 토큰 제거
             localStorage.removeItem('token');
-            // 메인 페이지로 이동
+            setIsLoggedIn(false); // 로그아웃 시 상태 업데이트
             Router.push('/');
             alert('로그아웃 되었습니다.');
         }
     };
-
-    const car = () =>{
-        Router.push('/chargemain')
-    }
     return (
         <header
             style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 20px', alignItems: 'center' }}
@@ -110,6 +112,10 @@ const MallHeader = () => {
             </div>
             {/* 아이콘이랑 검색 영역 */}
             <div style={{ display: 'flex', alignItems: 'center' }}>
+                {/* 전기차페이지 이동 */}
+                <div style={{ textAlign: 'center', marginRight: '20px' }} onClick={car}>
+                    <CarOutlined style={{ fontSize: '30px' }} />
+                </div>
                 {/* 장바구니 */}
                 <div style={{ textAlign: 'center', marginRight: '20px' }} onClick={cart}>
                     <ShoppingOutlined style={{ fontSize: '30px' }} />
@@ -119,64 +125,11 @@ const MallHeader = () => {
                     <UserOutlined style={{ fontSize: '30px' }} />
                 </div>
                 {/* 로그아웃 */}
-                <div style={{ textAlign: 'center', marginRight: '20px' }} onClick={handleLogout}>
-                    <LoginOutlined style={{ fontSize: '30px' }} />
-                </div>
-                {/* 전기차페이지 이동 */}
-                <div style={{ textAlign: 'center', marginRight: '20px' }} onClick={car}>
-                    <CarOutlined style={{ fontSize: '30px' }} />
-                </div>
-                {/* 검색 */}
-                <div style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <Input
-                            placeholder="상품 또는 브랜드를 입력하세요"
-                            value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
-                            onKeyPress={(event) => {
-                                if (event.key === 'Enter') {
-                                    search();
-                                }
-                            }}
-                            style={{ width: 400, marginRight: '10px' }}
-                        />
-                        <Button onClick={search}>검색</Button>
+                {isLoggedIn && (
+                    <div style={{ textAlign: 'center', marginRight: '20px' }} onClick={handleLogout}>
+                        <LoginOutlined style={{ fontSize: '30px' }} />
                     </div>
-                    {searchResults.length > 0 && searchInput && (
-                        <div
-                            style={{
-                                position: 'absolute',
-                                top: '100%',
-                                width: '400px',
-                                maxHeight: '300px',
-                                overflowY: 'auto',
-                                backgroundColor: 'white',
-                                border: '1px solid #ddd',
-                                borderRadius: '4px',
-                                zIndex: 1000,
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                            }}
-                        >
-                            {searchResults.map((item: any, index) => (
-                                <div
-                                    key={index}
-                                    style={{
-                                        padding: '8px 12px',
-                                        cursor: 'pointer',
-                                        borderBottom: '1px solid #eee',
-                                    }}
-                                    onClick={() => {
-                                        Router.push(`./product/${item.ProductID}`);
-                                        setSearchInput(''); // 검색어 초기화
-                                        setSearchResults([]); // 검색 결과도 초기화
-                                    }}
-                                >
-                                    {item.ProductName}
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
+                )}
             </div>
         </header>
     );

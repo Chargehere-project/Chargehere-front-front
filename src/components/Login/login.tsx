@@ -41,18 +41,14 @@ const Login = () => {
           console.error('세션 체크 실패:', sessionError);
         }
 
-        alert(response.data.message);
-        router.push('/');
+        router.push('/mall');
       } else {
-        alert(response.data.message);
       }
     } catch (error) {
       console.error('Login error:', error);
       if (axios.isAxiosError(error)) {
         console.error('Error details:', error.response?.data);
-        alert(error.response?.data?.message || '로그인 중 오류가 발생했습니다.');
       } else {
-        alert('로그인 중 오류가 발생했습니다.');
       }
     }
   };

@@ -37,8 +37,7 @@ const Header = () => {
    const profile = () =>{
        const user = token()
        if(!user){
-           alert('로그인이 필요합니다.')
-           return
+        Router.push('/login')
        }else{
            Router.push('/profile')
        }

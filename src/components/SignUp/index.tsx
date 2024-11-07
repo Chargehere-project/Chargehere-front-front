@@ -63,7 +63,7 @@ const SignUp = () => {
             });
             console.log('성공:', response.data);
             setErrorMessage(''); // 성공 시 에러 메시지 초기화
-            Router.push('/');
+            Router.push('/login');
         } catch (err) {
             console.log('실패:', err);
             if (axios.isAxiosError(err) && err.response) {

@@ -60,7 +60,7 @@ const MallIndex = () => {
 
   return (
     <div>
-      <Swipe />
+      <Swipe banners={[]} />
       {/* Best 섹션 */}
       <section style={{ marginTop: '40px', textAlign: 'center' }}>
         <h2>Best</h2>
