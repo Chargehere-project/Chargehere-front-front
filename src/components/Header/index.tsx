@@ -37,9 +37,9 @@ const Header = () => {
    const profile = () =>{
        const user = token()
        if(!user){
-        Router.push('/login')
+        Router.push('/mall/login')
        }else{
-           Router.push('/profile')
+           Router.push('/mall/profile')
        }
    }
    const logo = () =>{

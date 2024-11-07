@@ -280,6 +280,10 @@ const SignUp = () => {
             >
                 <DaumPostcode onComplete={handleComplete} />
             </Modal>
+
+            <p>
+        이미 회원이신가요? <a href="/mall/login">로그인</a>
+      </p>
         </Form>
     );
 };

@@ -80,7 +80,16 @@ const Login = () => {
           />
         </div>
         <button className={styles.formButton} type="submit">로그인</button>
+
+        <p>
+        아이디/비밀번호를 잊으셨나요? <a href="/mall/findid">아이디/비밀번호 찾기</a>
+      </p>
+      <p>
+        아직 회원이 아니신가요? <a href="/mall/signup">회원가입</a>
+      </p>
       </form>
+
+      
     </div>
   );
 };
