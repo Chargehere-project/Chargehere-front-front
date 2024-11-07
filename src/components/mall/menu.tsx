@@ -14,7 +14,7 @@ const Menu = () => {
                     <a href="/mall/review">리뷰</a>
                 </li>
                 <li className={styles.navItem}>
-                    <a href="/mall/#">CS</a>
+                    <a href="/mall/cs">CS</a>
                 </li>
             </ul>
         </nav>
