@@ -138,7 +138,7 @@ const ShoppingCart = () => {
             
             if (!token) {
                 alert('로그인이 필요합니다.');
-                Router.push('/login');
+                Router.push('/mall/login');
                 return;
             }
 
@@ -166,7 +166,7 @@ const ShoppingCart = () => {
             };
 
             sessionStorage.setItem('orderData', JSON.stringify(orderData));
-            Router.push('/bill');
+            Router.push('/mall/bill');
         } catch (error) {
             console.error('주문 준비 중 오류 발생:', error);
             alert('주문 처리 중 오류가 발생했습니다.');

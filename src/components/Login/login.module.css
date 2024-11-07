@@ -29,12 +29,12 @@
 .formButton {
   width: 100%;
   padding: 10px;
-  background-color: #007BFF;
+  background-color: #0597F2;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
 .formButton:hover {
-  background-color: #0056B3;
+  background-color: #BBDDF2;
 }
