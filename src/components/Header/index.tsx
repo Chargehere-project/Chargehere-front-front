@@ -15,7 +15,7 @@ const Header = () => {
             try {
                 const response = await fetch('/api/admin/getLogoUrl'); // 예시 API 호출
                 const data = await response.json();
-                setLogoUrl(data.logoUrl || '/main.png'); // S3에서 로고 URL을 가져옴
+                setLogoUrl(data.logoUrl || '/public/main.png'); // S3에서 로고 URL을 가져옴
             } catch (error) {
                 console.error('로고 URL 가져오기 실패:', error);
                 setLogoUrl('/main.png'); // 기본 로고 설정
@@ -50,7 +50,7 @@ const Header = () => {
    }
    return (
        <header style={{ display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
-           <Image src={logoUrl || '/main.png'} alt="logo" width={100} height={50} onClick={logo}/>
+           <Image src={logoUrl || '/public/main.png'} alt="logo" width={100} height={50} onClick={logo}/>
            <div>
                <UserOutlined style={{ fontSize: '30px', marginRight: '20px' }} onClick={profile}/>
                <ShopOutlined style={{ fontSize: '30px' }} onClick={mall}/>
