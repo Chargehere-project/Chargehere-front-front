@@ -16,7 +16,7 @@ export function SuccessPage() {
 
     async function confirm() {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/confirm`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/confirm`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
