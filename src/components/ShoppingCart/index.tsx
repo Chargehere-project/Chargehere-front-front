@@ -176,7 +176,7 @@ const ShoppingCart = () => {
             };
     
             const response = await axios.post(
-                `${process.env.NEXT_PUBLIC_API_URL}/orders/create`,
+                `${process.env.NEXT_PUBLIC_API_URL}/api/orders/create`,
                 orderData,
                 {
                     headers: {
@@ -210,7 +210,7 @@ const ShoppingCart = () => {
     
             // 서버로 보내는 데이터 구조 변경
             const response = await axios.post(
-                `${process.env.NEXT_PUBLIC_API_URL}/cart/alldelete`,
+                `${process.env.NEXT_PUBLIC_API_URL}/api/cart/alldelete`,
                 {
                     UserID: decoded.UserID  // userId -> UserID로 변경
                 },
@@ -225,7 +225,6 @@ const ShoppingCart = () => {
             if (response.data.result) {
                 setCart([]); 
                 setSelectedItems([]);
-                alert('장바구니가 비워졌습니다.');
             }
         } catch (error: any) {
             console.error('장바구니 비우기 실패:', error);

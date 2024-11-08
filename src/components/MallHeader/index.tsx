@@ -90,8 +90,20 @@ const MallHeader = () => {
         Router.push('/chargemain');
     };
     useEffect(() => {
-        const userToken = localStorage.getItem('token');
-        setIsLoggedIn(!!userToken);
+        const checkLoginStatus = () => {
+            const userToken = localStorage.getItem('token');
+            setIsLoggedIn(!!userToken);
+        };
+    
+        // 초기 체크
+        checkLoginStatus();
+    
+        // 라우터 이벤트에 리스너 추가
+        Router.events.on('routeChangeComplete', checkLoginStatus);
+    
+        return () => {
+            Router.events.off('routeChangeComplete', checkLoginStatus);
+        };
     }, []);
 
     const handleLogout = () => {

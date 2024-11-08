@@ -55,12 +55,12 @@ const MallIndex = () => {
     fetchSaleProducts();
   }, []);
   const handleProductClick = (productId: number) => {
-    router.push(`api/mall/product/${productId}`);
+    router.push(`/mall/product/${productId}`);
   };
 
   return (
     <div>
-      <Swipe banners={[]} />
+      <Swipe />
       {/* Best 섹션 */}
       <section style={{ marginTop: '40px', textAlign: 'center' }}>
         <h2>Best</h2>
@@ -86,6 +86,8 @@ const MallIndex = () => {
               />
               <h3>{product.ProductName}</h3>
               <p>가격: {product.Price.toLocaleString()}원</p>
+              <p>할인율: {product.Discount}%</p>
+              <p>판매가격: {(product.Price * (1 - product.Discount / 100)).toLocaleString()}원</p>
             </div>
           ))}
         </div>
@@ -115,6 +117,8 @@ const MallIndex = () => {
               />
               <h3>{product.ProductName}</h3>
               <p>가격: {product.Price.toLocaleString()}원</p>
+              <p>할인율: {product.Discount}%</p>
+              <p>판매가격: {(product.Price * (1 - product.Discount / 100)).toLocaleString()}원</p>
             </div>
           ))}
         </div>
@@ -145,6 +149,7 @@ const MallIndex = () => {
               <h3>{product.ProductName}</h3>
               <p>가격: {product.Price.toLocaleString()}원</p>
               <p>할인율: {product.Discount}%</p>
+              <p>판매가격: {(product.Price * (1 - product.Discount / 100)).toLocaleString()}원</p>
             </div>
           ))}
         </div>

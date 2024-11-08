@@ -47,7 +47,7 @@ const tailFormItemLayout = {
 };
 const SignUp = () => {
     const [form] = Form.useForm();
-    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string>('');
     const [address, setAddress] = useState<string>('');
     const [checkId, setCheckId] = useState<string>('');
@@ -63,7 +63,7 @@ const SignUp = () => {
             });
             console.log('성공:', response.data);
             setErrorMessage(''); // 성공 시 에러 메시지 초기화
-            Router.push('/login');
+            Router.push('/mall/login');
         } catch (err) {
             console.log('실패:', err);
             if (axios.isAxiosError(err) && err.response) {
@@ -109,7 +109,7 @@ const SignUp = () => {
         console.log(fullAddress); // e.g. '서울 성동구 왕십리로2길 20 (성수동1가)'
         form.setFieldsValue({ residence: fullAddress });
         setAddress(fullAddress);
-        setIsModalVisible(false);
+        setIsModalOpen(false);
     };
     const onWebsiteChange = (value: string) => {
         if (!value) {
@@ -122,6 +122,14 @@ const SignUp = () => {
         label: website,
         value: website,
     }));
+    const handleModalOpen = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+    };
+
     return (
         <Form
             {...formItemLayout}
@@ -133,11 +141,15 @@ const SignUp = () => {
         >
             <Form.Item
                 name="id"
-                label="아이디"
+                label="아이디 (이메일)"
                 rules={[
                     {
                         required: true,
-                        message: '아이디를 입력해 주세요',
+                        message: '이메일을 입력해 주세요',
+                    },
+                    {
+                        type: 'email',
+                        message: '유효한 이메일 형식이어야 합니다',
                     },
                 ]}
             >
@@ -169,7 +181,7 @@ const SignUp = () => {
                     {
                         pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/,
                         message: '비밀번호는 영문 대/소문자, 숫자, 특수문자를 각각 하나 이상 포함해야 합니다',
-                    }
+                    },
                 ]}
                 hasFeedback
                 extra={
@@ -210,18 +222,67 @@ const SignUp = () => {
                 <Input />
             </Form.Item>
             <Form.Item label="생년월일" required>
-                <Space.Compact>
-                    <Form.Item name="birthYear" noStyle rules={[{ required: true, message: '년도를 입력해 주세요' }]}>
-                        <Input style={{ width: '30%' }} placeholder="YYYY" />
-                    </Form.Item>
-                    <Form.Item name="birthMonth" noStyle rules={[{ required: true, message: '월을 입력해 주세요' }]}>
-                        <Input style={{ width: '25%', margin: '0 5px' }} placeholder="MM" />
-                    </Form.Item>
-                    <Form.Item name="birthDay" noStyle rules={[{ required: true, message: '일을 입력해 주세요' }]}>
-                        <Input style={{ width: '25%' }} placeholder="DD" />
-                    </Form.Item>
-                </Space.Compact>
-            </Form.Item>
+    <Space.Compact>
+        <Form.Item
+            name="birthYear"
+            noStyle
+            rules={[
+                { required: true, message: '년도를 입력해 주세요' },
+                {
+                    validator: (_, value) => {
+                        const currentYear = new Date().getFullYear();
+                        if (value >= 1900 && value <= currentYear) {
+                            return Promise.resolve();
+                        }
+                        return Promise.reject(new Error(`년도는 1900년부터 ${currentYear}년까지 가능합니다`));
+                    },
+                },
+            ]}
+        >
+            <Input style={{ width: '30%' }} placeholder="YYYY" maxLength={4} />
+        </Form.Item>
+        <Form.Item
+            name="birthMonth"
+            noStyle
+            rules={[
+                { required: true, message: '월을 입력해 주세요' },
+                {
+                    validator: (_, value) => {
+                        if (value >= 1 && value <= 12) {
+                            return Promise.resolve();
+                        }
+                        return Promise.reject(new Error('월은 1월부터 12월까지 입력 가능합니다'));
+                    },
+                },
+            ]}
+        >
+            <Input style={{ width: '25%', margin: '0 5px' }} placeholder="MM" maxLength={2} />
+        </Form.Item>
+        <Form.Item
+            name="birthDay"
+            noStyle
+            rules={[
+                { required: true, message: '일을 입력해 주세요' },
+                {
+                    validator: (_, value) => {
+                        const year = form.getFieldValue('birthYear');
+                        const month = form.getFieldValue('birthMonth');
+                        if (!year || !month) {
+                            return Promise.reject(new Error('연도와 월을 먼저 입력해 주세요'));
+                        }
+                        const daysInMonth = new Date(year, month, 0).getDate();
+                        if (value >= 1 && value <= daysInMonth) {
+                            return Promise.resolve();
+                        }
+                        return Promise.reject(new Error(`${month}월에는 1일부터 ${daysInMonth}일까지 입력 가능합니다`));
+                    },
+                },
+            ]}
+        >
+            <Input style={{ width: '25%' }} placeholder="DD" maxLength={2} />
+        </Form.Item>
+    </Space.Compact>
+</Form.Item>
             <Form.Item
                 name="phone"
                 label="핸드폰 번호"
@@ -240,9 +301,26 @@ const SignUp = () => {
                             form.setFieldsValue({ residence: e.target.value });
                         }}
                     />
-                    <Button onClick={() => setIsModalVisible(true)}>주소찾기</Button>
+                    <Button onClick={handleModalOpen}>주소찾기</Button>
                 </Space.Compact>
             </Form.Item>
+
+            <Modal
+                title="주소 검색"
+                open={isModalOpen}
+                onOk={() => setIsModalOpen(false)}
+                onCancel={() => setIsModalOpen(false)}
+                destroyOnClose={true}
+            >
+                {
+                    <DaumPostcode
+                        onComplete={(data) => {
+                            handleComplete(data);
+                            handleModalClose();
+                        }}
+                    />
+                }
+            </Modal>
             <Form.Item name="detailAddress" label="상세 주소">
                 <Input
                     placeholder="상세 주소를 입력하세요"
@@ -272,18 +350,10 @@ const SignUp = () => {
                     회원가입
                 </Button>
             </Form.Item>
-            <Modal
-                title="주소 검색"
-                open={isModalVisible}
-                onOk={() => setIsModalVisible(false)}
-                onCancel={() => setIsModalVisible(false)}
-            >
-                <DaumPostcode onComplete={handleComplete} />
-            </Modal>
 
             <p>
-        이미 회원이신가요? <a href="/mall/login">로그인</a>
-      </p>
+                이미 회원이신가요? <a href="/mall/login">로그인</a>
+            </p>
         </Form>
     );
 };

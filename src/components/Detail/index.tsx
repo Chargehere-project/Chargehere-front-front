@@ -138,7 +138,6 @@ const Detail = () => {
 
             if (response.data.result) {
                 console.log(response.data.data, '주문아이디');
-                alert('주문이 완료되었습니다.');
                 router.push(`/order/${response.data.data}`);
             }
         } catch (error) {

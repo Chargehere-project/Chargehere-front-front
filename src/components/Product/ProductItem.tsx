@@ -2,29 +2,31 @@ import React from 'react';
 import Router from 'next/router';
 import style from './profile.module.css';
 
-
 interface ProductItemProps {
     ProductID: number;
-    Image: string;      // 백엔드 컬럼명에 맞게 수정
-    ProductName: string;  // 백엔드 컬럼명에 맞게 수정
-    Discount: number;    // 백엔드 컬럼명에 맞게 수정
-    Price: number;      // 백엔드 컬럼명에 맞게 수정
+    Image: string; // 백엔드 컬럼명에 맞게 수정
+    ProductName: string; // 백엔드 컬럼명에 맞게 수정
+    Discount: number; // 백엔드 컬럼명에 맞게 수정
+    Price: number; // 백엔드 컬럼명에 맞게 수정
 }
 
-const ProductItem: React.FC<ProductItemProps> = ({ ProductID, Image, ProductName,  Discount, Price }) => {
+const ProductItem: React.FC<ProductItemProps> = ({ ProductID, Image, ProductName, Discount, Price }) => {
     const defaultImage = '/images/default.jpg'; // 기본 이미지 경로
 
     const Click = () => {
         Router.push(`product/${ProductID}`);
     };
     return (
-        <div onClick={Click}  style={{
-            border: '1px solid #ddd',
-            borderRadius: '8px',
-            padding: '16px',
-            cursor: 'pointer',
-            transition: 'transform 0.2s',
-        }}>
+        <div
+            onClick={Click}
+            style={{
+                border: '1px solid #ddd',
+                borderRadius: '8px',
+                padding: '16px',
+                cursor: 'pointer',
+                transition: 'transform 0.2s',
+            }}
+        >
             <img
                 src={Image}
                 alt={ProductName}
@@ -34,8 +36,11 @@ const ProductItem: React.FC<ProductItemProps> = ({ ProductID, Image, ProductName
                 style={{ width: '100%', height: 'auto' }}
             />
             <h3>{ProductName}</h3>
-            <p>{Discount}% 할인</p>
-            <p>{Price}원</p>
+            <p style={{ color: 'red', fontSize: '40px', fontWeight: 'bold' }}>{Discount}%</p>
+            <div>
+                <p style={{color:'#adb5bd', textDecoration:'line-through'}}>{Price}원</p>
+                <p style={{fontWeight:'bold'}}>{(Price * (1 - Discount / 100)).toLocaleString()}원</p>
+            </div>
         </div>
     );
 };

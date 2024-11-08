@@ -80,6 +80,8 @@ const Profile = () => {
                         },
                     }
                 );
+                console.log(response.data.data);
+                
                 setOrderList(response.data.data);
             } catch (error) {
                 console.error('구매내역을 가져오는데 실패했습니다:', error);
