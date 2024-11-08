@@ -81,7 +81,7 @@ const Profile = () => {
                     }
                 );
                 console.log(response.data.data);
-                
+
                 setOrderList(response.data.data);
             } catch (error) {
                 console.error('구매내역을 가져오는데 실패했습니다:', error);
@@ -179,13 +179,22 @@ const Profile = () => {
                     <div>구매 내역이 없습니다.</div>
                 )}
             </div>
-
             <div className={style.sectionTitle}>포인트 내역</div>
             <div className={style.sectionContainer}>
                 {pointList && pointList.length > 0 ? (
                     pointList.map((item, index) => (
                         <div key={index} className={style.pointItem}>
-                            <div className={style.itemInfo}>포인트: {item.Amount}</div>
+                            <div className={style.itemInfo}>
+                                포인트: {item.Amount}
+                                <span
+                                    style={{
+                                        color: item.Amount < 0 ? 'red' : 'blue',
+                                        marginLeft: '10px',
+                                    }}
+                                >
+                                    ({item.Amount < 0 ? '사용' : '적립'})
+                                </span>
+                            </div>
                             <div className={style.itemInfo}>적립일자: {item.ChargeDate}</div>
                         </div>
                     ))

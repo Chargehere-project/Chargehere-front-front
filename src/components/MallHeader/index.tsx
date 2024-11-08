@@ -120,7 +120,12 @@ const MallHeader = () => {
         >
             {/* 로고 */}
             <div style={{ display: 'flex', alignItems: 'center' }} onClick={logo}>
-                <Image src="http://localhost:8000/uploads/main.png" alt="logo" width={100} height={50} />
+            <Image
+                src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/charge_logo.png`}
+                alt="로고"
+                width={300}
+                height={100}
+            />
             </div>
             {/* 아이콘이랑 검색 영역 */}
             <div style={{ display: 'flex', alignItems: 'center' }}>
