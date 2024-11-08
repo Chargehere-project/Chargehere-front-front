@@ -5,6 +5,7 @@ const nextConfig = {
         esmExternals: 'loose',
     },
     images: {
+        domains: ['localhost', '3.36.65.201'],  // 이미지 도메인 추가
         remotePatterns: [
             {
                 protocol: 'http',
@@ -19,7 +20,7 @@ const nextConfig = {
                 pathname: '/uploads/**',
             }
         ],
-    },
+    }
 };
 
 export default nextConfig;

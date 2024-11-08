@@ -5,6 +5,7 @@ import Router from 'next/router';
 import style from './shoppingcart.module.css';
 
 interface Product {
+    ProductID: number;    // 추가
     ProductName: string;
     ProductImage: string; // 이미지 URL 추가
 }
@@ -15,6 +16,8 @@ interface CartItem {
     Price: number;
     Product: Product;
 }
+
+
 
 const ShoppingCart = () => {
     const [cart, setCart] = useState<CartItem[]>([]);
@@ -127,52 +130,113 @@ const ShoppingCart = () => {
     };
 
     const goToOrder = async () => {
-        if (selectedItems.length === 0) {
-            alert('주문할 상품을 선택해주세요');
-            return;
-        }
-
         try {
             const selectedProducts = cart.filter((item) => selectedItems.includes(item.CartID));
             const token = localStorage.getItem('token');
-            
+                
             if (!token) {
                 alert('로그인이 필요합니다.');
                 Router.push('/mall/login');
                 return;
             }
-
+    
             const decoded: any = jwtDecode(token);
-
+    
+            // 세션 정보 가져오기
             const sessionResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/check-session`, {
                 withCredentials: true,
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                }
             });
-
+    
             if (!sessionResponse.data.result) {
                 alert('세션 정보가 없습니다.');
                 return;
             }
-
-            const { phoneNumber, address } = sessionResponse.data.userDetails;
-
+    
+            // 세션에서 사용자 정보 추출
+            const { phoneNumber: CustomerPhoneNumber, address: CustomerAddress } = sessionResponse.data.userDetails;
+    
+            // 주문 데이터 생성
             const orderData = {
-                userId: decoded.UserID,
-                name: decoded.UserName,
-                phone: phoneNumber,
-                address: address,
-                cartItems: selectedProducts,
-                totalAmount: totalPrice + fee(),
+                UserID: decoded.UserID,
+                CustomerName: decoded.UserName,
+                CustomerPhoneNumber,  // 세션에서 가져온 전화번호
+                CustomerAddress,      // 세션에서 가져온 주소
+                TotalAmount: totalPrice + fee(),
+                OrderStatus: 'Pending',
+                orderItems: selectedProducts.map(item => ({
+                    ProductID: item.Product.ProductID,
+                    Quantity: item.Quantity,
+                    Price: item.Price,
+                    CartID: item.CartID
+                }))
             };
-
-            sessionStorage.setItem('orderData', JSON.stringify(orderData));
-            Router.push('/mall/bill');
+    
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/orders/create`,
+                orderData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+    
+            if (response.data.result) {
+                Router.push(`/order/${response.data.orderListId}`);
+            }
         } catch (error) {
-            console.error('주문 준비 중 오류 발생:', error);
+            console.error('주문 생성 중 오류 발생:', error);
             alert('주문 처리 중 오류가 발생했습니다.');
         }
     };
 
+    const deleteAllItems = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('로그인이 필요합니다.');
+                return;
+            }
+    
+            const decoded: any = jwtDecode(token);
+            
+            // 확인을 위해 userId 로깅
+            console.log('전송할 userId:', decoded.UserID);
+    
+            // 서버로 보내는 데이터 구조 변경
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/cart/alldelete`,
+                {
+                    UserID: decoded.UserID  // userId -> UserID로 변경
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+    
+            if (response.data.result) {
+                setCart([]); 
+                setSelectedItems([]);
+                alert('장바구니가 비워졌습니다.');
+            }
+        } catch (error: any) {
+            console.error('장바구니 비우기 실패:', error);
+            // 에러 응답 내용 자세히 출력
+            if (error.response) {
+                console.error('서버 응답:', error.response.data);
+            }
+            alert('장바구니 비우기에 실패했습니다.');
+        }
+    };
+    
     return (
         <div className={style.cartContainer}>
             <h1 className={style.cartTitle}>장바구니</h1>
@@ -186,6 +250,14 @@ const ShoppingCart = () => {
                     /> 전체 선택
                 </label>
             </div>
+            {cart.length > 0 && (
+                <button 
+                    onClick={deleteAllItems}
+                    className={style.deleteAllButton}
+                >
+                    전체 삭제
+                </button>
+            )}
             <div className={style.cartItems}>
                 {cart && cart.length > 0 ? (
                     cart.map((item) => (

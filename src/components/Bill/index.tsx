@@ -6,11 +6,22 @@ import style from './bill.module.css';
 import { loadTossPayments } from '@tosspayments/tosspayments-sdk';
 
 interface OrderItem {
-    productID: string;
+    productID: number;
     productName: string;
     quantity: number;
-    price: number;
+    price: number | string;
     image: string;
+}
+
+interface OrderData {
+    orderListId: number;
+    customerName: string;
+    customerPhoneNumber: string;
+    customerAddress: string;
+    items: OrderItem[];
+    totalAmount: number | string;
+    paymentAmount: number | string;
+    discount: number;
 }
 
 interface Order {
@@ -68,6 +79,7 @@ const BillPage = () => {
     }, [clientKey, customerKey]);
 
     useEffect(() => {
+        
         async function renderPaymentWidgets() {
             if (!widgets || !order) {
                 console.log('widgets or order not ready', { widgets, order });
@@ -123,12 +135,19 @@ const BillPage = () => {
             if (!id) return;
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/order/${id}`);
             console.log('주문 데이터:', response.data);
-
+    
             if (response.data.result) {
                 const fetchedOrder = {
                     ...response.data.data,
-                    totalAmount: parseFloat(response.data.data.totalAmount), // 숫자로 변환
-                    paymentAmount: parseFloat(response.data.data.paymentAmount), // 숫자로 변환
+                    customerName: response.data.data.customerName,
+                    customerPhoneNumber: response.data.data.customerPhoneNumber,
+                    customerAddress: response.data.data.customerAddress,
+                    items: response.data.data.items.map((item: OrderItem) => ({
+                        ...item,
+                        price: parseFloat(item.price as string),
+                    })),
+                    totalAmount: parseFloat(response.data.data.totalAmount),
+                    paymentAmount: parseFloat(response.data.data.paymentAmount),
                 };
                 setOrder(fetchedOrder);
                 console.log('변환된 주문 데이터:', fetchedOrder);
