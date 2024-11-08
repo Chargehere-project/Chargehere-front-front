@@ -115,7 +115,7 @@ const Detail = () => {
         const token = localStorage.getItem('token');
         if (!token) {
             alert('로그인이 필요합니다.');
-            router.push('/login');
+            router.push('/mall/login');
             return;
         }
 
