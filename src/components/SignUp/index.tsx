@@ -283,13 +283,35 @@ const SignUp = () => {
         </Form.Item>
     </Space.Compact>
 </Form.Item>
-            <Form.Item
-                name="phone"
-                label="핸드폰 번호"
-                rules={[{ required: true, message: '핸드폰 번호를 입력해 주세요' }]}
-            >
-                <Input style={{ width: '100%' }} />
-            </Form.Item>
+<Form.Item
+    name="phone"
+    label="핸드폰 번호"
+    rules={[
+        { required: true, message: '핸드폰 번호를 입력해 주세요' },
+        {
+            pattern: /^[0-9]{10,11}$/, // 10~11자리 숫자만 허용
+            message: '올바른 핸드폰 번호를 입력해 주세요 (숫자만 입력)',
+        }
+    ]}
+>
+    <Input 
+        style={{ width: '100%' }} 
+        placeholder=" -을 제외한 숫자만 입력해주세요 (01012345678)"
+        maxLength={11}
+        onKeyPress={(e) => {
+            const pattern = /[0-9]/;
+            const inputChar = String.fromCharCode(e.charCode);
+            if (!pattern.test(inputChar)) {
+                e.preventDefault();
+            }
+        }}
+        onChange={(e) => {
+            // 숫자 이외의 문자 제거
+            const value = e.target.value.replace(/[^0-9]/g, '');
+            form.setFieldsValue({ phone: value });
+        }}
+    />
+</Form.Item>
             <Form.Item name="residence" label="주소" rules={[{ required: true, message: '주소를 입력해 주세요' }]}>
                 <Space.Compact>
                     <Input

@@ -47,7 +47,11 @@ const BillPage = () => {
     const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
     const [userData, setUserData] = useState({ UserName: '', Phone: '', Address: '' });
     const [useSameInfo, setUseSameInfo] = useState(true);
-    const [recipientData, setRecipientData] = useState({ name: '', phone: '', address: '' });
+    const [recipientData, setRecipientData] = useState({
+        name: userData.UserName,
+        phone: userData.Phone,
+        address: userData.Address,
+    });
     const [amount, setAmount] = useState({
         currency: 'KRW',
         value: order?.paymentAmount || 1000,
@@ -79,7 +83,6 @@ const BillPage = () => {
     }, [clientKey, customerKey]);
 
     useEffect(() => {
-        
         async function renderPaymentWidgets() {
             if (!widgets || !order) {
                 console.log('widgets or order not ready', { widgets, order });
@@ -135,7 +138,7 @@ const BillPage = () => {
             if (!id) return;
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/order/${id}`);
             console.log('주문 데이터:', response.data);
-    
+
             if (response.data.result) {
                 const fetchedOrder = {
                     ...response.data.data,
@@ -146,8 +149,8 @@ const BillPage = () => {
                         ...item,
                         price: parseFloat(item.price as string),
                     })),
-                    totalAmount: parseFloat(response.data.data.totalAmount),
-                    paymentAmount: parseFloat(response.data.data.paymentAmount),
+                    totalAmount: parseFloat(response.data.data.totalAmount) + 3000,
+                    paymentAmount: parseFloat(response.data.data.paymentAmount) + 3000,
                 };
                 setOrder(fetchedOrder);
                 console.log('변환된 주문 데이터:', fetchedOrder);
@@ -214,50 +217,51 @@ const BillPage = () => {
     };
 
     const handlePayment = async () => {
-      if (!widgets || !order || !ready) {
-          alert('결제 정보를 불러오는 중입니다. 잠시만 기다려주세요.');
-          return;
-      }
-  
-      try {
-          const token = localStorage.getItem('token');
-          if (!token) {
-              alert('로그인이 필요합니다.');
-              router.push('/login');
-              return;
-          }
-  
-          const decoded: any = jwtDecode(token);
-          const userId = decoded.UserID;
-  
-          // 1. 먼저 결제 정보를 서버에 저장
-          const paymentData = {
-              orderListId: order.orderListId,
-              userId,
-              totalAmount: order.totalAmount,
-              paymentAmount: order.paymentAmount,
-              pointUsed: pointsToUse,
-              couponUsed: selectedCoupon?.couponId,
-              recipientInfo: {
-                  name: recipientData.name,
-                  phone: recipientData.phone,
-                  address: recipientData.address
-              },
-              paymentMethod: 'Card',
-          };
-  
-          const transactionResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/transaction`, paymentData);
-          
-          if (!transactionResponse.data.success) {
-              throw new Error('거래 정보 생성 실패');
-          }
-  
-  
-      } catch (error) {
-          console.error('결제 처리 중 오류 발생:', error);
-          alert('결제 처리 중 오류가 발생했습니다.');
-      }
-  };
+        if (!widgets || !order || !ready) {
+            alert('결제 정보를 불러오는 중입니다. 잠시만 기다려주세요.');
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('로그인이 필요합니다.');
+                router.push('/login');
+                return;
+            }
+
+            const decoded: any = jwtDecode(token);
+            const userId = decoded.UserID;
+
+            // 1. 먼저 결제 정보를 서버에 저장
+            const paymentData = {
+                orderListId: order.orderListId,
+                userId,
+                totalAmount: order.totalAmount,
+                paymentAmount: order.paymentAmount,
+                pointUsed: pointsToUse,
+                couponUsed: selectedCoupon?.couponId,
+                recipientInfo: {
+                    name: recipientData.name,
+                    phone: recipientData.phone,
+                    address: recipientData.address,
+                },
+                paymentMethod: 'Card',
+            };
+
+            const transactionResponse = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/transaction`,
+                paymentData
+            );
+
+            if (!transactionResponse.data.success) {
+                throw new Error('거래 정보 생성 실패');
+            }
+        } catch (error) {
+            console.error('결제 처리 중 오류 발생:', error);
+            alert('결제 처리 중 오류가 발생했습니다.');
+        }
+    };
 
     const handleUsePoints = () => {
         if (!order) return;
@@ -296,16 +300,38 @@ const BillPage = () => {
                 phone: userData.Phone,
                 address: userData.Address,
             });
-        } else {
-            setRecipientData({ name: '', phone: '', address: '' });
         }
+        // 직접 입력 시에는 기존 값을 유지하도록 else 부분 제거
     };
+    useEffect(() => {
+        if (useSameInfo || recipientData.name === '') {
+            // 초기 로드 시나 회원정보와 동일할 때
+            setRecipientData({
+                name: userData.UserName,
+                phone: userData.Phone,
+                address: userData.Address,
+            });
+        }
+    }, [userData]);
 
     const handleRecipientDataChange = (field: keyof typeof recipientData, value: string) => {
-        setRecipientData((prev) => ({
-            ...prev,
-            [field]: value,
-        }));
+        if (field === 'phone') {
+            // 숫자만 추출
+            const numbersOnly = value.replace(/[^0-9]/g, '');
+
+            // 11자리로 제한
+            const limitedLength = numbersOnly.slice(0, 11);
+
+            setRecipientData((prev) => ({
+                ...prev,
+                [field]: limitedLength,
+            }));
+        } else {
+            setRecipientData((prev) => ({
+                ...prev,
+                [field]: value,
+            }));
+        }
     };
 
     if (!order) {
@@ -378,6 +404,14 @@ const BillPage = () => {
                                 onChange={(e) => handleRecipientDataChange('phone', e.target.value)}
                                 disabled={useSameInfo}
                                 className={style.inputText}
+                                maxLength={11}
+                                placeholder="010을 포함한 숫자만 입력해주세요(- 제외)"
+                                // 키보드 입력 시 숫자만 허용
+                                onKeyPress={(e) => {
+                                    if (!/[0-9]/.test(e.key)) {
+                                        e.preventDefault();
+                                    }
+                                }}
                             />
                         </label>
                         <label className={style.label}>
@@ -394,9 +428,9 @@ const BillPage = () => {
                 </div>
 
                 <div className={style.orderSummary}>
-                    <p>총 주문 금액: ₩{order.totalAmount}</p>
+                    <p>총 주문 금액: ₩{order.totalAmount}</p><p style={{fontSize:'10px'}}>(배송비 3000원 포함)</p>
                     <p>할인 금액: ₩{order.discount}</p>
-                    <p>총 결제 금액: ₩{order.paymentAmount}</p>
+                    <p>총 결제 금액: ₩{order.paymentAmount}</p><p style={{fontSize:'10px'}}>(배송비 3000원 포함)</p>
                 </div>
 
                 <div className={style.pointsSection}>
@@ -424,7 +458,6 @@ const BillPage = () => {
 
                     {selectedCoupon && <p>선택한 쿠폰: {selectedCoupon.couponName}</p>}
                 </div>
-
             </div>
 
             <div className="wrapper" style={{ margin: '20px', padding: '20px', border: '1px solid #ddd' }}>
@@ -436,80 +469,84 @@ const BillPage = () => {
                     <div id="agreement" style={{ marginBottom: '30px', minHeight: '100px' }} />
 
                     <button
-            className="button"
-            disabled={!ready}
-            onClick={async () => {
-                if (!widgets || !order || !ready) {
-                    alert('결제 정보를 불러오는 중입니다. 잠시만 기다려주세요.');
-                    return;
-                }
+                        className="button"
+                        disabled={!ready}
+                        onClick={async () => {
+                            if (!widgets || !order || !ready) {
+                                alert('결제 정보를 불러오는 중입니다. 잠시만 기다려주세요.');
+                                return;
+                            }
 
-                try {
-                    const token = localStorage.getItem('token');
-                    if (!token) {
-                        alert('로그인이 필요합니다.');
-                        router.push('/login');
-                        return;
-                    }
+                            try {
+                                const token = localStorage.getItem('token');
+                                if (!token) {
+                                    alert('로그인이 필요합니다.');
+                                    router.push('/login');
+                                    return;
+                                }
 
-                    const decoded: any = jwtDecode(token);
-                    const userId = decoded.UserID;
+                                const decoded: any = jwtDecode(token);
+                                const userId = decoded.UserID;
 
-                    // 1. 먼저 결제 정보를 서버에 저장
-                    const paymentData = {
-                        orderListId: order.orderListId,
-                        userId,
-                        totalAmount: order.totalAmount,
-                        paymentAmount: order.paymentAmount,
-                        pointUsed: pointsToUse,
-                        couponUsed: selectedCoupon?.couponId,
-                        recipientInfo: {
-                            name: recipientData.name,
-                            phone: recipientData.phone,
-                            address: recipientData.address
-                        },
-                        paymentMethod: 'Card',
-                        status: 'PENDING'  // 상태를 PENDING으로 변경
-                    };
+                                // 1. 먼저 결제 정보를 서버에 저장
+                                const paymentData = {
+                                    orderListId: order.orderListId,
+                                    userId,
+                                    totalAmount: order.totalAmount,
+                                    paymentAmount: order.paymentAmount,
+                                    pointUsed: pointsToUse,
+                                    couponUsed: selectedCoupon?.couponId,
+                                    recipientInfo: {
+                                        name: recipientData.name,
+                                        phone: recipientData.phone,
+                                        address: recipientData.address,
+                                    },
+                                    paymentMethod: 'Card',
+                                    status: 'PENDING', // 상태를 PENDING으로 변경
+                                };
 
-                    const transactionResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/transaction`, paymentData);
-                    
-                    if (!transactionResponse.data.success) {
-                        throw new Error('거래 정보 생성 실패');
-                    }
+                                const transactionResponse = await axios.post(
+                                    `${process.env.NEXT_PUBLIC_API_URL}/api/transaction`,
+                                    paymentData
+                                );
 
-                    const { transactionId } = transactionResponse.data;
+                                if (!transactionResponse.data.success) {
+                                    throw new Error('거래 정보 생성 실패');
+                                }
 
-                    // 2. 토스페이먼츠 결제 요청
-                    const formattedOrderId = `ORDER-${String(order.orderListId)}-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
+                                const { transactionId } = transactionResponse.data;
 
-                    await widgets.requestPayment({
-                        orderId: formattedOrderId,
-                        orderName: `주문 ${order.orderListId}`,
-                        successUrl: `${window.location.origin}/payment/success?transactionId=${transactionId}`,
-                        failUrl: `${window.location.origin}/payment/fail?transactionId=${transactionId}`,
-                        customerName: userData.UserName,
-                        customerMobilePhone: userData.Phone,
-                    });
+                                // 2. 토스페이먼츠 결제 요청
+                                const formattedOrderId = `ORDER-${String(
+                                    order.orderListId
+                                )}-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
 
-                } catch (error) {
-                    console.error('결제 처리 중 오류 발생:', error);
-                    alert('결제 처리 중 오류가 발생했습니다.');
-                }
-            }}
-            style={{
-                width: '100%',
-                padding: '15px',
-                fontSize: '16px',
-                backgroundColor: ready ? '#3182f6' : '#ccc',
-                color: 'white',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: ready ? 'pointer' : 'not-allowed',
-            }}
-        >
-            결제하기
-        </button>
+                                await widgets.requestPayment({
+                                    orderId: formattedOrderId,
+                                    orderName: `주문 ${order.orderListId}`,
+                                    successUrl: `${window.location.origin}/payment/success?transactionId=${transactionId}`,
+                                    failUrl: `${window.location.origin}/payment/fail?transactionId=${transactionId}`,
+                                    customerName: userData.UserName,
+                                    customerMobilePhone: userData.Phone,
+                                });
+                            } catch (error) {
+                                console.error('결제 처리 중 오류 발생:', error);
+                                alert('결제 처리 중 오류가 발생했습니다.');
+                            }
+                        }}
+                        style={{
+                            width: '100%',
+                            padding: '15px',
+                            fontSize: '16px',
+                            backgroundColor: ready ? '#3182f6' : '#ccc',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '5px',
+                            cursor: ready ? 'pointer' : 'not-allowed',
+                        }}
+                    >
+                        결제하기
+                    </button>
                 </div>
             </div>
         </>
