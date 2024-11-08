@@ -152,11 +152,8 @@ const Detail = () => {
             );
 
             if (response.data.result) {
-<<<<<<< Updated upstream
                 console.log(response.data.data, '주문아이디');
-=======
-                alert('주문이 완료되었습니다.');
->>>>>>> Stashed changes
+
                 router.push(`/order/${response.data.data}`);
             }
         } catch (error) {
