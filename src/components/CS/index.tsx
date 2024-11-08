@@ -12,13 +12,13 @@ interface Inquiry {
 
 function InquiryDetail() {
     const router = useRouter();
-    const { inquiryId } = router.query; // URL에서 inquiryId 가져오기
+    const { inquiryId } = router.query;
     const [inquiry, setInquiry] = useState<Inquiry | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchInquiry = async () => {
-            if (!inquiryId) return; // inquiryId가 없으면 실행하지 않음
+            if (!inquiryId) return;
 
             try {
                 const response = await axios.get(`/api/inquiry/${inquiryId}`);
@@ -37,38 +37,43 @@ function InquiryDetail() {
         };
 
         fetchInquiry();
-    }, [inquiryId]); // inquiryId가 변경될 때마다 실행
+    }, [inquiryId]);
 
     const handleWriteClick = () => {
-        router.push('/cs/write'); // 글쓰기 페이지로 이동
+        router.push('/mall/cs/cwrite');
     };
 
     if (error) return <p>{error}</p>;
-    if (!inquiry) return <p>로딩 중...</p>;
 
     return (
         <div style={styles.container}>
             <h1 style={styles.title}>고객센터</h1>
+
+            <div style={styles.board}>
+                {inquiry ? (
+                    <>
+                        <h2 style={styles.inquiryTitle}>{inquiry.Title}</h2>
+                        <p style={styles.inquiryContent}>{inquiry.Content}</p>
+                        {inquiry.InquiryReplies.length > 0 ? (
+                            inquiry.InquiryReplies.map((reply) => (
+                                <div key={reply.ReplyID} style={styles.replyContainer}>
+                                    <h4 style={styles.replyTitle}>답변</h4>
+                                    <p>{reply.ReplyContent}</p>
+                                </div>
+                            ))
+                        ) : (
+                            <p>아직 답변이 없습니다.</p>
+                        )}
+                    </>
+                ) : (
+                    <>
+                        <h2 style={styles.inquiryTitle}>아직 작성된 글이 없습니다.</h2>
+                        <p style={styles.placeholderContent}>게시글이 등록되면 여기에 표시됩니다.</p>
+                    </>
+                )}
+            </div>
+
             <button onClick={handleWriteClick} style={styles.writeButton}>글쓰기</button>
-            
-            {inquiry ? (
-                <div style={styles.board}>
-                    <h2 style={styles.inquiryTitle}>{inquiry.Title}</h2>
-                    <p style={styles.inquiryContent}>{inquiry.Content}</p>
-                    {inquiry.InquiryReplies.length > 0 ? (
-                        inquiry.InquiryReplies.map((reply) => (
-                            <div key={reply.ReplyID} style={styles.replyContainer}>
-                                <h4 style={styles.replyTitle}>답변</h4>
-                                <p>{reply.ReplyContent}</p>
-                            </div>
-                        ))
-                    ) : (
-                        <p>아직 답변이 없습니다.</p>
-                    )}
-                </div>
-            ) : (
-                <p style={styles.noInquiryMessage}>아직 작성된 글이 없습니다.</p>
-            )}
         </div>
     );
 }
@@ -77,12 +82,12 @@ export default InquiryDetail;
 
 const styles: { [key: string]: React.CSSProperties } = {
     container: {
-        maxWidth: '800px',
+        maxWidth: '1500px',
         margin: '0 auto',
         padding: '20px',
         backgroundColor: '#f9f9f9',
         borderRadius: '8px',
-        fontFamily: 'Arial, sans-serif',
+        position: 'relative', // 버튼 위치 조정을 위한 상대 위치
     },
     title: {
         fontSize: '24px',
@@ -91,8 +96,9 @@ const styles: { [key: string]: React.CSSProperties } = {
         marginBottom: '20px',
     },
     writeButton: {
-        display: 'block',
-        margin: '0 auto 20px',
+        position: 'absolute',
+        right: '20px',
+        bottom: '20px',
         padding: '10px 20px',
         backgroundColor: '#0070f3',
         color: '#fff',
@@ -100,17 +106,20 @@ const styles: { [key: string]: React.CSSProperties } = {
         borderRadius: '4px',
         cursor: 'pointer',
         fontSize: '16px',
+        margin: '10px'
     },
     board: {
         padding: '20px',
         borderRadius: '8px',
         border: '1px solid #ddd',
         backgroundColor: '#fff',
+        minHeight: '200px',
     },
     inquiryTitle: {
         fontSize: '20px',
         fontWeight: 'bold',
         marginBottom: '10px',
+        textAlign: 'center',
     },
     inquiryContent: {
         fontSize: '16px',
@@ -127,10 +136,10 @@ const styles: { [key: string]: React.CSSProperties } = {
         fontWeight: 'bold',
         marginBottom: '5px',
     },
-    noInquiryMessage: {
-        textAlign: 'center' as 'center',
+    placeholderContent: {
         color: '#888',
         fontSize: '16px',
+        textAlign: 'center' as 'center',
         marginTop: '20px',
     },
 };

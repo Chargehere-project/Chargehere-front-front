@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import { Button } from 'antd'; // Ant Design 버튼 사용
-import { jwtDecode } from 'jwt-decode';
+import { Button, Input, List, Tabs, Form, message } from 'antd';
+import {jwtDecode} from 'jwt-decode';
 
 interface Product {
+    ProductID: number;
     ProductName: string;
     Image: string;
     Price: number;
@@ -12,22 +13,49 @@ interface Product {
     Description: string;
 }
 
+interface Review {
+    ReviewID: number;
+    ProductID: number;
+    UserID: number;
+    Rating: number;
+    Content: string;
+    ReviewDate: string;
+}
+
+interface QA {
+    QID: number;
+    ProductID: number;
+    UserID: number;
+    Question: string;
+    Answer: string | null;
+    Date: string;
+}
+
 const Detail = () => {
     const router = useRouter();
-    const { id } = router.query;
+    const { id } = router.query; // 상품 ID
     const [product, setProduct] = useState<Product | null>(null);
+    const [reviews, setReviews] = useState<Review[]>([]);
+    const [qas, setQAs] = useState<QA[]>([]);
+    const [newQuestion, setNewQuestion] = useState<string>('');
 
     useEffect(() => {
         const fetchProduct = async () => {
+            if (!router.isReady || !id) return;
             try {
-                if (!router.isReady) return;
-                if (!id) return;
+                // 상품 정보 가져오기
+                const productResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/product/${id}`);
+                setProduct(productResponse.data.data);
 
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/product/${id}`);
-                console.log('제품 데이터:', response.data);
-                setProduct(response.data.data);
+                // 해당 상품에 대한 리뷰 가져오기
+                const reviewResponse = await axios.get(`/api/reviews?productId=${id}`);
+                setReviews(reviewResponse.data);
+
+                // 해당 상품에 대한 Q&A 가져오기
+                const qaResponse = await axios.get(`/api/qas?productId=${id}`);
+                setQAs(qaResponse.data);
             } catch (error) {
-                console.error('제품 상세정보를 가져오는데 실패했습니다.', error);
+                console.error('데이터를 불러오는데 실패했습니다.', error);
             }
         };
 
@@ -37,13 +65,12 @@ const Detail = () => {
     // 장바구니 추가 함수
     const addToCart = async () => {
         try {
-            // token 함수를 분리하고 직접 토큰 값을 가져오기
             const authToken = localStorage.getItem('token');
             if (!authToken) {
                 alert('로그인이 필요합니다.');
                 return;
             }
-    
+
             let userId;
             try {
                 const decoded: any = jwtDecode(authToken);
@@ -52,14 +79,14 @@ const Detail = () => {
                 console.error('토큰 디코드 에러:', error);
                 return;
             }
-    
+
             const response = await axios.post(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/savecart`,
                 {
                     userId,
                     productId: id,
                     quantity: 1,
-                    price: product?.Price  // 숫자 형태로 전송
+                    price: product?.Price
                 },
                 {
                     headers: {
@@ -68,7 +95,7 @@ const Detail = () => {
                     }
                 }
             );
-    
+
             if (response.data.result) {
                 alert('장바구니에 추가되었습니다.');
             }
@@ -80,30 +107,23 @@ const Detail = () => {
 
     // 구매하기 함수
     const buyNow = async () => {
+        if (!product) {
+            alert('상품 정보를 불러오는 중입니다.');
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('로그인이 필요합니다.');
+            router.push('/login');
+            return;
+        }
+
         try {
-            // product가 null인지 먼저 확인
-            if (!product) {
-                alert('상품 정보를 불러오는 중입니다.');
-                return;
-            }
-
-            // 1. JWT 토큰 확인 및 디코딩
-            const token = localStorage.getItem('token');
-            if (!token) {
-                alert('로그인이 필요합니다.');
-                router.push('/login');
-                return;
-            }
-
-            // 2. JWT 토큰에서 유저 정보 추출
             const decoded: any = jwtDecode(token);
-
-            // 3. 세션에서 유저 상세 정보 가져오기
             const sessionResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/check-session`, {
                 withCredentials: true,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
             });
 
             if (!sessionResponse.data.result) {
@@ -112,11 +132,8 @@ const Detail = () => {
             }
 
             const { phoneNumber, address } = sessionResponse.data.userDetails;
-
-            // 4. 할인가 계산
             const discountedPrice = product.Price * (1 - (product.Discount || 0) / 100);
 
-            // 5. 구매 요청 보내기
             const response = await axios.post(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/buy`,
                 {
@@ -129,15 +146,17 @@ const Detail = () => {
                     Quantity: 1,
                 },
                 {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: { Authorization: `Bearer ${token}` },
                     withCredentials: true,
                 }
             );
 
             if (response.data.result) {
+<<<<<<< Updated upstream
                 console.log(response.data.data, '주문아이디');
+=======
+                alert('주문이 완료되었습니다.');
+>>>>>>> Stashed changes
                 router.push(`/order/${response.data.data}`);
             }
         } catch (error) {
@@ -146,81 +165,80 @@ const Detail = () => {
         }
     };
 
+    // Q&A 질문 등록 함수
+    const handleQuestionSubmit = async () => {
+        if (!newQuestion) {
+            alert('질문 내용을 입력해주세요.');
+            return;
+        }
+        try {
+            const response = await axios.post('/api/qas', {
+                productId: id,
+                question: newQuestion,
+                userId: 1,
+            });
+            setQAs([...qas, response.data]);
+            setNewQuestion('');
+        } catch (error) {
+            console.error('질문 등록 실패:', error);
+        }
+    };
+
     if (!product) {
         return <div>로딩중...</div>;
     }
 
     return (
-        <div
-            style={{
-                maxWidth: '1200px',
-                margin: '0 auto',
-                padding: '20px',
-            }}
-        >
-            <div
-                style={{
-                    display: 'flex',
-                    gap: '40px',
-                }}
-            >
-                {/* 제품 이미지 */}
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
+            <h1>{product.ProductName}</h1>
+            <div style={{ display: 'flex', gap: '40px' }}>
                 <div style={{ flex: '1' }}>
-                    <img
-                        src={product.Image}
-                        alt={product.ProductName}
-                        style={{
-                            width: '100%',
-                            height: 'auto',
-                            borderRadius: '8px',
-                        }}
-                    />
+                    <img src={product.Image} alt={product.ProductName} style={{ width: '100%', borderRadius: '8px' }} />
                 </div>
-
-                {/* 제품 정보 */}
                 <div style={{ flex: '1' }}>
                     <h1>{product.ProductName}</h1>
-                    <div style={{ marginTop: '20px' }}>
-                        <p>가격: {product.Price.toLocaleString()}원</p>
-                        {product.Discount > 0 && (
-                            <p>
-                                할인가: {(product.Price * (1 - product.Discount / 100)).toLocaleString()}원 (
-                                {product.Discount}% 할인)
-                            </p>
-                        )}
-                    </div>
-
-                    {/* 버튼 그룹 */}
-                    <div
-                        style={{
-                            marginTop: '30px',
-                            display: 'flex',
-                            gap: '10px',
-                        }}
-                    >
-                        <Button
-                            type="primary"
-                            onClick={buyNow}
-                            style={{
-                                width: '150px',
-                                height: '45px',
-                            }}
-                        >
-                            구매하기
-                        </Button>
-                        <Button
-                            onClick={addToCart}
-                            style={{
-                                width: '150px',
-                                height: '45px',
-                            }}
-                        >
-                            장바구니
-                        </Button>
+                    <p>가격: {product.Price.toLocaleString()}원</p>
+                    {product.Discount > 0 && (
+                        <p>할인가: {(product.Price * (1 - product.Discount / 100)).toLocaleString()}원 ({product.Discount}% 할인)</p>
+                    )}
+                    <div style={{ display: 'flex', gap: '10px', marginTop: '30px' }}>
+                        <Button type="primary" onClick={buyNow} style={{ width: '150px', height: '45px' }}>구매하기</Button>
+                        <Button onClick={addToCart} style={{ width: '150px', height: '45px' }}>장바구니</Button>
                     </div>
                 </div>
             </div>
-            <p>상세 설명: {product.Description}</p>
+
+            <Tabs defaultActiveKey="1" style={{ marginTop: '40px' }}>
+                <Tabs.TabPane tab="상세정보" key="1">
+                    <p>{product.Description}</p>
+                </Tabs.TabPane>
+                
+                <Tabs.TabPane tab={`사용후기 (${reviews.length})`} key="2">
+                    <List dataSource={reviews} renderItem={(review) => (
+                        <List.Item key={review.ReviewID}>
+                            <List.Item.Meta title={`평점: ${review.Rating}`} description={review.Content} />
+                            <div>{review.ReviewDate}</div>
+                        </List.Item>
+                    )} />
+                </Tabs.TabPane>
+
+                <Tabs.TabPane tab={`상품 Q&A (${qas.length})`} key="3">
+                    <List dataSource={qas} renderItem={(qa) => (
+                        <List.Item key={qa.QID}>
+                            <List.Item.Meta title={`Q. ${qa.Question}`} description={qa.Answer ? `A. ${qa.Answer}` : '답변 대기 중'} />
+                            <div>{qa.Date}</div>
+                        </List.Item>
+                    )} />
+                    <Form layout="inline" style={{ marginTop: '20px' }}>
+                        <Form.Item>
+                            <Input placeholder="질문을 입력하세요" value={newQuestion} onChange={(e) => setNewQuestion(e.target.value)} />
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" onClick={handleQuestionSubmit}>질문하기</Button>
+                        </Form.Item>
+                    </Form>
+                </Tabs.TabPane>
+            </Tabs>
         </div>
     );
 };
