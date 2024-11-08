@@ -28,7 +28,7 @@ const NoticePage = () => {
     const fetchNotices = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/notices`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/notices`);
         console.log('API 응답:', response.data);
         setNotices(response.data.data);
       } catch (error) {

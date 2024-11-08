@@ -56,7 +56,7 @@ const Profile = () => {
 
             try {
                 const response = await axios.post(
-                    `${process.env.NEXT_PUBLIC_API_URL}/name`,
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/name`,
                     { userId },
                     {
                         headers: {
@@ -72,7 +72,7 @@ const Profile = () => {
 
             try {
                 const response = await axios.post(
-                    `${process.env.NEXT_PUBLIC_API_URL}/orderlist`,
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/orderlist`,
                     { userId },
                     {
                         headers: {
@@ -87,7 +87,7 @@ const Profile = () => {
 
             try {
                 const response = await axios.post(
-                    `${process.env.NEXT_PUBLIC_API_URL}/chargelist`,
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/chargelist`,
                     { userId },
                     {
                         headers: {
@@ -105,7 +105,7 @@ const Profile = () => {
 
             try {
                 const response = await axios.post(
-                    `${process.env.NEXT_PUBLIC_API_URL}/couponlist`,
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/couponlist`,
                     { userId },
                     {
                         headers: {

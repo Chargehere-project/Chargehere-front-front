@@ -1,11 +1,28 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, message } from 'antd';
+import { Form, Input, Button, Typography, message } from 'antd';
 import axios from 'axios';
+
+import styles from './Find.module.css';
+
+const { Title, Text } = Typography;
 
 const FindPw = () => {
     const [form] = Form.useForm();
     const [id, setId] = useState<string>('');
     const [name, setName] = useState<string>('');
+    const [phone, setPhone] = useState<string>('');
+    const [message, setMessage] = useState<string>('');
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const handleResetPassword = async (event: React.FormEvent) => {
+        event.preventDefault();
+        try {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/findpw`, { id, name, phone });
+            if (response.data.data) {
+                setMessage(`비밀번호: ${response.data.data.Password}`);
+                setErrorMessage('');
+            } else {
+                setMessage('');
+                setErrorMessage('일치하는 정보가 없습니다.');
     const [email, setEmail] = useState<string>('');
     const [verificationCode, setVerificationCode] = useState<string>('');
     const [sentCode, setSentCode] = useState<string>('');
@@ -188,10 +205,16 @@ const FindPw = () => {
                 </Button>
             </Form.Item>
 
-            <p>
-                아이디를 잊으셨나요? <a href="../../mall/findid">아이디 찾기</a>
-            </p>
+                <Text className={styles.footerText}>
+                    아이디를 잊으셨나요? <a href="../../mall/findid" className={styles.link}>아이디 찾기</a>
+                </Text>
         </Form>
+
+
+        </div>
+
+
+        
     );
 };
 

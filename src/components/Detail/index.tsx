@@ -23,7 +23,7 @@ const Detail = () => {
                 if (!router.isReady) return;
                 if (!id) return;
 
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/product/${id}`);
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/product/${id}`);
                 console.log('제품 데이터:', response.data);
                 setProduct(response.data.data);
             } catch (error) {
@@ -54,7 +54,7 @@ const Detail = () => {
             }
     
             const response = await axios.post(
-                `${process.env.NEXT_PUBLIC_API_URL}/savecart`,
+                `${process.env.NEXT_PUBLIC_API_URL}/api/savecart`,
                 {
                     userId,
                     productId: id,
@@ -99,7 +99,7 @@ const Detail = () => {
             const decoded: any = jwtDecode(token);
 
             // 3. 세션에서 유저 상세 정보 가져오기
-            const sessionResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/check-session`, {
+            const sessionResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/check-session`, {
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'application/json',
@@ -118,7 +118,7 @@ const Detail = () => {
 
             // 5. 구매 요청 보내기
             const response = await axios.post(
-                `${process.env.NEXT_PUBLIC_API_URL}/buy`,
+                `${process.env.NEXT_PUBLIC_API_URL}/api/buy`,
                 {
                     UserID: decoded.UserID,
                     ProductID: id,
