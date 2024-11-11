@@ -1,55 +1,44 @@
 import Image from 'next/image';
 import { UserOutlined, ShopOutlined, LoginOutlined } from '@ant-design/icons';
 import Router from 'next/router';
-import { jwtDecode } from 'jwt-decode';
-import { Input, Button } from 'antd';
+import {jwtDecode} from 'jwt-decode';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 
 const Header = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-
     const [logoUrl, setLogoUrl] = useState<string | null>(null);
-    // useEffect(() => {
-    //     // S3에서 로고 URL을 가져오는 API 호출 (이 부분은 실제 API 엔드포인트로 대체해야 합니다)
-    //     const fetchLogoUrl = async () => {
-    //         try {
-    //             const response = await fetch('/api/admin/getLogoUrl'); // 예시 API 호출
-    //             const data = await response.json();
-    //             setLogoUrl(data.logoUrl || '/charge_logo.png'); // S3에서 로고 URL을 가져옴
-    //         } catch (error) {
-    //             console.error('로고 URL 가져오기 실패:', error);
-    //             setLogoUrl('/charge_logo.png'); // 기본 로고 설정
-    //         }
-    //     };
-    //     fetchLogoUrl();
-    // }, []);
 
     useEffect(() => {
-        // S3에서 로고 URL을 가져오는 API 호출 (이 부분은 실제 API 엔드포인트로 대체해야 합니다)
+        // S3에서 로고 URL을 가져오는 API 호출
         const fetchLogoUrl = async () => {
             try {
-                const response = await fetch('/api/admin/getLogoUrl'); // 예시 API 호출
+                const response = await fetch('/api/admin/getLogoUrl');
                 const data = await response.json();
-                setLogoUrl(data.logoUrl || '/public/main.png'); // S3에서 로고 URL을 가져옴
+                setLogoUrl(data.logoUrl || '/main.png');
             } catch (error) {
                 console.error('로고 URL 가져오기 실패:', error);
-                setLogoUrl('/main.png'); // 기본 로고 설정
+                setLogoUrl('/main.png');
             }
         };
         fetchLogoUrl();
+
+        // 로그인 상태 확인
+        const token = localStorage.getItem('token');
+        if (token) setIsLoggedIn(true);
     }, []);
+
     const token = () => {
         const token = localStorage.getItem('token');
         if (!token) return null;
         try {
             const decoded: any = jwtDecode(token);
-            return decoded.UserID; // 토큰에서 UserID를 추출
+            return decoded.UserID; // 토큰에서 UserID 추출
         } catch (error) {
             console.error('토큰 디코드 에러:', error);
             return null;
         }
     };
+
     const profile = () => {
         const user = token();
         if (!user) {
@@ -58,12 +47,11 @@ const Header = () => {
             Router.push('/mall/profile');
         }
     };
-    const logo = () => {
-        Router.push('/chargemain');
-    };
+
     const mall = () => {
         Router.push('/mall');
     };
+
     const handleLogout = () => {
         if (window.confirm('로그아웃 하시겠습니까?')) {
             localStorage.removeItem('token');
@@ -72,24 +60,52 @@ const Header = () => {
             alert('로그아웃 되었습니다.');
         }
     };
+
     return (
-        <header style={{ display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
+        <header style={headerStyle}>
             <Image
-                src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/charge_logo.png`}
+                src={logoUrl || '/main.png'}
                 alt="로고"
-                width={300}
-                height={100}
+                width={100}
+                height={50}
+                onClick={() => Router.push('/chargemain')}
+                style={{ cursor: 'pointer' }}
             />
-            <div>
-                <UserOutlined style={{ fontSize: '30px', marginRight: '20px' }} onClick={profile} />
-                <ShopOutlined style={{ fontSize: '30px' }} onClick={mall} />
+            <div style={iconContainerStyle}>
+                <UserOutlined style={iconStyle} onClick={profile} />
+                <ShopOutlined style={iconStyle} onClick={mall} />
                 {isLoggedIn && (
-                    <div style={{ textAlign: 'center', marginRight: '20px' }} onClick={handleLogout}>
-                        <LoginOutlined style={{ fontSize: '30px' }} />
-                    </div>
+                    <LoginOutlined style={iconStyle} onClick={handleLogout} />
                 )}
             </div>
         </header>
     );
 };
+
+// 인라인 스타일
+const headerStyle = {
+    position: 'fixed' as 'fixed', // 상단 고정
+    top: 0,
+    left: 0,
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '10px 20px',
+    backgroundColor: 'white',
+    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+    zIndex: 1000,
+};
+
+const iconContainerStyle = {
+    display: 'flex',
+    alignItems: 'center',
+};
+
+const iconStyle = {
+    fontSize: '30px',
+    marginRight: '20px',
+    cursor: 'pointer',
+};
+
 export default Header;

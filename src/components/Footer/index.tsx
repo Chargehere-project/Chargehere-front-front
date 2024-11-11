@@ -1,4 +1,5 @@
 import React from 'react';
+
 const Footer = () => {
     return (
         <footer
@@ -7,7 +8,7 @@ const Footer = () => {
                 color: 'white',
                 padding: '20px 0',
                 textAlign: 'center',
-                width: '100%',
+                width: '1400px',
             }}
         >
             <div style={{ width: '100%', margin: '0 auto', lineHeight: '1.2', fontSize: '14px' }}>
@@ -45,4 +46,5 @@ const Footer = () => {
         </footer>
     );
 };
+
 export default Footer;

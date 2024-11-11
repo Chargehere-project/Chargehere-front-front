@@ -1,17 +1,24 @@
+/* src/styles/globals.css */
+
+/* 색상 변수 */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --button-color: #0597F2;
+  --button-hover-color: #BBDDF2;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --button-color: #4098d7; /* 다크 모드용 버튼 색상 */
+    --button-hover-color: #8cbbe3; /* 다크 모드용 버튼 호버 색상 */
   }
 }
 
-html,
-body {
+/* 기본 레이아웃 설정 */
+html, body {
   max-width: 100vw;
   overflow-x: hidden;
 }
@@ -24,22 +31,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
 
+/* 링크 스타일 */
 a {
   color: inherit;
   text-decoration: none;
 }
-/* src/styles/globals.css */
-:root {
-  --button-color: #0597F2; /* 버튼 색상 */
-  --button-hover-color: #BBDDF2; /* 버튼 호버 색상 */
-}
 
+/* 버튼 스타일 */
 button {
   background-color: var(--button-color);
   color: #fff;
@@ -54,7 +53,23 @@ button:hover {
   background-color: var(--button-hover-color);
 }
 
+/* 레이아웃을 위한 컨테이너 설정 */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 
+.content {
+  flex: 1;
+}
+
+.content {
+  margin-top: 120px; /* 헤더 높이에 맞춰 여백 설정 */
+}
+
+
+/* 다크 모드 지원 */
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

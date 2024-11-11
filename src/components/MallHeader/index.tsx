@@ -2,70 +2,44 @@ import Image from 'next/image';
 import Router from 'next/router';
 import { jwtDecode } from 'jwt-decode';
 import { useState, useEffect } from 'react';
-import { UserOutlined, ShoppingOutlined, LoginOutlined, SearchOutlined, CarOutlined } from '@ant-design/icons';
-import { Input, Button } from 'antd'; // antd 컴포넌트 import
+import { UserOutlined, ShoppingOutlined, LoginOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
 const MallHeader = () => {
-    const [searchInput, setSearchInput] = useState('');
-    const [searchResults, setSearchResults] = useState([]);
-    const [isSearching, setIsSearching] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-    useEffect(() => {
-        const debounceTimer = setTimeout(() => {
-            if (searchInput) {
-                handleSearch();
-            } else {
-                setSearchResults([]);
-            }
-        }, 300);
-
-        return () => clearTimeout(debounceTimer);
-    }, [searchInput]);
-
-    const handleSearch = async () => {
-        if (!searchInput.trim()) return;
-
-        try {
-            setIsSearching(true);
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/search`, {
-                params: {
-                    query: searchInput,
-                },
-            });
-
-            // response.data에서 result와 data 구조 확인
-            if (response.data.result) {
-                setSearchResults(response.data.data || []);
-            }
-        } catch (error) {
-            console.error('검색 에러:', error);
-            setSearchResults([]);
-        } finally {
-            setIsSearching(false);
-        }
-    };
+    const [cartCount, setCartCount] = useState(0);
 
     const token = () => {
         const token = localStorage.getItem('token');
         if (!token) return null;
         try {
             const decoded: any = jwtDecode(token);
-            return decoded.UserID; // 토큰에서 UserID를 추출
+            return decoded.UserID;
         } catch (error) {
             console.error('토큰 디코드 에러:', error);
             return null;
         }
     };
+
+    const fetchCartCount = async () => {
+        const user = token();
+        if (user) {
+            try {
+                const response = await axios.get(`/api/cart/${user}/count`);
+                setCartCount(response.data.count);
+            } catch (error) {
+                console.error('장바구니 개수 불러오기 에러:', error);
+            }
+        }
+    };
+
     const cart = () => {
         const user = token();
         if (!user) {
             alert('로그인이 필요합니다.');
             Router.push('/mall/login');
         } else {
-            // 로그인된 사용자의 장바구니로 이동
-            Router.push(`/mall/cart/${user}`); // 또는 그냥 '/cart'로 이동하고 서버에서 처리
+            Router.push(`/mall/cart/${user}`);
         }
     };
 
@@ -81,26 +55,17 @@ const MallHeader = () => {
     const logo = () => {
         Router.push('/mall');
     };
-    const search = () => {
-        // 검색 처리 로직 추가 필요
-        console.log('Search initiated'); // 예시 로그
-    };
 
-    const car = () => {
-        Router.push('/chargemain');
-    };
+
     useEffect(() => {
         const checkLoginStatus = () => {
             const userToken = localStorage.getItem('token');
             setIsLoggedIn(!!userToken);
         };
-    
-        // 초기 체크
         checkLoginStatus();
-    
-        // 라우터 이벤트에 리스너 추가
+        fetchCartCount(); // 컴포넌트 마운트 시 장바구니 개수 불러오기
         Router.events.on('routeChangeComplete', checkLoginStatus);
-    
+
         return () => {
             Router.events.off('routeChangeComplete', checkLoginStatus);
         };
@@ -109,47 +74,109 @@ const MallHeader = () => {
     const handleLogout = () => {
         if (window.confirm('로그아웃 하시겠습니까?')) {
             localStorage.removeItem('token');
-            setIsLoggedIn(false); // 로그아웃 시 상태 업데이트
+            setIsLoggedIn(false);
             Router.push('/');
             alert('로그아웃 되었습니다.');
         }
     };
+
     return (
-        <header
-            style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 20px', alignItems: 'center' }}
-        >
-            {/* 로고 */}
-            <div style={{ display: 'flex', alignItems: 'center' }} onClick={logo}>
-            <Image
-                src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/charge_logo.png`}
-                alt="로고"
-                width={300}
-                height={100}
-            />
-            </div>
-            {/* 아이콘이랑 검색 영역 */}
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-                {/* 전기차페이지 이동 */}
-                <div style={{ textAlign: 'center', marginRight: '20px' }} onClick={car}>
-                    <CarOutlined style={{ fontSize: '30px' }} />
+        <header style={headerStyle}>
+            <div style={headerContentStyle}>
+                <div style={logoContainerStyle} onClick={logo}>
+                    <Image
+                        src="/main.png" 
+                        alt="로고"
+                        width={150}
+                        height={50}
+                    />
                 </div>
-                {/* 장바구니 */}
-                <div style={{ textAlign: 'center', marginRight: '20px' }} onClick={cart}>
-                    <ShoppingOutlined style={{ fontSize: '30px' }} />
-                </div>
-                {/* 마이페이지 */}
-                <div style={{ textAlign: 'center', marginRight: '20px' }} onClick={profile}>
-                    <UserOutlined style={{ fontSize: '30px' }} />
-                </div>
-                {/* 로그아웃 */}
-                {isLoggedIn && (
-                    <div style={{ textAlign: 'center', marginRight: '20px' }} onClick={handleLogout}>
-                        <LoginOutlined style={{ fontSize: '30px' }} />
+                <nav style={navContainerStyle}>
+                    <span style={navItemStyle} onClick={() => Router.push('/')}>HOME</span>
+                    <span style={navItemStyle} onClick={() => Router.push('/mall/product')}>PRODUCTS</span>
+                    <span style={navItemStyle} onClick={() => Router.push('/ev-guide')}>EV GUIDE</span>
+                    <span style={navItemStyle} onClick={() => Router.push('/cs')}>CS</span>
+                </nav>
+                <div style={iconContainerStyle}>
+                    <div style={cartIconContainer} onClick={cart}>
+                        <ShoppingOutlined style={iconStyle} />
+                        {cartCount > 0 && <span style={cartCountStyle}>{cartCount}</span>}
                     </div>
-                )}
+                    <UserOutlined style={iconStyle} onClick={profile} />
+                    {isLoggedIn && (
+                        <LoginOutlined style={iconStyle} onClick={handleLogout} />
+                    )}
+                </div>
             </div>
         </header>
     );
+};
+
+const headerStyle = {
+    position: 'fixed' as 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%', // 전체 화면 너비로 설정
+    height: '70px',
+    backgroundColor: 'white',
+    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+    zIndex: 1000,
+    display: 'flex',
+    justifyContent: 'center', // 중앙 정렬을 위해 사용
+};
+
+const headerContentStyle = {
+    width: '100%', // 내부 콘텐츠의 최대 너비를 1400px로 제한하여 중앙에 정렬되도록 함
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '10px 20px',
+};
+
+const logoContainerStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    cursor: 'pointer',
+};
+
+const navContainerStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '20px',
+};
+
+const navItemStyle = {
+    fontSize: '16px',
+    cursor: 'pointer',
+    color: '#333',
+    fontWeight: 'bold' as 'bold',
+};
+
+const iconContainerStyle = {
+    display: 'flex',
+    alignItems: 'center',
+};
+
+const iconStyle = {
+    fontSize: '24px',
+    marginLeft: '20px',
+    cursor: 'pointer',
+};
+
+const cartIconContainer = {
+    position: 'relative' as 'relative',
+};
+
+const cartCountStyle = {
+    position: 'absolute' as 'absolute',
+    top: '-5px',
+    right: '-10px',
+    backgroundColor: 'red',
+    color: 'white',
+    borderRadius: '50%',
+    padding: '2px 6px',
+    fontSize: '12px',
 };
 
 export default MallHeader;
