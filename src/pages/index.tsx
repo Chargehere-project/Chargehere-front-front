@@ -49,8 +49,8 @@ const MainBanner = () => {
             <div className={styles.mainBanner}>
                 <div className={styles.bannerContent}>
                     <h1 className={styles.fadeIn}>충전이 필요한 모든 순간, ChargeHere</h1>
-                    <Link href="/chargemain">
-                        <button className={styles.fadeInButton}>홈페이지로 바로 가기</button>
+                    <Link href="/map">
+                        <button className={styles.fadeInButton}>충전소 찾기로 바로 가기</button>
                     </Link>
                     <Link href="/mall">
                         <button className={styles.fadeInButton}>쇼핑몰로 바로 가기</button>
