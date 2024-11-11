@@ -139,61 +139,64 @@ const ShoppingCart = () => {
                 Router.push('/mall/login');
                 return;
             }
-    
+     
             const decoded: any = jwtDecode(token);
-
-            const sessionResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/check-session`, {
-
-                withCredentials: true,
-                headers: { 
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
+            
+            // 세션 체크
+            const sessionResponse = await axios.get(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/check-session`,
+                {
+                    withCredentials: true,
+                    headers: { 
+                        Authorization: `Bearer ${token}`
+                    }
                 }
-            });
-    
+            );
+     
             if (!sessionResponse.data.result) {
                 alert('세션 정보가 없습니다.');
                 return;
             }
-    
-            // 세션에서 사용자 정보 추출
-            const { phoneNumber: CustomerPhoneNumber, address: CustomerAddress } = sessionResponse.data.userDetails;
-    
-            // 주문 데이터 생성
+     
+            // 선택된 상품들의 총 금액 계산
+            const totalAmount = selectedProducts.reduce((sum, item) => 
+                sum + (item.Price * item.Quantity), 0) + fee();
+     
+            // 주문 데이터 구성
             const orderData = {
                 UserID: decoded.UserID,
                 CustomerName: decoded.UserName,
-                CustomerPhoneNumber,  // 세션에서 가져온 전화번호
-                CustomerAddress,      // 세션에서 가져온 주소
-                TotalAmount: totalPrice + fee(),
+                CustomerPhoneNumber: sessionResponse.data.userDetails.phoneNumber,
+                CustomerAddress: sessionResponse.data.userDetails.address,
+                TotalAmount: totalAmount,
                 OrderStatus: 'Pending',
                 orderItems: selectedProducts.map(item => ({
                     ProductID: item.Product.ProductID,
                     Quantity: item.Quantity,
                     Price: item.Price,
-                    CartID: item.CartID
+                    // Subtotal은 서버에서 계산됨
                 }))
             };
-    
+     
             const response = await axios.post(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/orders/create`,
                 orderData,
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json'
+                        Authorization: `Bearer ${token}`
                     }
                 }
             );
-    
+     
             if (response.data.result) {
                 Router.push(`/order/${response.data.orderListId}`);
             }
+     
         } catch (error) {
             console.error('주문 생성 중 오류 발생:', error);
             alert('주문 처리 중 오류가 발생했습니다.');
         }
-    };
+     };
 
     const deleteAllItems = async () => {
         try {

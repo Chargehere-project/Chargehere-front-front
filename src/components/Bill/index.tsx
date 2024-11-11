@@ -150,7 +150,7 @@ const BillPage = () => {
                         price: parseFloat(item.price as string),
                     })),
                     totalAmount: parseFloat(response.data.data.totalAmount) + 3000,
-                    paymentAmount: parseFloat(response.data.data.paymentAmount) + 3000,
+                    paymentAmount: parseFloat(response.data.data.totalAmount) + 3000,
                 };
                 setOrder(fetchedOrder);
                 console.log('변환된 주문 데이터:', fetchedOrder);
@@ -300,8 +300,14 @@ const BillPage = () => {
                 phone: userData.Phone,
                 address: userData.Address,
             });
+        } else {
+            // 직접 입력 선택 시 모든 필드를 빈 값으로 초기화
+            setRecipientData({
+                name: '',
+                phone: '',
+                address: ''
+            });
         }
-        // 직접 입력 시에는 기존 값을 유지하도록 else 부분 제거
     };
     useEffect(() => {
         if (useSameInfo || recipientData.name === '') {
