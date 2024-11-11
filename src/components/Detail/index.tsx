@@ -45,10 +45,9 @@ const Detail = () => {
         const fetchProduct = async () => {
             if (!router.isReady || !id) return;
             try {
-                // 상품 정보 가져오기
                 const productResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/product/${id}`);
                 setProduct(productResponse.data.data);
-    
+
                 // 해당 상품에 대한 리뷰 가져오기 (URL 수정)
                 const reviewResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/product/${id}`);
                 if (reviewResponse.data.result) {
@@ -56,6 +55,7 @@ const Detail = () => {
                 }
     
                 // 해당 상품에 대한 Q&A 가져오기
+
                 const qaResponse = await axios.get(`/api/qas?productId=${id}`);
                 setQAs(qaResponse.data);
             } catch (error) {
@@ -66,7 +66,6 @@ const Detail = () => {
         fetchProduct();
     }, [router.isReady, id]);
 
-    // 장바구니 추가 함수
     const addToCart = async () => {
         try {
             const authToken = localStorage.getItem('token');
@@ -109,7 +108,6 @@ const Detail = () => {
         }
     };
 
-    // 구매하기 함수
     const buyNow = async () => {
         if (!product) {
             alert('상품 정보를 불러오는 중입니다.');
@@ -156,8 +154,6 @@ const Detail = () => {
             );
 
             if (response.data.result) {
-                console.log(response.data.data, '주문아이디');
-
                 router.push(`/order/${response.data.data}`);
             }
         } catch (error) {
@@ -166,23 +162,8 @@ const Detail = () => {
         }
     };
 
-    // Q&A 질문 등록 함수
-    const handleQuestionSubmit = async () => {
-        if (!newQuestion) {
-            alert('질문 내용을 입력해주세요.');
-            return;
-        }
-        try {
-            const response = await axios.post('/api/qas', {
-                productId: id,
-                question: newQuestion,
-                userId: 1,
-            });
-            setQAs([...qas, response.data]);
-            setNewQuestion('');
-        } catch (error) {
-            console.error('질문 등록 실패:', error);
-        }
+    const handleQuestionSubmit = () => {
+        router.push(`/CS/Detail/Qawrite?id=${id}`);
     };
 
     if (!product) {
@@ -248,9 +229,6 @@ const Detail = () => {
                         </List.Item>
                     )} />
                     <Form layout="inline" style={{ marginTop: '20px' }}>
-                        <Form.Item>
-                            <Input placeholder="질문을 입력하세요" value={newQuestion} onChange={(e) => setNewQuestion(e.target.value)} />
-                        </Form.Item>
                         <Form.Item>
                             <Button type="primary" onClick={handleQuestionSubmit}>질문하기</Button>
                         </Form.Item>

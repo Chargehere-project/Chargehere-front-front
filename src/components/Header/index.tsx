@@ -26,20 +26,18 @@ const Header = () => {
     // }, []);
 
     useEffect(() => {
-        const checkLoginStatus = () => {
-            const token = localStorage.getItem('token');
-            setIsLoggedIn(!!token);
+        // S3에서 로고 URL을 가져오는 API 호출 (이 부분은 실제 API 엔드포인트로 대체해야 합니다)
+        const fetchLogoUrl = async () => {
+            try {
+                const response = await fetch('/api/admin/getLogoUrl'); // 예시 API 호출
+                const data = await response.json();
+                setLogoUrl(data.logoUrl || '/public/main.png'); // S3에서 로고 URL을 가져옴
+            } catch (error) {
+                console.error('로고 URL 가져오기 실패:', error);
+                setLogoUrl('/main.png'); // 기본 로고 설정
+            }
         };
-
-        // 초기 체크
-        checkLoginStatus();
-
-        // 라우터 이벤트에 리스너 추가
-        Router.events.on('routeChangeComplete', checkLoginStatus);
-
-        return () => {
-            Router.events.off('routeChangeComplete', checkLoginStatus);
-        };
+        fetchLogoUrl();
     }, []);
     const token = () => {
         const token = localStorage.getItem('token');
