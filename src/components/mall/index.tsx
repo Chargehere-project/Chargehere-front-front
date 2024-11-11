@@ -73,10 +73,10 @@ const styles = {
   categorySection: {
     display: 'flex',
     justifyContent: 'space-around',
-    width: '1400px',  // 카테고리 섹션 전체 너비
+    width: '100%',  // 카테고리 섹션 전체 너비
   },
   categoryCard: {
-    width: '388px',    // 각 카드 너비
+    width: '25%',    // 각 카드 너비
     height: '500px',   // 각 카드 높이
     textAlign: 'center',
     cursor: 'pointer',
@@ -90,7 +90,7 @@ const styles = {
     objectFit: 'cover',
   },
   attendanceSection: {
-    width: '1400px',
+    width: '100%',
     height: '300px',
     marginTop: '20px',
     padding: '20px',

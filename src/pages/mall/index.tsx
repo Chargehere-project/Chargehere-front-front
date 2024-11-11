@@ -5,7 +5,7 @@ const MallPage = () => {
   return (
     <div>
       <Mall /> 
-      <Main/>
+      
     </div>
   );
 };

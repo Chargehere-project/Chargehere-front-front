@@ -12,7 +12,7 @@ export default function App({ Component, pageProps }: AppProps) {
     
     return (
         <div className="app-container">
-            {path ? <MallHeader /> : <Header />}
+            <MallHeader />
             <div className="content">
                 <Component {...pageProps} />
             </div>
