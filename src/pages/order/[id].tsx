@@ -1,12 +1,12 @@
-import React from "react";
-import Bill from "../../components/Bill/index";
+import React from 'react';
+import Bill from '../../components/Bill/index';
 
 const Billpage = () => {
     return (
         <div>
-            <Bill  />
+            <Bill />
         </div>
     );
 };
 
-export default Billpage
+export default Billpage;

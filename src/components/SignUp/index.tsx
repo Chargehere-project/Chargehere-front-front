@@ -51,8 +51,54 @@ const SignUp = () => {
     const [errorMessage, setErrorMessage] = useState<string>('');
     const [address, setAddress] = useState<string>('');
     const [checkId, setCheckId] = useState<string>('');
+    const [isIdChecked, setIsIdChecked] = useState(false);
+    const check = async () => {
+        try {
+            const userId = form.getFieldValue('id');
+            if (!userId) {
+                setErrorMessage('아이디를 입력해주세요');
+                setIsIdChecked(false);
+                return;
+            }
+    
+            // 이메일 형식 검사
+            const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+            if (!emailRegex.test(userId)) {
+                setErrorMessage('올바른 이메일 형식이 아닙니다');
+                setIsIdChecked(false);
+                setCheckId('');
+                return;
+            }
+    
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/checkid`, { userId });
+            console.log('데이터확인', response.data);
+            if (response.data.result === true) {
+                setCheckId(response.data.message);
+                setErrorMessage('');
+                setIsIdChecked(true);
+            } else {
+                setErrorMessage(response.data.message);
+                setCheckId('');
+                setIsIdChecked(false);
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                setErrorMessage(error.response.data.message);
+            } else {
+                setErrorMessage('서버 오류가 발생했습니다');
+            }
+            setCheckId('');
+            setIsIdChecked(false);
+            console.error('아이디 중복 검사 실패:', error);
+        }
+    };
+
     const onFinish = async (values: any) => {
-        console.log('Received values of form: ', values);
+        if (!isIdChecked) {
+            alert('아이디 중복검사를 해주세요.');
+            return;
+        }
+
         try {
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/signup`, {
                 id: values.id,
@@ -62,7 +108,7 @@ const SignUp = () => {
                 phone: values.phone,
             });
             console.log('성공:', response.data);
-            setErrorMessage(''); // 성공 시 에러 메시지 초기화
+            setErrorMessage('');
             Router.push('/mall/login');
         } catch (err) {
             console.log('실패:', err);
@@ -73,62 +119,19 @@ const SignUp = () => {
             }
         }
     };
-    const check = async () => {
-        try {
-            const userId = form.getFieldValue('id');
-            if (!userId) {
-                setErrorMessage('아이디를 입력해주세요');
-                return;
-            }
-            console.log('검사할 ID:', userId); // 요청 전 확인용 로그
 
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/checkid`, { userId });
-            console.log('데이터확인', response.data);
-            if (response.data.result === true) {
-                setCheckId(response.data.message);
-                setErrorMessage('');
-            } else {
-                setErrorMessage(response.data.message);
-                setCheckId('');
-            }
-        } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-                setErrorMessage(error.response.data.message);
-            } else {
-                setErrorMessage('서버 오류가 발생했습니다');
-            }
-            setCheckId('');
-            console.error('아이디 중복 검사 실패:', error);
-        }
+    // ID 입력 필드에 onChange 이벤트 추가
+    const handleIdChange = () => {
+        setIsIdChecked(false);  // ID 변경 시 중복검사 상태 초기화
     };
 
     const [autoCompleteResult, setAutoCompleteResult] = useState<string[]>([]);
-    const handleComplete = (data: any) => {
-        let fullAddress = data.address;
-        let extraAddress = '';
-        console.log(fullAddress); // e.g. '서울 성동구 왕십리로2길 20 (성수동1가)'
-        form.setFieldsValue({ residence: fullAddress });
-        setAddress(fullAddress);
-        setIsModalOpen(false);
-    };
-    const onWebsiteChange = (value: string) => {
-        if (!value) {
-            setAutoCompleteResult([]);
-        } else {
-            setAutoCompleteResult(['.com', '.org', '.net'].map((domain) => `${value}${domain}`));
-        }
-    };
+
+
     const websiteOptions = autoCompleteResult.map((website) => ({
         label: website,
         value: website,
     }));
-    const handleModalOpen = () => {
-        setIsModalOpen(true);
-    };
-
-    const handleModalClose = () => {
-        setIsModalOpen(false);
-    };
 
     return (
         <Form
@@ -154,12 +157,12 @@ const SignUp = () => {
                 ]}
             >
                 <Space.Compact>
-                    <Input style={{ width: 'calc(100% - 100px)' }} />
+                    <Input style={{ width: 'calc(100% - 100px)' }}  onChange={handleIdChange}  />
                     <Button onClick={check} htmlType="button">
                         중복검사
                     </Button>
-                    <div>{errorMessage}</div>
-                    <div>{checkId}</div>
+                    <div style={{ color: 'red' }}>{errorMessage}</div>
+                    <div style={{ color: 'green' }}>{checkId}</div>
                 </Space.Compact>
             </Form.Item>
             <Form.Item
@@ -221,137 +224,7 @@ const SignUp = () => {
             >
                 <Input />
             </Form.Item>
-            <Form.Item label="생년월일" required>
-    <Space.Compact>
-        <Form.Item
-            name="birthYear"
-            noStyle
-            rules={[
-                { required: true, message: '년도를 입력해 주세요' },
-                {
-                    validator: (_, value) => {
-                        const currentYear = new Date().getFullYear();
-                        if (value >= 1900 && value <= currentYear) {
-                            return Promise.resolve();
-                        }
-                        return Promise.reject(new Error(`년도는 1900년부터 ${currentYear}년까지 가능합니다`));
-                    },
-                },
-            ]}
-        >
-            <Input style={{ width: '30%' }} placeholder="YYYY" maxLength={4} />
-        </Form.Item>
-        <Form.Item
-            name="birthMonth"
-            noStyle
-            rules={[
-                { required: true, message: '월을 입력해 주세요' },
-                {
-                    validator: (_, value) => {
-                        if (value >= 1 && value <= 12) {
-                            return Promise.resolve();
-                        }
-                        return Promise.reject(new Error('월은 1월부터 12월까지 입력 가능합니다'));
-                    },
-                },
-            ]}
-        >
-            <Input style={{ width: '25%', margin: '0 5px' }} placeholder="MM" maxLength={2} />
-        </Form.Item>
-        <Form.Item
-            name="birthDay"
-            noStyle
-            rules={[
-                { required: true, message: '일을 입력해 주세요' },
-                {
-                    validator: (_, value) => {
-                        const year = form.getFieldValue('birthYear');
-                        const month = form.getFieldValue('birthMonth');
-                        if (!year || !month) {
-                            return Promise.reject(new Error('연도와 월을 먼저 입력해 주세요'));
-                        }
-                        const daysInMonth = new Date(year, month, 0).getDate();
-                        if (value >= 1 && value <= daysInMonth) {
-                            return Promise.resolve();
-                        }
-                        return Promise.reject(new Error(`${month}월에는 1일부터 ${daysInMonth}일까지 입력 가능합니다`));
-                    },
-                },
-            ]}
-        >
-            <Input style={{ width: '25%' }} placeholder="DD" maxLength={2} />
-        </Form.Item>
-    </Space.Compact>
-</Form.Item>
-<Form.Item
-    name="phone"
-    label="핸드폰 번호"
-    rules={[
-        { required: true, message: '핸드폰 번호를 입력해 주세요' },
-        {
-            pattern: /^[0-9]{10,11}$/, // 10~11자리 숫자만 허용
-            message: '올바른 핸드폰 번호를 입력해 주세요 (숫자만 입력)',
-        }
-    ]}
->
-    <Input 
-        style={{ width: '100%' }} 
-        placeholder=" -을 제외한 숫자만 입력해주세요 (01012345678)"
-        maxLength={11}
-        onKeyPress={(e) => {
-            const pattern = /[0-9]/;
-            const inputChar = String.fromCharCode(e.charCode);
-            if (!pattern.test(inputChar)) {
-                e.preventDefault();
-            }
-        }}
-        onChange={(e) => {
-            // 숫자 이외의 문자 제거
-            const value = e.target.value.replace(/[^0-9]/g, '');
-            form.setFieldsValue({ phone: value });
-        }}
-    />
-</Form.Item>
-            <Form.Item name="residence" label="주소" rules={[{ required: true, message: '주소를 입력해 주세요' }]}>
-                <Space.Compact>
-                    <Input
-                        style={{ width: 'calc(100% - 100px)' }}
-                        readOnly
-                        value={address}
-                        onChange={(e) => {
-                            setAddress(e.target.value);
-                            form.setFieldsValue({ residence: e.target.value });
-                        }}
-                    />
-                    <Button onClick={handleModalOpen}>주소찾기</Button>
-                </Space.Compact>
-            </Form.Item>
 
-            <Modal
-                title="주소 검색"
-                open={isModalOpen}
-                onOk={() => setIsModalOpen(false)}
-                onCancel={() => setIsModalOpen(false)}
-                destroyOnClose={true}
-            >
-                {
-                    <DaumPostcode
-                        onComplete={(data) => {
-                            handleComplete(data);
-                            handleModalClose();
-                        }}
-                    />
-                }
-            </Modal>
-            <Form.Item name="detailAddress" label="상세 주소">
-                <Input
-                    placeholder="상세 주소를 입력하세요"
-                    onChange={(e) => {
-                        const fullAddress = `${address} ${e.target.value}`.trim();
-                        form.setFieldsValue({ residence: fullAddress });
-                    }}
-                />
-            </Form.Item>
             <Form.Item
                 name="agreement"
                 valuePropName="checked"

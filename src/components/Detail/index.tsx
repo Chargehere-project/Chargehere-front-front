@@ -20,8 +20,10 @@ interface Review {
     Rating: number;
     Content: string;
     ReviewDate: string;
+    User?: {  // 유저 정보 추가 (필요한 경우)
+        UserName: string;
+    };
 }
-
 interface QA {
     QID: number;
     ProductID: number;
@@ -46,8 +48,13 @@ const Detail = () => {
                 const productResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/product/${id}`);
                 setProduct(productResponse.data.data);
 
-                const reviewResponse = await axios.get(`/api/reviews?productId=${id}`);
-                setReviews(reviewResponse.data);
+                // 해당 상품에 대한 리뷰 가져오기 (URL 수정)
+                const reviewResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/product/${id}`);
+                if (reviewResponse.data.result) {
+                    setReviews(reviewResponse.data.data);
+                }
+    
+                // 해당 상품에 대한 Q&A 가져오기
 
                 const qaResponse = await axios.get(`/api/qas?productId=${id}`);
                 setQAs(qaResponse.data);
@@ -55,7 +62,7 @@ const Detail = () => {
                 console.error('데이터를 불러오는데 실패했습니다.', error);
             }
         };
-
+    
         fetchProduct();
     }, [router.isReady, id]);
 
@@ -189,13 +196,30 @@ const Detail = () => {
                 </Tabs.TabPane>
                 
                 <Tabs.TabPane tab={`사용후기 (${reviews.length})`} key="2">
-                    <List dataSource={reviews} renderItem={(review) => (
-                        <List.Item key={review.ReviewID}>
-                            <List.Item.Meta title={`평점: ${review.Rating}`} description={review.Content} />
-                            <div>{review.ReviewDate}</div>
-                        </List.Item>
-                    )} />
-                </Tabs.TabPane>
+    <List 
+        dataSource={reviews} 
+        renderItem={(review) => (
+            <List.Item key={review.ReviewID}>
+                <List.Item.Meta 
+                    title={
+                        <div>
+                            <span>평점: {review.Rating}</span>
+                            {review.User && <span style={{ marginLeft: '10px' }}>{review.User.UserName}</span>}
+                        </div>
+                    }
+                    description={
+                        <div>
+                            <div>{review.Content}</div>
+                            <div style={{ color: '#888', fontSize: '12px', marginTop: '5px' }}>
+                                {new Date(review.ReviewDate).toLocaleDateString()}
+                            </div>
+                        </div>
+                    }
+                />
+            </List.Item>
+        )}
+    />
+</Tabs.TabPane>
 
                 <Tabs.TabPane tab={`상품 Q&A (${qas.length})`} key="3">
                     <List dataSource={qas} renderItem={(qa) => (

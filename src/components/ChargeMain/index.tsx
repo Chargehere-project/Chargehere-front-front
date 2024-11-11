@@ -69,6 +69,7 @@ const Main = () => {
         Router.push(path);
     };
 
+
     return (
         <>
             <div className={styles.container}>
@@ -80,7 +81,12 @@ const Main = () => {
                     </div>
                 )}
                 <MainSwipe />
-                <div className={styles.buttonContainer}></div>
+                <div className={styles.buttonContainer}>
+                                            {/* 충전하기 버튼 추가 */}
+                                            <div className={styles.button} onClick={() => handleNavigation('/charging')}>
+                            충전하기
+                        </div>
+                </div>
                 <div className={styles.announcementContainer}>
                     <h2>공지</h2>
                     <div
