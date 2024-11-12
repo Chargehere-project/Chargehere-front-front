@@ -22,22 +22,26 @@ const MainSwipe = () => {
                 className={styles.swiper}
             >
                 <SwiperSlide onClick={() => router.push('/event/1')}>
-                    <div style={{ position: 'relative', width: '100%', height: '640px' }}>
+                    <div className={styles.slideImageContainer}>
                         <Image
-                            src="/main_banner1.png" // public 폴더의 main_banner1.png 사용
+                            src="/main_banner1.png"
                             alt="Slide 1"
-                            layout="fill"
-                            objectFit="cover"
+                            layout="responsive"
+                            width={1400} // 원본 이미지의 가로 크기
+                            height={640} // 원본 이미지의 세로 크기
+                            priority
                         />
                     </div>
                 </SwiperSlide>
                 <SwiperSlide onClick={() => router.push('/event/2')}>
-                    <div style={{ position: 'relative', width: '100%', height: '640px' }}>
-                        <Image
-                            src="/main_banner2.png" // public 폴더의 main_banner2.png 사용
+                    <div className={styles.slideImageContainer}>
+                    <Image
+                            src="/main_banner2.png"
                             alt="Slide 2"
-                            layout="fill"
-                            objectFit="cover"
+                            layout="responsive"
+                            width={1400} // 원본 이미지의 가로 크기
+                            height={640} // 원본 이미지의 세로 크기
+                            priority
                         />
                     </div>
                 </SwiperSlide>
