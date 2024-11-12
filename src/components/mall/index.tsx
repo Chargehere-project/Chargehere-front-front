@@ -1,59 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Swipe from './Swipe';
 import { ArrowUpOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
+import Swipe from './Swipe';
 
 interface Product {
-    ProductID: number;
-    ProductName: string;
-    Price: number;
-    Discount: number;
-    Image: string;
+  ProductID: number;
+  ProductName: string;
+  Price: number;
+  Discount: number;
+  Image: string;
 }
 
-const MallIndex = () => {
+const MallIndex: React.FC = () => {
   const [bestProducts, setBestProducts] = useState<Product[]>([]);
-  const [newProducts, setNewProducts] = useState<Product[]>([]);
-  const [saleProducts, setSaleProducts] = useState<Product[]>([]);
-
-  const router = useRouter(); 
+  const router = useRouter();
 
   useEffect(() => {
-    // 주문이 많은 상품 8개 가져오기
     const fetchBestProducts = async () => {
       try {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/products`);
-        setBestProducts(response.data.data.slice(0, 8)); // 8개로 제한하기
+        setBestProducts(response.data.data.slice(0, 8));
       } catch (error) {
-        console.error('Best 상품 데이터를 불러오는 중 오류가 발생했습니다.', error);
-      }
-    };
-
-    // 신상품 8개 (ID 역순) 가져오기
-    const fetchNewProducts = async () => {
-      try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/newproducts`);
-        setNewProducts(response.data.data.slice(0, 8)); // 8개로 제한하기
-      } catch (error) {
-        console.error('신상품 데이터를 불러오는 중 오류가 발생했습니다.', error);
-      }
-    };
-
-    // 할인율이 높은 상품 8개 가져오기
-    const fetchSaleProducts = async () => {
-      try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/saleproducts`);
-        setSaleProducts(response.data.data.slice(0, 8)); // 8개로 제한하기
-      } catch (error) {
-        console.error('Sale 상품 데이터를 불러오는 중 오류가 발생했습니다.', error);
+        console.error('Error fetching best products', error);
       }
     };
 
     fetchBestProducts();
-    fetchNewProducts();
-    fetchSaleProducts();
   }, []);
+
   const handleProductClick = (productId: number) => {
     router.push(`/mall/product/${productId}`);
   };
@@ -61,112 +36,31 @@ const MallIndex = () => {
   return (
     <div>
       <Swipe />
-      {/* Best 섹션 */}
-      <section style={{ marginTop: '40px', textAlign: 'center' }}>
-        <h2>Best</h2>
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-          {bestProducts.map((product) => (
-            <div
-              key={product.ProductID}
-              style={{
-                width: '22%',
-                marginBottom: '20px',
-                backgroundColor: '#F2F2F2',
-                padding: '10px',
-                textAlign: 'center',
-                borderRadius: '10px',
-                cursor: 'pointer'  // 커서 스타일 추가
-              }}
-              onClick={() => handleProductClick(product.ProductID)}
-            >
-              <img
-                src={product.Image}
-                alt={product.ProductName}
-                style={{ width: '100%', height: '200px', objectFit: 'cover' }}
-              />
-              <h3>{product.ProductName}</h3>
-              <p>가격: {product.Price.toLocaleString()}원</p>
-              <p>할인율: {product.Discount}%</p>
-              <p>판매가격: {(product.Price * (1 - product.Discount / 100)).toLocaleString()}원</p>
-            </div>
-          ))}
+
+      {/* Category Section */}
+      <section style={styles.categorySection}>
+        <div style={styles.categoryCard} onClick={() => router.push('/map')}>
+          <img src="/charge_charge.png" alt="Charge" style={styles.categoryImage} />
+          <p>CHARGE</p>
+        </div>
+        <div style={styles.categoryCard} onClick={() => router.push('/mall/product')}>
+          <img src="/charge_shop.png" alt="Shopping" style={styles.categoryImage} />
+          <p>SHOPPING</p>
+        </div>
+        <div style={styles.categoryCard} onClick={() => router.push('/ev-guide')}>
+          <img src="/charge_evguide.png" alt="EV Guide" style={styles.categoryImage} />
+          <p>EV GUIDE</p>
         </div>
       </section>
-      {/* 신상품 섹션 */}
-      <section style={{ marginTop: '40px', textAlign: 'center' }}>
-        <h2>신상품</h2>
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-          {newProducts.map((product) => (
-            <div
-              key={product.ProductID}
-              style={{
-                width: '22%',
-                marginBottom: '20px',
-                backgroundColor: '#F2F2F2',
-                padding: '10px',
-                textAlign: 'center',
-                borderRadius: '10px',
-                cursor: 'pointer'  // 커서 스타일 추가
-              }}
-              onClick={() => handleProductClick(product.ProductID)}
-            >
-              <img
-                src={product.Image}
-                alt={product.ProductName}
-                style={{ width: '100%', height: '200px', objectFit: 'cover' }}
-              />
-              <h3>{product.ProductName}</h3>
-              <p>가격: {product.Price.toLocaleString()}원</p>
-              <p>할인율: {product.Discount}%</p>
-              <p>판매가격: {(product.Price * (1 - product.Discount / 100)).toLocaleString()}원</p>
-            </div>
-          ))}
-        </div>
+
+      {/* Attendance Section */}
+      <section style={styles.attendanceSection}>
+        <h2>출석 체크 하기</h2>
       </section>
-      {/* Sale 섹션 */}
-      <section style={{ marginTop: '40px', textAlign: 'center' }}>
-        <h2>Sale</h2>
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-          {saleProducts.map((product) => (
-            <div
-              key={product.ProductID}
-              style={{
-                width: '22%',
-                marginBottom: '20px',
-                backgroundColor: '#F2F2F2',
-                padding: '10px',
-                textAlign: 'center',
-                borderRadius: '10px',
-                cursor: 'pointer'  // 커서 스타일 추가
-              }}
-              onClick={() => handleProductClick(product.ProductID)}
-            >
-              <img
-                src={product.Image}
-                alt={product.ProductName}
-                style={{ width: '100%', height: '200px', objectFit: 'cover' }}
-              />
-              <h3>{product.ProductName}</h3>
-              <p>가격: {product.Price.toLocaleString()}원</p>
-              <p>할인율: {product.Discount}%</p>
-              <p>판매가격: {(product.Price * (1 - product.Discount / 100)).toLocaleString()}원</p>
-            </div>
-          ))}
-        </div>
-      </section>
-      {/* 페이지 상단으로 이동하는 화살표 버튼 */}
+
+      {/* Scroll to Top Button */}
       <button
-        style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          backgroundColor: '#333',
-          color: '#fff',
-          border: 'none',
-          padding: '10px',
-          borderRadius: '50%',
-          cursor: 'pointer',
-        }}
+        style={styles.scrollTopButton}
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       >
         <ArrowUpOutlined style={{ fontSize: '20px' }} />
@@ -174,5 +68,52 @@ const MallIndex = () => {
     </div>
   );
 };
+
+const styles = {
+  categorySection: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    width: '100%',  // 카테고리 섹션 전체 너비
+  },
+  categoryCard: {
+    width: '25%',    // 각 카드 너비
+    height: '500px',   // 각 카드 높이
+    textAlign: 'center',
+    cursor: 'pointer',
+    backgroundColor: '#f2f2f2',
+    borderRadius: '10px',
+    overflow: 'hidden',
+  },
+  categoryImage: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  },
+  attendanceSection: {
+    width: '100%',
+    height: '300px',
+    marginTop: '20px',
+    padding: '20px',
+    textAlign: 'center',
+    backgroundColor: '#666',
+    color: '#fff',
+    fontSize: '24px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    cursor: 'pointer',
+  },
+  scrollTopButton: {
+    position: 'fixed',
+    bottom: '20px',
+    right: '20px',
+    backgroundColor: '#333',
+    color: '#fff',
+    border: 'none',
+    padding: '10px',
+    borderRadius: '50%',
+    cursor: 'pointer',
+  },
+} as const;
 
 export default MallIndex;

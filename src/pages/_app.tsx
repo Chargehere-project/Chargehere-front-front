@@ -9,13 +9,14 @@ import Menu from '@/components/mall/menu';
 export default function App({ Component, pageProps }: AppProps) {
     const router = useRouter(); // router 사용
     const path = router.pathname.startsWith('/mall'); // url 시작이 mall인지 확인 후에 있으면 true 없으면 false 반환
-
+    
     return (
-        <>
-            {path ? <MallHeader /> : <Header />}
-            {path ? <Menu /> : <div />}
-            <Component {...pageProps} />
+        <div className="app-container">
+            <MallHeader />
+            <div className="content">
+                <Component {...pageProps} />
+            </div>
             <Footer />
-        </>
+        </div>
     );
 }

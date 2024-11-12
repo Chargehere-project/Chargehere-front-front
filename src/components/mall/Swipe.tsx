@@ -1,14 +1,15 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Navigation, Autoplay } from 'swiper/modules';
+import { Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import 'swiper/css/navigation';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React from 'react';
 import styles from './Swipe.module.css';
+
 const MainSwipe = () => {
     const router = useRouter();
+    
     return (
         <div className={styles.swiperContainer}>
             <Swiper
@@ -16,41 +17,33 @@ const MainSwipe = () => {
                 spaceBetween={50}
                 loop={true}
                 autoplay={{ delay: 5000 }}
-                navigation
                 pagination={{ clickable: true }}
-                modules={[Pagination, Navigation, Autoplay]}
+                modules={[Pagination, Autoplay]}
                 className={styles.swiper}
             >
                 <SwiperSlide onClick={() => router.push('/event/1')}>
-                    <Image
-                        src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/colla.png`}
-                        alt="Slide 1"
-                        width={1200}
-                        height={600}
-                    />
+                    <div style={{ position: 'relative', width: '100%', height: '640px' }}>
+                        <Image
+                            src="/main_banner1.png" // public 폴더의 main_banner1.png 사용
+                            alt="Slide 1"
+                            layout="fill"
+                            objectFit="cover"
+                        />
+                    </div>
                 </SwiperSlide>
                 <SwiperSlide onClick={() => router.push('/event/2')}>
-                    <Image
-                        src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/game.png`}
-                        alt="Slide 2"
-                        width={1200}
-                        height={600}
-                    />
-                </SwiperSlide>
-                <SwiperSlide onClick={() => router.push('/event/3')}>
-                    <Image
-                        src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/style.png`}
-                        alt="Slide 3"
-                        width={1200}
-                        height={600}
-                    />
-                    <div className={styles.slideContent}>
-                        <h2>당신을 위한 쇼핑몰</h2>
-                        <p>쉽고 빠른 스타일링 이제 on style과 함께하세요</p>
+                    <div style={{ position: 'relative', width: '100%', height: '640px' }}>
+                        <Image
+                            src="/main_banner2.png" // public 폴더의 main_banner2.png 사용
+                            alt="Slide 2"
+                            layout="fill"
+                            objectFit="cover"
+                        />
                     </div>
                 </SwiperSlide>
             </Swiper>
         </div>
     );
 };
+
 export default MainSwipe;

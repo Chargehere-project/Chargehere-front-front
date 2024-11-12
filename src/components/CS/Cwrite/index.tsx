@@ -13,7 +13,7 @@ function Cwrite() {
             await axios.post('/api/mall/cs', {
                 title: values.title,
                 content: values.content,
-            });
+            }, { headers: { authorization: 'Bearer ' + localStorage.getItem('token') } });
             message.success('글이 성공적으로 등록되었습니다.');
             router.push('/mall/cs'); 
         } catch (error) {
@@ -26,27 +26,13 @@ function Cwrite() {
     return (
         <div style={styles.container}>
             <h1 style={styles.title}>고객센터 글쓰기</h1>
-            <Form
-                layout="vertical"
-                onFinish={onFinish}
-                style={styles.form}
-            >
-                <Form.Item
-                    label="제목"
-                    name="title"
-                    rules={[{ required: true, message: '제목을 입력해주세요.' }]}
-                >
+            <Form layout="vertical" onFinish={onFinish} style={styles.form}>
+                <Form.Item label="제목" name="title" rules={[{ required: true, message: '제목을 입력해주세요.' }]}>
                     <Input placeholder="제목을 입력하세요" />
                 </Form.Item>
-
-                <Form.Item
-                    label="내용"
-                    name="content"
-                    rules={[{ required: true, message: '내용을 입력해주세요.' }]}
-                >
+                <Form.Item label="내용" name="content" rules={[{ required: true, message: '내용을 입력해주세요.' }]}>
                     <Input.TextArea rows={6} placeholder="내용을 입력하세요" />
                 </Form.Item>
-
                 <Form.Item>
                     <Button type="primary" htmlType="submit" loading={loading} style={styles.submitButton}>
                         등록하기

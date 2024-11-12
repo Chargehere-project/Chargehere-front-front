@@ -117,7 +117,7 @@ const MainBanner = () => {
             <div className={styles.sixthSection} ref={sixthSectionRef}>
                 <div className={styles.sixthText}>
                     <h1>
-                        {isCountUpActive && <CountUp end={10239173} duration={3} separator="," />}명의 회원이 ChargeHere와 함께하고 있습니다.
+                        {isCountUpActive && <CountUp end={239173} duration={3} separator="," />}명의 회원이 ChargeHere와 함께하고 있습니다.
                     </h1>
                     <p>지금 바로 <a href="#">Chargehere</a>를 시작하세요.</p>
                 </div>

@@ -21,9 +21,11 @@ function InquiryDetail() {
             if (!inquiryId) return;
 
             try {
-                const response = await axios.get(`/api/inquiry/${inquiryId}`);
+                const response = await axios.get(`/api/inquiry/${inquiryId}`, {
+                    headers: { authorization: 'Bearer ' + localStorage.getItem('token') },
+                });
                 setInquiry(response.data);
-            } catch (err: unknown) {
+            } catch (err) {
                 if (axios.isAxiosError(err)) {
                     if (err.response && err.response.status === 403) {
                         setError("해당 문의를 볼 수 있는 권한이 없습니다.");
