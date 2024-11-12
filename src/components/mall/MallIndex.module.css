@@ -1,0 +1,148 @@
+/* 전체 컨테이너 */
+.container {
+    font-family: Arial, sans-serif;  /*G마켓 폰트로 바꿔야함*/
+    background-color: #f4f4f4;
+  }
+  
+  /* 카테고리 섹션 */
+  .categorySection {
+    display: flex;
+    justify-content: space-around;
+    padding: 50px 20px;
+  }
+  
+  /* 카테고리 카드 */
+  .categoryCard {
+    position: relative;
+    width: 30%;
+    height: 400px;
+    text-align: center;
+    cursor: pointer;
+    background-color: #f2f2f2;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  /* 호버 이미지 확대시키기 */
+  .categoryCard:hover .categoryImage {
+    transform: scale(1.1) translateY(-10px);
+  }
+  
+  /* 카테고리 이미지 */
+  .categoryImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  
+  /* 카테고리 텍스트 */
+  .categoryText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 30px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  
+  /* 출석 체크 섹션 */
+  .attendanceSection {
+    width: 100%;
+    height: 80px;
+    margin-top: 20px;
+    padding: 20px;
+    text-align: center;
+    background-color: #555555;
+    color: #fff;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  /* 추천 상품 섹션 */
+  .recommendedSection {
+    padding: 40px 20px;
+    text-align: center;
+    background-color: #fff;
+  }
+  
+  .recommendedTitle {
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  /* 상품 컨테이너 */
+  .productContainer {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  /* 상품 카드 */
+  .productCard {
+    width: 200px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    background-color: #fff;
+    cursor: pointer;
+  }
+  
+  /* 상품 이미지 */
+  .productImage {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    margin-bottom: 10px;
+  }
+  
+  /* 상품명 */
+  .productName {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  /* 상품 가격 */
+  .productPrice {
+    font-size: 14px;
+    color: #333;
+  }
+  
+  /* '상품 더보기' 버튼 */
+  .viewMoreButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #000000;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .viewMoreButton:hover {
+    background-color: #333;
+  }
+  
+  /* 스크롤 위로 버튼 */
+  .scrollTopButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+  }  
