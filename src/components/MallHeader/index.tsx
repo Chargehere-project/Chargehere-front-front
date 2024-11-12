@@ -28,7 +28,9 @@ const MallHeader = () => {
         const user = token();
         if (user) {
             try {
-                const response = await axios.get(`/api/cart/${user}/count`);
+                const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/cart/count`, {
+                    userId: user
+                });
                 setCartCount(response.data.count);
             } catch (error) {
                 console.error('장바구니 개수 불러오기 에러:', error);
@@ -57,7 +59,7 @@ const MallHeader = () => {
     };
 
     const logo = () => {
-        Router.push('/mall');
+        Router.push('/');
     };
 
 
@@ -117,7 +119,7 @@ const MallHeader = () => {
                 </div>
                 
                 <nav className={`${styles.navContainer} ${isMenuOpen ? styles.navOpen : ''}`}>
-                    <span className={styles.navItem} onClick={() => Router.push('/')}>HOME</span>
+                    <span className={styles.navItem} onClick={() => Router.push('/mall')}>HOME</span>
                     <span className={styles.navItem} onClick={() => Router.push('/mall/product')}>PRODUCTS</span>
                     <span className={styles.navItem} onClick={() => Router.push('/ev-guide')}>EV GUIDE</span>
                     <span className={styles.navItem} onClick={() => Router.push('/cs')}>CS</span>
