@@ -65,8 +65,9 @@ button:hover {
 }
 
 .content {
-  margin-top: 120px; /* 헤더 높이에 맞춰 여백 설정 */
+  margin-top: 80px; /* 헤더 높이에 맞춰 여백 설정 */
 }
+
 
 
 /* 다크 모드 지원 */

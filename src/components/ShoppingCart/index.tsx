@@ -208,6 +208,7 @@ const ShoppingCart = () => {
      };
 
     return (
+        
         <div className={style.cartContainer}>
             <div className={style.cartMain}>
                 <h1 className={style.cartTitle}>CART</h1>
