@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import axios from 'axios';
 import Router from 'next/router';
 import style from './shoppingcart.module.css';
 
 interface Product {
-    ProductID: number;    // 추가
+    ProductID: number;
     ProductName: string;
-    ProductImage: string; // 이미지 URL 추가
+    ProductImage: string;
 }
 
 interface CartItem {
@@ -17,8 +17,6 @@ interface CartItem {
     Product: Product;
 }
 
-
-
 const ShoppingCart = () => {
     const [cart, setCart] = useState<CartItem[]>([]);
     const [editingId, setEditingId] = useState<number | null>(null);
@@ -26,25 +24,21 @@ const ShoppingCart = () => {
 
     useEffect(() => {
         const fetchCart = async () => {
-            const token = () => {
-                const token = localStorage.getItem('token');
-                if (!token) return null;
-                try {
-                    const decoded: any = jwtDecode(token);
-                    return decoded.UserID;
-                } catch (error) {
-                    console.error('토큰 디코드 에러:', error);
-                    return null;
-                }
-            };
-            const userId = token();
+            const token = localStorage.getItem('token');
+            if (!token) {
+                Router.push('/mall/login');
+                return;
+            }
+
+            const userId = (jwtDecode(token) as any).UserID;
+
             try {
                 const response = await axios.post(
                     `${process.env.NEXT_PUBLIC_API_URL}/api/cart`,
                     { userId },
                     {
                         headers: {
-                            Authorization: `Bearer ${localStorage.getItem('token')}`,
+                            Authorization: `Bearer ${token}`,
                         },
                     }
                 );
@@ -60,10 +54,7 @@ const ShoppingCart = () => {
         try {
             await axios.post(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/cart/quantity`,
-                {
-                    cartId,
-                    quantity: newQuantity,
-                },
+                { cartId, quantity: newQuantity },
                 {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -89,13 +80,9 @@ const ShoppingCart = () => {
     };
 
     const handleSelectItem = (cartId: number) => {
-        setSelectedItems((prev) => {
-            if (prev.includes(cartId)) {
-                return prev.filter((id) => id !== cartId);
-            } else {
-                return [...prev, cartId];
-            }
-        });
+        setSelectedItems((prev) =>
+            prev.includes(cartId) ? prev.filter((id) => id !== cartId) : [...prev, cartId]
+        );
     };
 
     const totalPrice = cart.reduce((sum, item) => {
@@ -129,39 +116,64 @@ const ShoppingCart = () => {
         }
     };
 
-    const goToOrder = async () => {
+    const deleteAllItems = async () => {
         try {
-            const selectedProducts = cart.filter((item) => selectedItems.includes(item.CartID));
             const token = localStorage.getItem('token');
-                
             if (!token) {
                 alert('로그인이 필요합니다.');
                 Router.push('/mall/login');
                 return;
             }
-     
+
+            for (const cartId of selectedItems) {
+                await axios.post(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/cart/deletecart`,
+                    { cartId },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+            }
+
+            // 선택된 항목 삭제 후 상태 업데이트
+            setCart(cart.filter((item) => !selectedItems.includes(item.CartID)));
+            setSelectedItems([]);
+            alert('선택된 항목이 삭제되었습니다.');
+        } catch (error) {
+            console.error('선택된 항목 삭제 실패:', error);
+            alert('선택된 항목 삭제에 실패했습니다.');
+        }
+    };
+
+    const goToOrder = async () => {
+        try {
+            const selectedProducts = cart.filter((item) => selectedItems.includes(item.CartID));
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('로그인이 필요합니다.');
+                Router.push('/mall/login');
+                return;
+            }
             const decoded: any = jwtDecode(token);
-            
             // 세션 체크
             const sessionResponse = await axios.get(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/check-session`,
                 {
                     withCredentials: true,
-                    headers: { 
+                    headers: {
                         Authorization: `Bearer ${token}`
                     }
                 }
             );
-     
             if (!sessionResponse.data.result) {
                 alert('세션 정보가 없습니다.');
                 return;
             }
-     
             // 선택된 상품들의 총 금액 계산
-            const totalAmount = selectedProducts.reduce((sum, item) => 
+            const totalAmount = selectedProducts.reduce((sum, item) =>
                 sum + (item.Price * item.Quantity), 0) + fee();
-     
             // 주문 데이터 구성
             const orderData = {
                 UserID: decoded.UserID,
@@ -177,7 +189,6 @@ const ShoppingCart = () => {
                     // Subtotal은 서버에서 계산됨
                 }))
             };
-     
             const response = await axios.post(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/orders/create`,
                 orderData,
@@ -187,82 +198,39 @@ const ShoppingCart = () => {
                     }
                 }
             );
-     
             if (response.data.result) {
                 Router.push(`/order/${response.data.orderListId}`);
             }
-     
         } catch (error) {
             console.error('주문 생성 중 오류 발생:', error);
             alert('주문 처리 중 오류가 발생했습니다.');
         }
      };
 
-    const deleteAllItems = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                alert('로그인이 필요합니다.');
-                return;
-            }
-    
-            const decoded: any = jwtDecode(token);
-            
-            // 확인을 위해 userId 로깅
-            console.log('전송할 userId:', decoded.UserID);
-    
-            // 서버로 보내는 데이터 구조 변경
-            const response = await axios.post(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/cart/alldelete`,
-                {
-                    UserID: decoded.UserID  // userId -> UserID로 변경
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-    
-            if (response.data.result) {
-                setCart([]); 
-                setSelectedItems([]);
-            }
-        } catch (error: any) {
-            console.error('장바구니 비우기 실패:', error);
-            // 에러 응답 내용 자세히 출력
-            if (error.response) {
-                console.error('서버 응답:', error.response.data);
-            }
-            alert('장바구니 비우기에 실패했습니다.');
-        }
-    };
-    
     return (
         <div className={style.cartContainer}>
-            <h1 className={style.cartTitle}>장바구니</h1>
-            <div className={style.selectAllContainer}>
-                <label className={style.selectAllLabel}>
-                    <input
-                        type="checkbox"
-                        className={style.selectAllCheckbox}
-                        checked={selectedItems.length === cart.length}
-                        onChange={handleSelectAll}
-                    /> 전체 선택
-                </label>
-            </div>
-            {cart.length > 0 && (
-                <button 
-                    onClick={deleteAllItems}
-                    className={style.deleteAllButton}
-                >
-                    전체 삭제
-                </button>
-            )}
-            <div className={style.cartItems}>
-                {cart && cart.length > 0 ? (
-                    cart.map((item) => (
+            <div className={style.cartMain}>
+                <h1 className={style.cartTitle}>CART</h1>
+                <div className={style.selectAllContainer}>
+                    <label className={style.selectAllLabel}>
+                        <input
+                            type="checkbox"
+                            className={style.selectAllCheckbox}
+                            checked={selectedItems.length === cart.length}
+                            onChange={handleSelectAll}
+                        /> 전체 선택
+                    </label>
+                    {cart.length > 0 && (
+                        <button 
+                            onClick={deleteAllItems}
+                            className={style.deleteAllButton}
+                        >
+                            선택 삭제
+                        </button>
+                    )}
+                </div>
+                <div className={style.cartItems}>
+                    {cart.map((item) => (
                         <div key={item.CartID} className={style.cartItem}>
                             <input
                                 type="checkbox"
@@ -272,7 +240,7 @@ const ShoppingCart = () => {
                             />
                             <div className={style.itemImageContainer}>
                                 <img
-                                    src={item.Product.ProductImage} 
+                                    src={item.Product.ProductImage}
                                     alt={item.Product.ProductName}
                                     className={style.itemImage}
                                 />
@@ -306,30 +274,27 @@ const ShoppingCart = () => {
                                 삭제
                             </div>
                         </div>
-                    ))
-                ) : (
-                    <div>장바구니에 담긴 물건이 없습니다.</div>
-                )}
-            </div>
-            {cart.length > 0 && (
-                <div className={style.summaryContainer}>
-                    <div className={style.summaryRow}>
-                        <span>상품 금액</span>
-                        <span>{totalPrice.toLocaleString()}원</span>
-                    </div>
-                    <div className={style.summaryRow}>
-                        <span>배송비</span>
-                        <span>{fee().toLocaleString()}원</span>
-                    </div>
-                    <div className={`${style.summaryRow} ${style.summaryTotal}`}>
-                        <span>결제 예정 금액</span>
-                        <span>{(totalPrice + fee()).toLocaleString()}원</span>
-                    </div>
-                    <button onClick={goToOrder} className={style.orderButton}>
-                        주문하기
-                    </button>
+                    ))}
                 </div>
-            )}
+            </div>
+            <div className={style.summaryContainer}>
+                <h2 className={style.summaryTitle}>주문 내역</h2>
+                <div className={style.summaryRow}>
+                    <span>상품 금액</span>
+                    <span>{totalPrice.toLocaleString()}원</span>
+                </div>
+                <div className={style.summaryRow}>
+                    <span>배송비</span>
+                    <span>{fee().toLocaleString()}원</span>
+                </div>
+                <div className={`${style.summaryRow} ${style.summaryTotal}`}>
+                    <span>총 결제 금액</span>
+                    <span>{(totalPrice + fee()).toLocaleString()}원</span>
+                </div>
+                <button onClick={goToOrder} className={style.orderButton}>
+                    주문하기
+                </button>
+            </div>
         </div>
     );
 };
