@@ -3,6 +3,7 @@ import axios from 'axios';
 import { ArrowUpOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import Swipe from './Swipe';
+import styles from './MallIndex.module.css';
 
 interface Product {
   ProductID: number;
@@ -12,8 +13,9 @@ interface Product {
   Image: string;
 }
 
-const MallIndex: React.FC = () => {
+const MallIndex = () => {
   const [bestProducts, setBestProducts] = useState<Product[]>([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -27,40 +29,66 @@ const MallIndex: React.FC = () => {
     };
 
     fetchBestProducts();
+
+    const token = localStorage.getItem('authToken');
+    setIsLoggedIn(!!token);
   }, []);
 
   const handleProductClick = (productId: number) => {
     router.push(`/mall/product/${productId}`);
   };
 
+  const handleAttendanceClick = () => {
+    if (isLoggedIn) {
+      router.push('/roulette');
+    } else {
+      router.push('/mall/login');
+    }
+  };
+
   return (
-    <div>
+    <div className={styles.container}>
       <Swipe />
 
-      {/* Category Section */}
-      <section style={styles.categorySection}>
-        <div style={styles.categoryCard} onClick={() => router.push('/map')}>
-          <img src="/charge_charge.png" alt="Charge" style={styles.categoryImage} />
-          <p>CHARGE</p>
+      {/* 버튼 3개 있는데 */}
+      <section className={styles.categorySection}>
+        <div className={styles.categoryCard} onClick={() => router.push('/map')}>
+          <img src="/charge_charge.png" alt="Charge" className={styles.categoryImage} />
+          <p className={styles.categoryText}>CHARGE</p>
         </div>
-        <div style={styles.categoryCard} onClick={() => router.push('/mall/product')}>
-          <img src="/charge_shop.png" alt="Shopping" style={styles.categoryImage} />
-          <p>SHOPPING</p>
+        <div className={styles.categoryCard} onClick={() => router.push('/mall/product')}>
+          <img src="/charge_shop.png" alt="Shopping" className={styles.categoryImage} />
+          <p className={styles.categoryText}>SHOPPING</p>
         </div>
-        <div style={styles.categoryCard} onClick={() => router.push('/ev-guide')}>
-          <img src="/charge_evguide.png" alt="EV Guide" style={styles.categoryImage} />
-          <p>EV GUIDE</p>
+        <div className={styles.categoryCard} onClick={() => router.push('/mall/evguide/1')}>
+          <img src="/charge_evguide.png" alt="EV Guide" className={styles.categoryImage} />
+          <p className={styles.categoryText}>EV GUIDE</p>
         </div>
       </section>
 
-      {/* Attendance Section */}
-      <section style={styles.attendanceSection}>
+      {/* 출첵 부분 */}
+      <section className={styles.attendanceSection} onClick={handleAttendanceClick}>
         <h2>출석 체크 하기</h2>
       </section>
 
-      {/* Scroll to Top Button */}
+      {/* 상품 추천 부분 */}
+      <section className={styles.recommendedSection}>
+        <h2 className={styles.recommendedTitle}>추천 상품</h2>
+        <div className={styles.productContainer}>
+          {bestProducts.slice(0, 2).map((product) => (
+            <div key={product.ProductID} className={styles.productCard} onClick={() => handleProductClick(product.ProductID)}>
+              <img src={product.Image} alt={product.ProductName} className={styles.productImage} />
+              <p className={styles.productName}>{product.ProductName}</p>
+              <p className={styles.productPrice}>{product.Price.toLocaleString()}원</p>
+            </div>
+          ))}
+        </div>
+        <button onClick={() => router.push('/mall/product')} className={styles.viewMoreButton}>상품 더보기</button>
+      </section>
+
+      {/* 위로 올리기 부분 */}
       <button
-        style={styles.scrollTopButton}
+        className={styles.scrollTopButton}
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       >
         <ArrowUpOutlined style={{ fontSize: '20px' }} />
@@ -68,52 +96,5 @@ const MallIndex: React.FC = () => {
     </div>
   );
 };
-
-const styles = {
-  categorySection: {
-    display: 'flex',
-    justifyContent: 'space-around',
-    width: '100%',  // 카테고리 섹션 전체 너비
-  },
-  categoryCard: {
-    width: '25%',    // 각 카드 너비
-    height: '500px',   // 각 카드 높이
-    textAlign: 'center',
-    cursor: 'pointer',
-    backgroundColor: '#f2f2f2',
-    borderRadius: '10px',
-    overflow: 'hidden',
-  },
-  categoryImage: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-  },
-  attendanceSection: {
-    width: '100%',
-    height: '300px',
-    marginTop: '20px',
-    padding: '20px',
-    textAlign: 'center',
-    backgroundColor: '#666',
-    color: '#fff',
-    fontSize: '24px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    cursor: 'pointer',
-  },
-  scrollTopButton: {
-    position: 'fixed',
-    bottom: '20px',
-    right: '20px',
-    backgroundColor: '#333',
-    color: '#fff',
-    border: 'none',
-    padding: '10px',
-    borderRadius: '50%',
-    cursor: 'pointer',
-  },
-} as const;
 
 export default MallIndex;

@@ -49,6 +49,7 @@ const MallHeader = () => {
     const profile = () => {
         const user = token();
         if (!user) {
+            alert('로그인이 필요합니다.');
             Router.push('/mall/login');
         } else {
             Router.push('/mall/profile');
