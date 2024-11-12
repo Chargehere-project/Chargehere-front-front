@@ -94,8 +94,8 @@ const MallHeader = () => {
                 <nav style={navContainerStyle}>
                     <span style={navItemStyle} onClick={() => Router.push('/')}>HOME</span>
                     <span style={navItemStyle} onClick={() => Router.push('/mall/product')}>PRODUCTS</span>
-                    <span style={navItemStyle} onClick={() => Router.push('/ev-guide')}>EV GUIDE</span>
-                    <span style={navItemStyle} onClick={() => Router.push('/cs')}>CS</span>
+                    <span style={navItemStyle} onClick={() => Router.push('/mall/evguide/1')}>EV GUIDE</span>
+                    <span style={navItemStyle} onClick={() => Router.push('/mall/cs')}>CS</span>
                 </nav>
                 <div style={iconContainerStyle}>
                     <div style={cartIconContainer} onClick={cart}>

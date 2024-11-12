@@ -60,7 +60,7 @@ const MallIndex = () => {
           <img src="/charge_shop.png" alt="Shopping" className={styles.categoryImage} />
           <p className={styles.categoryText}>SHOPPING</p>
         </div>
-        <div className={styles.categoryCard} onClick={() => router.push('/ev-guide')}>
+        <div className={styles.categoryCard} onClick={() => router.push('/mall/evguide/1')}>
           <img src="/charge_evguide.png" alt="EV Guide" className={styles.categoryImage} />
           <p className={styles.categoryText}>EV GUIDE</p>
         </div>
