@@ -2,12 +2,15 @@ import Image from 'next/image';
 import Router from 'next/router';
 import { jwtDecode } from 'jwt-decode';
 import { useState, useEffect } from 'react';
-import { UserOutlined, ShoppingOutlined, LoginOutlined } from '@ant-design/icons';
+import { UserOutlined, ShoppingOutlined, LoginOutlined, MenuOutlined  } from '@ant-design/icons';
 import axios from 'axios';
+import styles from './MallHeader.module.css';
+
 
 const MallHeader = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [cartCount, setCartCount] = useState(0);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const token = () => {
         const token = localStorage.getItem('token');
@@ -79,104 +82,65 @@ const MallHeader = () => {
             alert('로그아웃 되었습니다.');
         }
     };
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+    };
+
+    useEffect(() => {
+        const checkLoginStatus = () => {
+            const userToken = localStorage.getItem('token');
+            setIsLoggedIn(!!userToken);
+        };
+        checkLoginStatus();
+        fetchCartCount();
+        Router.events.on('routeChangeComplete', () => {
+            checkLoginStatus();
+            setIsMenuOpen(false); // 페이지 이동 시 메뉴 닫기
+        });
+
+        return () => {
+            Router.events.off('routeChangeComplete', checkLoginStatus);
+        };
+    }, []);
 
     return (
-        <header style={headerStyle}>
-            <div style={headerContentStyle}>
-                <div style={logoContainerStyle} onClick={logo}>
+        <header className={styles.header}>
+            <div className={styles.headerContent}>
+                <div className={styles.logoContainer} onClick={logo}>
                     <Image
-                        src="/main.png" 
+                        src="/main.png"
                         alt="로고"
                         width={150}
                         height={50}
                     />
                 </div>
-                <nav style={navContainerStyle}>
-                    <span style={navItemStyle} onClick={() => Router.push('/')}>HOME</span>
-                    <span style={navItemStyle} onClick={() => Router.push('/mall/product')}>PRODUCTS</span>
-                    <span style={navItemStyle} onClick={() => Router.push('/ev-guide')}>EV GUIDE</span>
-                    <span style={navItemStyle} onClick={() => Router.push('/cs')}>CS</span>
+                
+                <nav className={`${styles.navContainer} ${isMenuOpen ? styles.navOpen : ''}`}>
+                    <span className={styles.navItem} onClick={() => Router.push('/')}>HOME</span>
+                    <span className={styles.navItem} onClick={() => Router.push('/mall/product')}>PRODUCTS</span>
+                    <span className={styles.navItem} onClick={() => Router.push('/ev-guide')}>EV GUIDE</span>
+                    <span className={styles.navItem} onClick={() => Router.push('/cs')}>CS</span>
                 </nav>
-                <div style={iconContainerStyle}>
-                    <div style={cartIconContainer} onClick={cart}>
-                        <ShoppingOutlined style={iconStyle} />
-                        {cartCount > 0 && <span style={cartCountStyle}>{cartCount}</span>}
+
+                <div className={styles.iconContainer}>
+                    <div className={styles.cartIconContainer} onClick={cart}>
+                        <ShoppingOutlined className={styles.icon} />
+                        {cartCount > 0 && <span className={styles.cartCount}>{cartCount}</span>}
                     </div>
-                    <UserOutlined style={iconStyle} onClick={profile} />
+                    <UserOutlined className={styles.icon} onClick={profile} />
                     {isLoggedIn && (
-                        <LoginOutlined style={iconStyle} onClick={handleLogout} />
+                        <LoginOutlined className={styles.icon} onClick={handleLogout} />
                     )}
                 </div>
+                <button 
+                className={`${styles.menuButton} ${isMenuOpen ? styles.menuButtonActive : ''}`} 
+                onClick={toggleMenu}
+            >
+                <MenuOutlined />
+            </button>
             </div>
         </header>
     );
-};
-
-const headerStyle = {
-    position: 'fixed' as 'fixed',
-    top: 0,
-    left: 0,
-    width: '100%', // 전체 화면 너비로 설정
-    height: '70px',
-    backgroundColor: 'white',
-    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-    zIndex: 1000,
-    display: 'flex',
-    justifyContent: 'center', // 중앙 정렬을 위해 사용
-};
-
-const headerContentStyle = {
-    width: '100%', // 내부 콘텐츠의 최대 너비를 1400px로 제한하여 중앙에 정렬되도록 함
-    height: '100%',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '10px 20px',
-};
-
-const logoContainerStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer',
-};
-
-const navContainerStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '20px',
-};
-
-const navItemStyle = {
-    fontSize: '16px',
-    cursor: 'pointer',
-    color: '#333',
-    fontWeight: 'bold' as 'bold',
-};
-
-const iconContainerStyle = {
-    display: 'flex',
-    alignItems: 'center',
-};
-
-const iconStyle = {
-    fontSize: '24px',
-    marginLeft: '20px',
-    cursor: 'pointer',
-};
-
-const cartIconContainer = {
-    position: 'relative' as 'relative',
-};
-
-const cartCountStyle = {
-    position: 'absolute' as 'absolute',
-    top: '-5px',
-    right: '-10px',
-    backgroundColor: 'red',
-    color: 'white',
-    borderRadius: '50%',
-    padding: '2px 6px',
-    fontSize: '12px',
 };
 
 export default MallHeader;

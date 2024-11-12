@@ -1,0 +1,198 @@
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+}
+
+.headerContent {
+    width: 100%;
+    max-width: 1400px;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+
+.logoContainer {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.navContainer {
+    display: flex;
+    align-items: center;
+    gap: 20px;  /* 웹 버전에서의 간격 유지 */
+}
+
+.navItem {
+    font-size: 16px;
+    cursor: pointer;
+    color: #333;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.navItem:hover {
+    color: #007bff;
+}
+
+.iconContainer {
+    display: flex;
+    align-items: center;
+}
+
+.icon {
+    font-size: 24px;
+    margin-left: 20px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.icon:hover {
+    color: #007bff;
+}
+
+.cartIconContainer {
+    position: relative;
+}
+
+.cartCount {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+}
+
+.menuButton {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+    order: 3;
+    color: #333;
+    transition: color 0.3s ease; /* 색상 변화 애니메이션 추가 */
+}
+
+@keyframes colorPulse {
+    0% { color: #333; }
+    50% { color: #007bff; }
+    100% { color: #333; }
+}
+
+.menuButtonActive {
+    animation: colorPulse 0.6s ease; /* 클릭 시 애니메이션 실행 */
+}
+
+/* 태블릿 (1024px 이하) */
+@media screen and (max-width: 1024px) {
+    .navItem {
+        font-size: 14px;
+    }
+
+    .icon {
+        font-size: 22px;
+        margin-left: 15px;
+    }
+}
+
+/* 작은 태블릿 (768px 이하) */
+@media screen and (max-width: 768px) {
+    .headerContent {
+        justify-content: space-between; /* 명시적으로 재선언 */
+    }
+
+    .menuButton {
+        display: block;
+        margin-left: 15px; /* 추가 */
+    }
+
+    .navContainer {
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        flex-direction: column;
+        background-color: white;
+        padding: 0;
+        margin: 0; /* 추가 */
+        margin-bottom: 0; /* 추가 */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        display: none;
+        z-index: 1000;
+        gap: 0;  /* 모바일에서는 gap 제거 */
+        line-height: 1;
+    }
+
+    .navOpen {
+        display: flex;
+        margin: 0; /* 추가 */
+        margin-bottom: 0; /* 추가 */
+    }
+    .iconContainer {
+        order: 2; /* 추가: 로고와 햄버거 메뉴 사이에 위치하도록 */
+        margin-left: auto; /* 추가: 오른쪽 정렬 유지 */
+    }
+
+    .navItem {
+        padding: 20px 0; /* 상하 패딩만 유지 */
+        width: 100%;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        line-height: 1; /* 추가 */
+        height: auto; /* 추가 */
+    }
+
+    .navItem:last-child {
+        border-bottom: none;
+    }
+
+    .icon {
+        font-size: 20px;
+        margin-left: 12px;
+    }
+}
+
+
+/* 모바일 (480px 이하) */
+@media screen and (max-width: 480px) {
+    .headerContent {
+        padding: 10px;
+    }
+
+    .logoContainer img {
+        width: 120px;
+        height: 40px;
+    }
+
+    .icon {
+        font-size: 18px;
+        margin-left: 10px;
+    }
+
+    .cartCount {
+        padding: 1px 5px;
+        font-size: 10px;
+        top: -3px;
+        right: -8px;
+    }
+}
