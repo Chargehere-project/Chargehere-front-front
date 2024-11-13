@@ -2,8 +2,17 @@ import React from 'react';
 import { FacebookOutlined, InstagramOutlined } from '@ant-design/icons';
 import styles from './Footer.module.css';
 import Image from 'next/image';
+import Router from 'next/router';
 
 const Footer = () => {
+    const facebook = () => {
+        window.open('https://www.facebook.com/profile.php?id=61568595901060', '_blank');
+        // '_blank'는 새 창에서 열기를 지정
+    }
+    
+    const insta = () => {
+        window.open('https://www.instagram.com/chargehere_/', '_blank');
+    }
     return (
         <footer className={styles.footer}>
             <div className={styles.linkContainer}>
@@ -22,6 +31,7 @@ const Footer = () => {
                     </a>
                 </div>
                 <div className={styles.socialIcons}>
+                  
                     <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
                         <Image
                             src="/icons/facebook.png"
@@ -40,6 +50,8 @@ const Footer = () => {
                             className={styles.icon}
                         />
                     </a>
+         <FacebookOutlined className={styles.icon} onClick={facebook} />
+                    <InstagramOutlined className={styles.icon} onClick={insta} />
                 </div>
             </div>
             <div className={styles.infoContainer}>

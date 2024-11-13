@@ -4,6 +4,9 @@ import axios from 'axios';
 import { Button, Input, List, Tabs, Form, message } from 'antd';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import {jwtDecode} from 'jwt-decode';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import styles from './Detail.module.css';
+
 
 interface Product {
     ProductID: number;
@@ -21,7 +24,8 @@ interface Review {
     Rating: number;
     Content: string;
     ReviewDate: string;
-    User?: {  // 유저 정보 추가 (필요한 경우)
+    User?: {
+        // 유저 정보 추가 (필요한 경우)
         UserName: string;
     };
 }
@@ -41,7 +45,10 @@ const Detail = () => {
     const [reviews, setReviews] = useState<Review[]>([]);
     const [qas, setQAs] = useState<QA[]>([]);
     const [newQuestion, setNewQuestion] = useState<string>('');
+
     const [expandShipping, setExpandShipping] = useState(false);
+    const [isShippingInfoVisible, setIsShippingInfoVisible] = useState(false);
+
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -176,6 +183,15 @@ const Detail = () => {
     if (!product) {
         return <div>로딩중...</div>;
     }
+    const shippingInfo = {
+        delivery: '• 배송비는 전 상품 3000원이 부과됩니다.\n• 주문일로부터 1-3일 이내 출고됩니다.',
+        returns:
+            '• 상품 수령 후 7일 이내 반품 가능합니다.\n• 제품 하자 시 무료 반품 가능합니다.\n• 변심으로 인한 반품 시 배송비는 고객 부담입니다.',
+    };
+
+    if (!product) {
+        return <div>로딩중...</div>;
+    }
 
     return (
         <div style={{ maxWidth: '1400px', margin: '0 auto', marginTop: '100px' }}>
@@ -259,8 +275,98 @@ const Detail = () => {
                             </a>
                         </div>
                     )}
+        <div className={styles.container}>
+        <div className={styles.productSection}>
+            <div className={styles.imageSection}>
+                <img 
+                    src={product.Image} 
+                    alt={product.ProductName} 
+                    style={{ width: '100%', borderRadius: '8px' }} 
+                />
+            </div>
+            <div className={styles.infoSection}>
+                <h1 style={{ margin: '0px' }}>{product.ProductName}</h1>
+                <p style={{ margin: '0px' }}> {product.Price.toLocaleString()}원</p>
+                {product.Discount > 0 && (
+                    <p style={{ margin: '0px' }}>
+                        할인가: {(product.Price * (1 - product.Discount / 100)).toLocaleString()}원 ({product.Discount}% 할인)
+                    </p>
+                )}
+                <button
+                    onClick={() => setIsShippingInfoVisible(!isShippingInfoVisible)}
+                    className={styles.shippingButton}
+                >
+                    <span style={{fontSize:'16px'}}>배송 및 반품</span>
+                    {isShippingInfoVisible ? (
+                        <ChevronUp className="w-5 h-5" />
+                    ) : (
+                        <ChevronDown className="w-5 h-5" />
+                    )}
+                </button>
+                {isShippingInfoVisible && (
+    <div
+        style={{
+            marginTop: '8px',
+            padding: '16px',
+            backgroundColor: 'white',
+            border: '1px solid #e5e5e5',
+            borderRadius: '8px',
+        }}
+    >
+        <div style={{ marginBottom: '16px' }}>
+            <h4
+                style={{
+                    fontWeight: '600',
+                    marginBottom: '8px',
+                }}
+            >
+                배송 안내
+            </h4>
+            {shippingInfo.delivery.split('\n').map((text, index) => (
+                <p
+                    key={index}
+                    style={{
+                        margin: '4px 0',
+                        color: '#666',
+                    }}
+                >
+                    {text}
+                </p>
+            ))}
+        </div>
+        <div>
+            <h4
+                style={{
+                    fontWeight: '600',
+                    marginBottom: '8px',
+                }}
+            >
+                반품 안내
+            </h4>
+            {shippingInfo.returns.split('\n').map((text, index) => (
+                <p
+                    key={index}
+                    style={{
+                        margin: '4px 0',
+                        color: '#666',
+                    }}
+                >
+                    {text}
+                </p>
+            ))}
+        </div>
+    </div>
+)}
+                <div className={styles.buttonGroup}>
+                    <Button type="primary" onClick={buyNow} style={{ width: '150px', height: '45px' }}>
+                        구매하기
+                    </Button>
+                    <Button onClick={addToCart} style={{ width: '150px', height: '45px' }}>
+                        장바구니
+                    </Button>
                 </div>
             </div>
+        </div>
 
             <Tabs defaultActiveKey="1" style={{ marginTop: '40px' }}>
                 <Tabs.TabPane tab="상세정보" key="1">
@@ -274,6 +380,53 @@ const Detail = () => {
                     <Form layout="inline" style={{ marginTop: '20px' }}>
                         <Form.Item>
                             <Button type="primary">질문하기</Button>
+
+                <Tabs.TabPane tab={`사용후기 (${reviews.length})`} key="2">
+                    <List
+                        dataSource={reviews}
+                        renderItem={(review) => (
+                            <List.Item key={review.ReviewID}>
+                                <List.Item.Meta
+                                    title={
+                                        <div>
+                                            <span>평점: {review.Rating}</span>
+                                            {review.User && (
+                                                <span style={{ marginLeft: '10px' }}>{review.User.UserName}</span>
+                                            )}
+                                        </div>
+                                    }
+                                    description={
+                                        <div>
+                                            <div>{review.Content}</div>
+                                            <div style={{ color: '#888', fontSize: '12px', marginTop: '5px' }}>
+                                                {new Date(review.ReviewDate).toLocaleDateString()}
+                                            </div>
+                                        </div>
+                                    }
+                                />
+                            </List.Item>
+                        )}
+                    />
+                </Tabs.TabPane>
+
+                <Tabs.TabPane tab={`상품 Q&A (${qas.length})`} key="3">
+                    <List
+                        dataSource={qas}
+                        renderItem={(qa) => (
+                            <List.Item key={qa.QID}>
+                                <List.Item.Meta
+                                    title={`Q. ${qa.Question}`}
+                                    description={qa.Answer ? `A. ${qa.Answer}` : '답변 대기 중'}
+                                />
+                                <div>{qa.Date}</div>
+                            </List.Item>
+                        )}
+                    />
+                    <Form layout="inline" style={{ marginTop: '20px' }}>
+                        <Form.Item>
+                            <Button type="primary" onClick={handleQuestionSubmit}>
+                                질문하기
+                            </Button>
                         </Form.Item>
                     </Form>
                 </Tabs.TabPane>
