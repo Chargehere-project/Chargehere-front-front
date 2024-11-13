@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from 'react';
-import styles from '../styles/Home.module.css';
+import HomeStyled from '@/styles/styled';
 import CountUp from 'react-countup';
 import Link from 'next/link';  // Link 컴포넌트 사용
 const MainBanner = () => {
@@ -15,7 +15,7 @@ const MainBanner = () => {
             (entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.classList.add(styles.fadeInSection);
+                        entry.target.classList.add('fadeInSection');
                         // 여섯 번째 섹션이 보이면 카운트업 하도록 하기
                         if (entry.target === sixthSectionRef.current) {
                             setIsCountUpActive(true);
@@ -44,22 +44,24 @@ const MainBanner = () => {
         };
     }, []);
     return (
-        <div style={{width: '100%', margin: '0', padding:'0'}}>
+        <HomeStyled>
+
+<div style={{width: '100%', margin: '0', padding:'0'}}>
             {/* 첫 번째 섹션 */}
-            <div className={styles.mainBanner}>
-                <div className={styles.bannerContent}>
-                    <h1 className={styles.fadeIn}>충전이 필요한 모든 순간, ChargeHere</h1>
+            <div className= 'mainBanner'>
+                <div className= 'bannerContent'>
+                    <h1 className= 'fadeIn'>충전이 필요한 모든 순간, ChargeHere</h1>
                     <Link href="/map">
-                        <button className={styles.fadeInButton}>충전소 찾기</button>
+                        <button className= 'fadeInButton'>충전소 찾기</button>
                     </Link>
                     <Link href="/mall">
-                        <button className={styles.fadeInButton}>쇼핑몰 가기</button>
+                        <button className= 'fadeInButton'>쇼핑몰 가기</button>
                     </Link>
                 </div>
             </div>
             {/* 두 번째 섹션 */}
-            <div className={styles.secondSection} ref={secondSectionRef}>
-                <div className={styles.textContainer}>
+            <div className= 'secondSection' ref={secondSectionRef}>
+                <div className= 'textContainer'>
                     <h2>24시간 언제나.</h2>
                     <p>
                         한밤중이나 주말에도<br />
@@ -67,13 +69,13 @@ const MainBanner = () => {
                         충전하세요.
                     </p>
                 </div>
-                <div className={styles.imageContainer}>
-                    <img src="/intro1.png" alt="intro1img" className={styles.image} />
+                <div className= 'imageContainer'>
+                    <img src="/intro1.png" alt="intro1img" className= 'image' />
                 </div>
             </div>
             {/* 세 번째 섹션 */}
-            <div className={styles.thirdSection} ref={thirdSectionRef}>
-                <div className={styles.textContainer}>
+            <div className= 'thirdSection' ref={thirdSectionRef}>
+                <div className= 'textContainer'>
                     <h2>원하는 곳에서.</h2>
                     <p>
                         내 주변 가까운 충전존에서<br />
@@ -81,13 +83,13 @@ const MainBanner = () => {
                         어디서나 편하게 충전하세요.
                     </p>
                 </div>
-                <div className={styles.imageContainer}>
-                    <img src="/intro2.jpg" alt="intro2img" className={styles.image} />
+                <div className= 'imageContainer'>
+                    <img src="/intro2.jpg" alt="intro2img" className= 'image' />
                 </div>
             </div>
             {/* 네 번째 섹션 */}
-            <div className={styles.fourthSection} ref={fourthSectionRef}>
-                <div className={styles.textContainer}>
+            <div className= 'fourthSection' ref={fourthSectionRef}>
+                <div className= 'textContainer'>
                     <h2>저렴하고 편안하게.</h2>
                     <p>
                         안전한 충전으로 <br />
@@ -95,13 +97,13 @@ const MainBanner = () => {
                         충전하세요.
                     </p>
                 </div>
-                <div className={styles.imageContainer}>
-                    <img src="/intro3.jpg" alt="intro3img" className={styles.image} />
+                <div className= 'imageContainer'>
+                    <img src="/intro3.jpg" alt="intro3img" className= 'image' />
                 </div>
             </div>
             {/* 다섯 번째 섹션 */}
-            <div className={styles.fifthSection} ref={fifthSectionRef}>
-                <div className={styles.textContainer}>
+            <div className= 'fifthSection' ref={fifthSectionRef}>
+                <div className= 'textContainer'>
                     <h2>웹으로 편리하게.</h2>
                     <p>
                         Chargehere과 함께<br />
@@ -109,13 +111,13 @@ const MainBanner = () => {
                         QR코드로 충전하세요.
                     </p>
                 </div>
-                <div className={styles.imageContainer}>
-                    <img src="/intro4.png" alt="intro4img" className={styles.image} />
+                <div className= 'imageContainer'>
+                    <img src="/intro4.png" alt="intro4img" className= 'image' />
                 </div>
             </div>
             {/* 여섯 번째 섹션 */}
-            <div className={styles.sixthSection} ref={sixthSectionRef}>
-                <div className={styles.sixthText}>
+            <div className= 'sixthSection' ref={sixthSectionRef}>
+                <div className= 'sixthText'>
                     <h1>
                         {isCountUpActive && <CountUp end={239173} duration={3} separator="," />}명의 회원이 ChargeHere와 함께하고 있습니다.
                     </h1>
@@ -123,6 +125,8 @@ const MainBanner = () => {
                 </div>
             </div>
         </div>
+        </HomeStyled>
+        
     );
 }
 export default MainBanner;

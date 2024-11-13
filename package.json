@@ -10,6 +10,8 @@
     },
     "dependencies": {
         "@ant-design/icons": "^5.5.1",
+        "@ant-design/icons-svg": "^4.4.2",
+        "@babel/runtime": "^7.26.0",
         "@tosspayments/payment-sdk": "^1.9.0",
         "@tosspayments/payment-widget-sdk": "^0.12.0",
         "@tosspayments/tosspayments-sdk": "^2.3.2",
@@ -17,12 +19,14 @@
         "@types/nanoid": "^3.0.0",
         "antd": "^5.21.6",
         "axios": "^1.7.7",
+        "babel-plugin-styled-components": "^2.1.4",
         "dotenv": "^16.4.5",
         "html5-qrcode": "^2.3.8",
         "jwt-decode": "^4.0.0",
         "lucide-react": "^0.456.0",
         "nanoid": "^5.0.8",
         "next": "14.2.15",
+        "next-transpile-modules": "^10.0.1",
         "pagenation": "^1.0.0",
         "react": "^18",
         "react-countup": "^6.5.3",
@@ -39,6 +43,7 @@
         "@types/node": "^20",
         "@types/react": "^18",
         "@types/react-dom": "^18",
+        "babel-plugin-import": "^1.13.8",
         "typescript": "^5"
     }
 }

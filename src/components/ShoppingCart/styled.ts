@@ -1,9 +1,13 @@
+import styled from 'styled-components';
+
+const CartStyled = styled.div`
+
+
 .cartContainer {
     width: 90%;
     display: flex;
     justify-content: space-between;
     padding: 40px;
-    /* max-width: 1400px; */
     margin: 0 auto;
 }
 
@@ -349,3 +353,7 @@
         padding-bottom: 30px;
     }
 }
+
+`;
+
+export default CartStyled;
