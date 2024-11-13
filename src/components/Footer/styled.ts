@@ -1,3 +1,8 @@
+import styled from 'styled-components';
+
+const FooterStyled = styled.div`
+
+
 .footer {
     color: #333;
     padding: 20px;
@@ -184,3 +189,7 @@
         word-break: break-word;
     }
 }
+
+`;
+
+export default FooterStyled;

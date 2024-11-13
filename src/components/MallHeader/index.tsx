@@ -1,11 +1,10 @@
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Router from 'next/router';
-import { jwtDecode } from 'jwt-decode';
-import { useState, useEffect } from 'react';
-import { UserOutlined, ShoppingOutlined, LoginOutlined, MenuOutlined  } from '@ant-design/icons';
+import { UserOutlined, ShoppingOutlined, LoginOutlined, MenuOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import styles from './MallHeader.module.css';
-
+import {jwtDecode} from 'jwt-decode';
+import HeaderStyled from './styled';
 
 const MallHeader = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -38,44 +37,15 @@ const MallHeader = () => {
         }
     };
 
-    const cart = () => {
+    const handleNavigation = (path: string) => {
         const user = token();
-        if (!user) {
+        if (user || path === '/mall/login') {
+            Router.push(path);
+        } else {
             alert('로그인이 필요합니다.');
             Router.push('/mall/login');
-        } else {
-            Router.push(`/mall/cart/${user}`);
         }
     };
-
-    const profile = () => {
-        const user = token();
-        if (!user) {
-            alert('로그인이 필요합니다.');
-            Router.push('/mall/login');
-        } else {
-            Router.push('/mall/profile');
-        }
-    };
-
-    const logo = () => {
-        Router.push('/');
-    };
-
-
-    useEffect(() => {
-        const checkLoginStatus = () => {
-            const userToken = localStorage.getItem('token');
-            setIsLoggedIn(!!userToken);
-        };
-        checkLoginStatus();
-        fetchCartCount(); // 컴포넌트 마운트 시 장바구니 개수 불러오기
-        Router.events.on('routeChangeComplete', checkLoginStatus);
-
-        return () => {
-            Router.events.off('routeChangeComplete', checkLoginStatus);
-        };
-    }, []);
 
     const handleLogout = () => {
         if (window.confirm('로그아웃 하시겠습니까?')) {
@@ -85,9 +55,8 @@ const MallHeader = () => {
             alert('로그아웃 되었습니다.');
         }
     };
-    const toggleMenu = () => {
-        setIsMenuOpen(!isMenuOpen);
-    };
+
+    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
     useEffect(() => {
         const checkLoginStatus = () => {
@@ -96,6 +65,7 @@ const MallHeader = () => {
         };
         checkLoginStatus();
         fetchCartCount();
+
         Router.events.on('routeChangeComplete', () => {
             checkLoginStatus();
             setIsMenuOpen(false); // 페이지 이동 시 메뉴 닫기
@@ -107,36 +77,38 @@ const MallHeader = () => {
     }, []);
 
     return (
-        <header className={styles.header}>
-            <div className={styles.headerContent}>
-                <div className={styles.logoContainer} onClick={logo}>
-                    <Image src="/main.png" alt="로고" width={150} height={50} />
-                </div>
-
-                <nav className={`${styles.navContainer} ${isMenuOpen ? styles.navOpen : ''}`}>
-                    <span className={styles.navItem} onClick={() => Router.push('/')}>HOME</span>
-                    <span className={styles.navItem} onClick={() => Router.push('/mall/product')}>PRODUCTS</span>
-                    <span className={styles.navItem} onClick={() => Router.push('/mall/evguide/1')}>EV GUIDE</span>
-                    <span className={styles.navItem} onClick={() => Router.push('/mall/cs')}>CS</span>
-                </nav>
-
-                <div className={styles.iconContainer}>
-                    <UserOutlined className={styles.icon} onClick={profile} />
-                    <div className={styles.cartIconContainer} onClick={cart}>
-                        <ShoppingOutlined className={styles.icon} />
-                        {cartCount > 0 && <span className={styles.cartCount}>{cartCount}</span>}
+        <HeaderStyled>
+            <header className="header">
+                <div className="headerContent">
+                    <div className="logoContainer" onClick={() => Router.push('/')}>
+                        <Image src="/main.png" alt="로고" width={150} height={50} />
                     </div>
-                    {isLoggedIn && <LoginOutlined className={styles.icon} onClick={handleLogout} />}
-                </div>
-                <button
-                    className={`${styles.menuButton} ${isMenuOpen ? styles.menuButtonActive : ''}`}
-                    onClick={toggleMenu}>
-                    <MenuOutlined />
-                </button>
-            </div>
-        </header>
-    );
 
+                    <nav className={`navContainer ${isMenuOpen ? 'navOpen' : ''}`}>
+                        <span className="navItem" onClick={() => Router.push('/')}>HOME</span>
+                        <span className="navItem" onClick={() => Router.push('/mall/product')}>PRODUCTS</span>
+                        <span className="navItem" onClick={() => Router.push('/mall/evguide/1')}>EV GUIDE</span>
+                        <span className="navItem" onClick={() => Router.push('/mall/cs')}>CS</span>
+                    </nav>
+
+                    <div className="iconContainer">
+                        <UserOutlined className="icon" onClick={() => handleNavigation('/mall/profile')} />
+                        <div className="cartIconContainer" onClick={() => handleNavigation(`/mall/cart/${token()}`)}>
+                            <ShoppingOutlined className="icon" />
+                            {cartCount > 0 && <span className="cartCount">{cartCount}</span>}
+                        </div>
+                        {isLoggedIn && <LoginOutlined className="icon" onClick={handleLogout} />}
+                    </div>
+                    <button
+                        className={`menuButton ${isMenuOpen ? 'menuButtonActive' : ''}`}
+                        onClick={toggleMenu}
+                    >
+                        <MenuOutlined />
+                    </button>
+                </div>
+            </header>
+        </HeaderStyled>
+    );
 };
 
 export default MallHeader;
