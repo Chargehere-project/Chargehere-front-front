@@ -1,3 +1,8 @@
+import styled from 'styled-components';
+
+const BillStyled = styled.div`
+
+
 .billPage {
     max-width: 1200px;
     max-width: 1200px;
@@ -182,3 +187,8 @@
 .globalFontSize {
     font-size: 16px;
 }
+
+
+`;
+
+export default BillStyled;

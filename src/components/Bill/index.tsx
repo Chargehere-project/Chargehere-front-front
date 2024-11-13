@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import {jwtDecode} from 'jwt-decode';
-import style from './bill.module.css';
+import BillStyled from './styled';
 import { loadTossPayments } from '@tosspayments/tosspayments-sdk';
 
 interface OrderItem {
@@ -267,11 +267,12 @@ const BillPage = () => {
     };
 
     return (
-        <div className={style.billPage}>
-            <h2 className={style.headerTitle}>주문서</h2>
+        <BillStyled>
+             <div className= 'billPage'>
+            <h2 className= 'headerTitle'>주문서</h2>
 
-            <div className={style.mainContent}>
-                <div className={style.leftSection}>
+            <div className= 'mainContent'>
+                <div className= 'leftSection'>
                     <h3>배송지 정보</h3>
                     <label>
                         <input type="radio" value="same" checked={useSameInfo} onChange={handleUseSameInfoChange} /> 회원정보와 동일
@@ -300,7 +301,7 @@ const BillPage = () => {
                         disabled={useSameInfo}
                         onChange={(e) => handleRecipientDataChange('address', e.target.value)}
                     />
-                    <div className={style.pointsSection}>
+                    <div className= 'pointsSection'>
                 <h3>포인트 사용</h3>
                 <p>사용 가능한 포인트: {points}</p>
                 <input
@@ -312,7 +313,7 @@ const BillPage = () => {
                 <button onClick={handleUsePoints}>포인트 사용</button>
             </div>
 
-            <div className={style.couponSection}>
+            <div className= 'couponSection'>
                 <h3>쿠폰 선택</h3>
                 <select onChange={(e) => handleCouponSelection(availableCoupons[e.target.selectedIndex])}>
                     <option value="">쿠폰 선택</option>
@@ -327,17 +328,17 @@ const BillPage = () => {
 
                 </div>
 
-                <div className={style.rightSection}>
+                <div className= 'rightSection'>
                     <h3>주문 내역</h3>
                     {order?.items.map((item) => (
-                        <div key={item.productID} className={style.orderItem}>
-                            <img src={item.image} alt={item.productName} className={style.itemImage} />
+                        <div key={item.productID} className= 'orderItem'>
+                            <img src={item.image} alt={item.productName} className= 'itemImage' />
                             <div>{item.productName}</div>
                             <div>수량: {item.quantity}</div>
                             <div>가격: ₩{item.price}</div>
                         </div>
                     ))}
-                    <div className={style.orderSummary}>
+                    <div className= 'orderSummary'>
                         <p>총 주문 금액: ₩{order?.totalAmount}</p>
                         <p>할인 금액: ₩{order?.discount}</p>
                         <p>총 결제 금액: ₩{order?.paymentAmount}</p>
@@ -351,7 +352,7 @@ const BillPage = () => {
                 <div id="agreement" style={{ marginBottom: '30px', minHeight: '100px' }} />
 
                 <button
-                    className={style.buttonClass}
+                    className= 'buttonClass'
                     disabled={!ready}
                     onClick={handlePayment}
                     style={{
@@ -369,6 +370,9 @@ const BillPage = () => {
                 </button>
             </div>
         </div>
+
+        </BillStyled>
+       
     );
 };
 
