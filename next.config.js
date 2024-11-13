@@ -5,7 +5,15 @@ module.exports = withTM({
     compiler: {
         styledComponents: true,
     },
+    webpack: (config) => {
+        config.module.rules.push({
+            test: /\.mjs$/,
+            include: /node_modules/,
+            type: 'javascript/auto',
+        });
+        return config;
+    },
     experimental: {
-        esmExternals: true, // ESM 외부 모듈을 완전히 허용
+        esmExternals: 'loose', // ESM 외부 모듈을 완전히 허용
     },
 });
