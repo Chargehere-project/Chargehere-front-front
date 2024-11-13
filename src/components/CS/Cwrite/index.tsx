@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Form, Input, Button, message } from 'antd';
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import { jwtDecode } from 'jwt-decode'; // jwt-decode import 추가
 
 function Cwrite() {
     const [loading, setLoading] = useState(false);
@@ -10,13 +11,31 @@ function Cwrite() {
     const onFinish = async (values: { title: string; content: string }) => {
         setLoading(true);
         try {
-            await axios.post('/api/mall/cs', {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                message.error('로그인이 필요합니다.');
+                router.push('/mall/login');
+                return;
+            }
+
+            // JWT 토큰 디코드
+            const decoded: any = jwtDecode(token);
+            const userId = decoded.UserID;
+
+            await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/mall/cs`, {
+                userId, // userId 추가
                 title: values.title,
                 content: values.content,
-            }, { headers: { authorization: 'Bearer ' + localStorage.getItem('token') } });
+            }, { 
+                headers: { 
+                    authorization: `Bearer ${token}` 
+                } 
+            });
+            
             message.success('글이 성공적으로 등록되었습니다.');
             router.push('/mall/cs'); 
         } catch (error) {
+            console.error('글 등록 에러:', error);
             message.error('글 등록에 실패했습니다. 다시 시도해 주세요.');
         } finally {
             setLoading(false);
