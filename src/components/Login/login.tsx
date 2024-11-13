@@ -1,12 +1,14 @@
+// Login/login.tsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import styles from './login.module.css';
+import Image from 'next/image';
+import LoginStyled from './styled';
 
 // axios 인스턴스 생성
 const api = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_API_URL}`,
-  withCredentials: true, // 중요! 쿠키 전송을 위해 필요
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -47,53 +49,55 @@ const Login = () => {
     }
   };
 
+  const handleLogoClick = () => {
+    router.push('/mall');
+  };
+
   return (
-    <div className={styles.container} >
-
-<div className={styles.loginContainer}>
-      <h2 className={styles.title}>Login</h2>
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <div className={styles.formGroup}>
-          <label className={styles.formLabel} htmlFor="id">아이디:</label>
-          <input
-            className={styles.formInput}
-            type="text"
-            id="id"
-            value={id}
-            onChange={(e) => setId(e.target.value)}
-            placeholder="아이디를 입력하세요"
-            required
-          />
+    <LoginStyled>
+      <div className="login-container">
+        <div className="logo-container" onClick={handleLogoClick}>
+          <Image src="/main.png" alt="Main Logo" width={300} height={100} />
         </div>
-        <div className={styles.formGroup}>
-          <label className={styles.formLabel} htmlFor="password">비밀번호:</label>
-          <input
-            className={styles.formInput}
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="비밀번호를 입력하세요"
-            required
-          />
-        </div>
-        <button className={styles.formButton} type="submit">로그인</button>
+        <h2 className="title">Login</h2>
+        <form onSubmit={handleSubmit} className="form">
+          <div className="form-group">
+            <label htmlFor="id" className="form-label">아이디</label>
+            <input
+              type="text"
+              id="id"
+              value={id}
+              onChange={(e) => setId(e.target.value)}
+              placeholder="아이디를 입력하세요"
+              required
+              className="form-input"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="password" className="form-label">비밀번호</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="비밀번호를 입력하세요"
+              required
+              className="form-input"
+            />
+          </div>
+          <button type="submit" className="form-button">로그인</button>
 
-        {errorMessage && <p className={styles.errorText}>{errorMessage}</p>}
+          {errorMessage && <p className="error-text">{errorMessage}</p>}
 
-        <p className={styles.centeredText}>
-          아이디/비밀번호를 잊으셨나요? <a href="/mall/findid" className={styles.link}>아이디/비밀번호 찾기</a>
-        </p>
-        <p className={styles.centeredText}>
-          아직 회원이 아니신가요? <a href="/mall/signup" className={styles.link}>회원가입</a>
-        </p>
-      </form>
-    </div>
-
-    
-    
-    </div>
-   
+          <p className="centered-text">
+            <a href="/mall/findid" className="link">아이디/비밀번호 찾기</a>
+          </p>
+          <p className="centered-text">
+            <a href="/mall/signup" className="link">회원가입</a>
+          </p>
+        </form>
+      </div>
+    </LoginStyled>
   );
 };
 

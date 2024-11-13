@@ -119,8 +119,8 @@ const MallHeader = () => {
                 <nav className={`${styles.navContainer} ${isMenuOpen ? styles.navOpen : ''}`}>
                     <span className={styles.navItem} onClick={() => Router.push('/')}>HOME</span>
                     <span className={styles.navItem} onClick={() => Router.push('/mall/product')}>PRODUCTS</span>
-                    <span className={styles.navItem} onClick={() => Router.push('/ev-guide')}>EV GUIDE</span>
-                    <span className={styles.navItem} onClick={() => Router.push('/cs')}>CS</span>
+                    <span className={styles.navItem} onClick={() => Router.push('/mall/evguide/1')}>EV GUIDE</span>
+                    <span className={styles.navItem} onClick={() => Router.push('/mall/cs')}>CS</span>
                 </nav>
 
                 <div className={styles.iconContainer}>
