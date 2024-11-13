@@ -108,40 +108,41 @@ const MallHeader = () => {
         <header className={styles.header}>
             <div className={styles.headerContent}>
                 <div className={styles.logoContainer} onClick={logo}>
-                    <Image
-                        src="/main.png"
-                        alt="로고"
-                        width={150}
-                        height={50}
-                    />
+                    <Image src="/main.png" alt="로고" width={150} height={50} />
                 </div>
-                
+
                 <nav className={`${styles.navContainer} ${isMenuOpen ? styles.navOpen : ''}`}>
-                    <span className={styles.navItem} onClick={() => Router.push('/')}>HOME</span>
-                    <span className={styles.navItem} onClick={() => Router.push('/mall/product')}>PRODUCTS</span>
-                    <span className={styles.navItem} onClick={() => Router.push('/ev-guide')}>EV GUIDE</span>
-                    <span className={styles.navItem} onClick={() => Router.push('/cs')}>CS</span>
+                    <span className={styles.navItem} onClick={() => Router.push('/')}>
+                        HOME
+                    </span>
+                    <span className={styles.navItem} onClick={() => Router.push('/mall/product')}>
+                        PRODUCTS
+                    </span>
+                    <span className={styles.navItem} onClick={() => Router.push('/ev-guide')}>
+                        EV GUIDE
+                    </span>
+                    <span className={styles.navItem} onClick={() => Router.push('/cs')}>
+                        CS
+                    </span>
                 </nav>
 
                 <div className={styles.iconContainer}>
+                    <UserOutlined className={styles.icon} onClick={profile} />
                     <div className={styles.cartIconContainer} onClick={cart}>
                         <ShoppingOutlined className={styles.icon} />
                         {cartCount > 0 && <span className={styles.cartCount}>{cartCount}</span>}
                     </div>
-                    <UserOutlined className={styles.icon} onClick={profile} />
-                    {isLoggedIn && (
-                        <LoginOutlined className={styles.icon} onClick={handleLogout} />
-                    )}
+                    {isLoggedIn && <LoginOutlined className={styles.icon} onClick={handleLogout} />}
                 </div>
-                <button 
-                className={`${styles.menuButton} ${isMenuOpen ? styles.menuButtonActive : ''}`} 
-                onClick={toggleMenu}
-            >
-                <MenuOutlined />
-            </button>
+                <button
+                    className={`${styles.menuButton} ${isMenuOpen ? styles.menuButtonActive : ''}`}
+                    onClick={toggleMenu}>
+                    <MenuOutlined />
+                </button>
             </div>
         </header>
     );
+
 };
 
 export default MallHeader;

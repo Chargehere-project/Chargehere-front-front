@@ -9,7 +9,7 @@ import styles from './Swipe.module.css';
 
 const MainSwipe = () => {
     const router = useRouter();
-    
+
     return (
         <div className={styles.swiperContainer}>
             <Swiper
@@ -19,30 +19,15 @@ const MainSwipe = () => {
                 autoplay={{ delay: 5000 }}
                 pagination={{ clickable: true }}
                 modules={[Pagination, Autoplay]}
-                className={styles.swiper}
-            >
+                className={styles.swiper}>
                 <SwiperSlide onClick={() => router.push('/event/1')}>
                     <div className={styles.slideImageContainer}>
-                        <Image
-                            src="/main_banner1.png"
-                            alt="Slide 1"
-                            layout="responsive"
-                            width={1400} // 원본 이미지의 가로 크기
-                            height={640} // 원본 이미지의 세로 크기
-                            priority
-                        />
+                        <Image src="/main_banner1.png" alt="Slide 1" fill className={styles.slideImage} priority  />
                     </div>
                 </SwiperSlide>
                 <SwiperSlide onClick={() => router.push('/event/2')}>
                     <div className={styles.slideImageContainer}>
-                    <Image
-                            src="/main_banner2.png"
-                            alt="Slide 2"
-                            layout="responsive"
-                            width={1400} // 원본 이미지의 가로 크기
-                            height={640} // 원본 이미지의 세로 크기
-                            priority
-                        />
+                        <Image src="/main_banner2.png" alt="Slide 2" fill className={styles.slideImage} priority />
                     </div>
                 </SwiperSlide>
             </Swiper>

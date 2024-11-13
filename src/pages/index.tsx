@@ -44,16 +44,16 @@ const MainBanner = () => {
         };
     }, []);
     return (
-        <div>
+        <div style={{width: '100%', margin: '0', padding:'0'}}>
             {/* 첫 번째 섹션 */}
             <div className={styles.mainBanner}>
                 <div className={styles.bannerContent}>
                     <h1 className={styles.fadeIn}>충전이 필요한 모든 순간, ChargeHere</h1>
                     <Link href="/map">
-                        <button className={styles.fadeInButton}>충전소 찾기로 바로 가기</button>
+                        <button className={styles.fadeInButton}>충전소 찾기</button>
                     </Link>
                     <Link href="/mall">
-                        <button className={styles.fadeInButton}>쇼핑몰로 바로 가기</button>
+                        <button className={styles.fadeInButton}>쇼핑몰 가기</button>
                     </Link>
                 </div>
             </div>

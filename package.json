@@ -28,6 +28,7 @@
         "react-daum-postcode": "^3.1.3",
         "react-dom": "^18",
         "react-icons": "^5.3.0",
+        "react-modal": "^3.16.1",
         "react-router-dom": "^6.27.0",
         "styled-components": "^6.1.13",
         "swipe": "^1.7.7",
