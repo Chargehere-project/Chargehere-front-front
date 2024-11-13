@@ -1,4 +1,7 @@
-/* 기존 CSS 유지 */
+import styled from 'styled-components';
+
+const HomeStyled = styled.div`
+
 .mainBanner {
   background-image: url('/intro.jpg');
   background-size: cover;
@@ -260,3 +263,6 @@
   }
 }
 
+`;
+
+export default HomeStyled;
