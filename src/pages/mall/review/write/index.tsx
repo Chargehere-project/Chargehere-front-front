@@ -1,10 +1,12 @@
 import React from 'react';
-import Rwirte from '../../../../components/Rwrite/index';
+import Rwrite from '../../../../components/Rwrite/index';
+
 const WritePage = () => {
-  return (
-    <div>
-      <Rwirte />
-    </div>
-  );
+    return (
+        <div>
+            <Rwrite />
+        </div>
+    );
 };
+
 export default WritePage;
