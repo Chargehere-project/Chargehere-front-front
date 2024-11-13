@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import style from './bill.module.css';
 import { loadTossPayments } from '@tosspayments/tosspayments-sdk';
 
@@ -11,17 +11,6 @@ interface OrderItem {
     quantity: number;
     price: number | string;
     image: string;
-}
-
-interface OrderData {
-    orderListId: number;
-    customerName: string;
-    customerPhoneNumber: string;
-    customerAddress: string;
-    items: OrderItem[];
-    totalAmount: number | string;
-    paymentAmount: number | string;
-    discount: number;
 }
 
 interface Order {
@@ -52,10 +41,6 @@ const BillPage = () => {
         phone: userData.Phone,
         address: userData.Address,
     });
-    const [amount, setAmount] = useState({
-        currency: 'KRW',
-        value: order?.paymentAmount || 1000,
-    });
     const [ready, setReady] = useState<boolean>(false);
     const [widgets, setWidgets] = useState<any>(null);
 
@@ -65,65 +50,40 @@ const BillPage = () => {
     const customerKey = 'h-BboQRT_1DOGkVEGD5-G';
 
     useEffect(() => {
-        async function fetchPaymentWidgets() {
+        const fetchPaymentWidgets = async () => {
             try {
                 const tossInstance = await loadTossPayments(clientKey);
-                const widgetsInstance = tossInstance.widgets({
-                    customerKey: customerKey,
-                });
-
-                setWidgets(widgetsInstance); // widgets 설정
-                console.log('토스페이먼츠 인스턴스:', widgetsInstance);
+                const widgetsInstance = tossInstance.widgets({ customerKey });
+                setWidgets(widgetsInstance);
             } catch (error) {
-                console.error('토스페이먼츠 초기화 중 오류:', error);
+                console.error('Toss Payments 초기화 중 오류:', error);
             }
-        }
-
+        };
         fetchPaymentWidgets();
     }, [clientKey, customerKey]);
 
     useEffect(() => {
-        async function renderPaymentWidgets() {
-            if (!widgets || !order) {
-                console.log('widgets or order not ready', { widgets, order });
-                return;
-            }
+        const renderPaymentWidgets = async () => {
+            if (!widgets || !order) return;
 
             try {
-                // paymentAmount를 정확히 객체 형태로 전달해 SDK 요구사항에 맞춤
                 await widgets.setAmount({
                     currency: 'KRW',
-                    value: Math.round(order.paymentAmount), // 소수 제거된 정수 값
+                    value: Math.round(order.paymentAmount),
                 });
-                console.log('결제 금액:', Math.round(order.paymentAmount));
 
                 await Promise.all([
-                    widgets.renderPaymentMethods({
-                        selector: '#payment-method',
-                        variantKey: 'DEFAULT',
-                    }),
-                    widgets.renderAgreement({
-                        selector: '#agreement',
-                        variantKey: 'AGREEMENT',
-                    }),
+                    widgets.renderPaymentMethods({ selector: '#payment-method', variantKey: 'DEFAULT' }),
+                    widgets.renderAgreement({ selector: '#agreement', variantKey: 'AGREEMENT' }),
                 ]);
 
                 setReady(true);
             } catch (error) {
                 console.error('결제 위젯 렌더링 중 오류:', error);
             }
-        }
-
+        };
         renderPaymentWidgets();
     }, [widgets, order]);
-    // useEffect(() => {
-    //   if (widgets == null || order == null) {
-    //     return;
-    //   }
-
-    //   // order.paymentAmount가 준비된 이후에 설정
-    //   widgets.setAmount(order.paymentAmount);
-    // }, [widgets, order]);
 
     useEffect(() => {
         if (router.isReady && id) {
@@ -137,23 +97,13 @@ const BillPage = () => {
         try {
             if (!id) return;
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/order/${id}`);
-            console.log('주문 데이터:', response.data);
-
             if (response.data.result) {
                 const fetchedOrder = {
                     ...response.data.data,
-                    customerName: response.data.data.customerName,
-                    customerPhoneNumber: response.data.data.customerPhoneNumber,
-                    customerAddress: response.data.data.customerAddress,
-                    items: response.data.data.items.map((item: OrderItem) => ({
-                        ...item,
-                        price: parseFloat(item.price as string),
-                    })),
                     totalAmount: parseFloat(response.data.data.totalAmount) + 3000,
                     paymentAmount: parseFloat(response.data.data.totalAmount) + 3000,
                 };
                 setOrder(fetchedOrder);
-                console.log('변환된 주문 데이터:', fetchedOrder);
             }
         } catch (error) {
             console.error('주문 데이터를 가져오는 중 오류 발생:', error);
@@ -173,8 +123,6 @@ const BillPage = () => {
             const userId = decoded.UserID;
 
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/point`, { userId });
-            console.log('포인트 데이터:', response.data);
-
             if (response.data.result) {
                 const userData = response.data.data;
                 setPoints(userData.Points || 0);
@@ -206,8 +154,6 @@ const BillPage = () => {
             const userId = decoded.UserID;
 
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/usercoupon`, { userId });
-            console.log('쿠폰 데이터:', response.data);
-
             if (response.data.result && response.data.data) {
                 setAvailableCoupons(Array.isArray(response.data.data) ? response.data.data : [response.data.data]);
             }
@@ -233,7 +179,6 @@ const BillPage = () => {
             const decoded: any = jwtDecode(token);
             const userId = decoded.UserID;
 
-            // 1. 먼저 결제 정보를 서버에 저장
             const paymentData = {
                 orderListId: order.orderListId,
                 userId,
@@ -247,6 +192,7 @@ const BillPage = () => {
                     address: recipientData.address,
                 },
                 paymentMethod: 'Card',
+                status: 'PENDING',
             };
 
             const transactionResponse = await axios.post(
@@ -257,6 +203,17 @@ const BillPage = () => {
             if (!transactionResponse.data.success) {
                 throw new Error('거래 정보 생성 실패');
             }
+
+            const { transactionId } = transactionResponse.data;
+
+            await widgets.requestPayment({
+                orderId: `ORDER-${String(order.orderListId)}-${Date.now()}`,
+                orderName: `주문 ${order.orderListId}`,
+                successUrl: `${window.location.origin}/payment/success?transactionId=${transactionId}`,
+                failUrl: `${window.location.origin}/payment/fail?transactionId=${transactionId}`,
+                customerName: userData.UserName,
+                customerMobilePhone: userData.Phone,
+            });
         } catch (error) {
             console.error('결제 처리 중 오류 발생:', error);
             alert('결제 처리 중 오류가 발생했습니다.');
@@ -301,261 +258,117 @@ const BillPage = () => {
                 address: userData.Address,
             });
         } else {
-            // 직접 입력 선택 시 모든 필드를 빈 값으로 초기화
-            setRecipientData({
-                name: '',
-                phone: '',
-                address: ''
-            });
+            setRecipientData({ name: '', phone: '', address: '' });
         }
     };
-    useEffect(() => {
-        if (useSameInfo || recipientData.name === '') {
-            // 초기 로드 시나 회원정보와 동일할 때
-            setRecipientData({
-                name: userData.UserName,
-                phone: userData.Phone,
-                address: userData.Address,
-            });
-        }
-    }, [userData]);
 
     const handleRecipientDataChange = (field: keyof typeof recipientData, value: string) => {
-        if (field === 'phone') {
-            // 숫자만 추출
-            const numbersOnly = value.replace(/[^0-9]/g, '');
-
-            // 11자리로 제한
-            const limitedLength = numbersOnly.slice(0, 11);
-
-            setRecipientData((prev) => ({
-                ...prev,
-                [field]: limitedLength,
-            }));
-        } else {
-            setRecipientData((prev) => ({
-                ...prev,
-                [field]: value,
-            }));
-        }
+        setRecipientData((prev) => ({ ...prev, [field]: value }));
     };
 
-    if (!order) {
-        return <div>주문 정보를 불러오는 중입니다...</div>;
-    }
-
     return (
-        <>
-            <div className={style.billPage}>
-                <h2 className={style.headerTitle}>주문서</h2>
+        <div className={style.billPage}>
+            <h2 className={style.headerTitle}>주문서</h2>
 
-                {/* 주문 아이템 목록 */}
-                {order.items.map((item) => (
-                    <div key={item.productID} className={style.orderItem}>
-                        <img src={item.image} alt={item.productName} className={style.itemImage} />
-                        <div>
-                            <h4>{item.productName}</h4>
-                            <p>수량: {item.quantity}</p>
-                            <p>가격: ₩{item.price}</p>
-                        </div>
-                    </div>
-                ))}
-
-                <div className={style.userInfo}>
-                    <h3>주문자 정보</h3>
-                    <p>이름: {userData.UserName}</p>
-                    <p>전화번호: {userData.Phone}</p>
-                    <p>주소: {userData.Address}</p>
-                </div>
-
-                <div className={style.recipientInfo}>
+            <div className={style.mainContent}>
+                <div className={style.leftSection}>
                     <h3>배송지 정보</h3>
-                    <label className={style.label}>
-                        <input
-                            type="radio"
-                            value="same"
-                            checked={useSameInfo}
-                            onChange={handleUseSameInfoChange}
-                            className={style.radioButton}
-                        />
-                        회원정보와 동일
+                    <label>
+                        <input type="radio" value="same" checked={useSameInfo} onChange={handleUseSameInfoChange} /> 회원정보와 동일
                     </label>
-                    <label className={style.label}>
-                        <input
-                            type="radio"
-                            value="different"
-                            checked={!useSameInfo}
-                            onChange={handleUseSameInfoChange}
-                            className={style.radioButton}
-                        />
-                        직접 입력
+                    <label>
+                        <input type="radio" value="different" checked={!useSameInfo} onChange={handleUseSameInfoChange} /> 직접 입력
                     </label>
-
-                    <div>
-                        <label className={style.label}>
-                            이름:{' '}
-                            <input
-                                type="text"
-                                value={recipientData.name}
-                                onChange={(e) => handleRecipientDataChange('name', e.target.value)}
-                                disabled={useSameInfo}
-                                className={style.inputText}
-                            />
-                        </label>
-                        <label className={style.label}>
-                            전화번호:{' '}
-                            <input
-                                type="text"
-                                value={recipientData.phone}
-                                onChange={(e) => handleRecipientDataChange('phone', e.target.value)}
-                                disabled={useSameInfo}
-                                className={style.inputText}
-                                maxLength={11}
-                                placeholder="010을 포함한 숫자만 입력해주세요(- 제외)"
-                                // 키보드 입력 시 숫자만 허용
-                                onKeyPress={(e) => {
-                                    if (!/[0-9]/.test(e.key)) {
-                                        e.preventDefault();
-                                    }
-                                }}
-                            />
-                        </label>
-                        <label className={style.label}>
-                            주소:{' '}
-                            <input
-                                type="text"
-                                value={recipientData.address}
-                                onChange={(e) => handleRecipientDataChange('address', e.target.value)}
-                                disabled={useSameInfo}
-                                className={style.inputText}
-                            />
-                        </label>
-                    </div>
-                </div>
-
-                <div className={style.orderSummary}>
-                    <p>총 주문 금액: ₩{order.totalAmount}</p><p style={{fontSize:'10px'}}>(배송비 3000원 포함)</p>
-                    <p>할인 금액: ₩{order.discount}</p>
-                    <p>총 결제 금액: ₩{order.paymentAmount}</p><p style={{fontSize:'10px'}}>(배송비 3000원 포함)</p>
-                </div>
-
-                <div className={style.pointsSection}>
-                    <p>사용 가능한 포인트: {points}</p>
                     <input
-                        type="number"
-                        value={pointsToUse}
-                        onChange={(e) => setPointsToUse(Number(e.target.value))}
-                        placeholder="사용할 포인트 입력"
-                        className={style.inputNumber}
+                        type="text"
+                        placeholder="이름"
+                        value={recipientData.name}
+                        disabled={useSameInfo}
+                        onChange={(e) => handleRecipientDataChange('name', e.target.value)}
                     />
-                    <button onClick={handleUsePoints}>포인트 사용</button>
+                    <input
+                        type="text"
+                        placeholder="전화번호"
+                        value={recipientData.phone}
+                        disabled={useSameInfo}
+                        onChange={(e) => handleRecipientDataChange('phone', e.target.value)}
+                    />
+                    <input
+                        type="text"
+                        placeholder="주소"
+                        value={recipientData.address}
+                        disabled={useSameInfo}
+                        onChange={(e) => handleRecipientDataChange('address', e.target.value)}
+                    />
+                    <div className={style.pointsSection}>
+                <h3>포인트 사용</h3>
+                <p>사용 가능한 포인트: {points}</p>
+                <input
+                    type="number"
+                    value={pointsToUse}
+                    onChange={(e) => setPointsToUse(Number(e.target.value))}
+                    placeholder="사용할 포인트 입력"
+                />
+                <button onClick={handleUsePoints}>포인트 사용</button>
+            </div>
+
+            <div className={style.couponSection}>
+                <h3>쿠폰 선택</h3>
+                <select onChange={(e) => handleCouponSelection(availableCoupons[e.target.selectedIndex])}>
+                    <option value="">쿠폰 선택</option>
+                    {availableCoupons.map((coupon) => (
+                        <option key={coupon.couponId} value={coupon.couponId}>
+                            {coupon.couponName} - ₩{coupon.discountAmount} 할인 (유효기간: {coupon.expirationDate})
+                        </option>
+                    ))}
+                </select>
+                {selectedCoupon && <p>선택한 쿠폰: {selectedCoupon.couponName}</p>}
+            </div>
+
                 </div>
 
-                <div className={style.couponSection}>
-                    <h3>쿠폰 선택</h3>
-                    <select onChange={(e) => handleCouponSelection(availableCoupons[e.target.selectedIndex])}>
-                        <option value="">쿠폰 선택</option>
-                        {availableCoupons.map((coupon) => (
-                            <option key={coupon.couponId} value={coupon.couponId}>
-                                {coupon.couponName} - ₩{coupon.discountAmount} 할인 (유효기간: {coupon.expirationDate})
-                            </option>
-                        ))}
-                    </select>
-
-                    {selectedCoupon && <p>선택한 쿠폰: {selectedCoupon.couponName}</p>}
+                <div className={style.rightSection}>
+                    <h3>주문 내역</h3>
+                    {order?.items.map((item) => (
+                        <div key={item.productID} className={style.orderItem}>
+                            <img src={item.image} alt={item.productName} className={style.itemImage} />
+                            <div>{item.productName}</div>
+                            <div>수량: {item.quantity}</div>
+                            <div>가격: ₩{item.price}</div>
+                        </div>
+                    ))}
+                    <div className={style.orderSummary}>
+                        <p>총 주문 금액: ₩{order?.totalAmount}</p>
+                        <p>할인 금액: ₩{order?.discount}</p>
+                        <p>총 결제 금액: ₩{order?.paymentAmount}</p>
+                    </div>
                 </div>
             </div>
+
 
             <div className="wrapper" style={{ margin: '20px', padding: '20px', border: '1px solid #ddd' }}>
-                <div className="box_section">
-                    {/* 결제 수단 UI */}
-                    <div id="payment-method" style={{ marginBottom: '30px', minHeight: '200px' }} />
+                <div id="payment-method" style={{ marginBottom: '30px', minHeight: '200px' }} />
+                <div id="agreement" style={{ marginBottom: '30px', minHeight: '100px' }} />
 
-                    {/* 이용약관 UI */}
-                    <div id="agreement" style={{ marginBottom: '30px', minHeight: '100px' }} />
-
-                    <button
-                        className="button"
-                        disabled={!ready}
-                        onClick={async () => {
-                            if (!widgets || !order || !ready) {
-                                alert('결제 정보를 불러오는 중입니다. 잠시만 기다려주세요.');
-                                return;
-                            }
-
-                            try {
-                                const token = localStorage.getItem('token');
-                                if (!token) {
-                                    alert('로그인이 필요합니다.');
-                                    router.push('/login');
-                                    return;
-                                }
-
-                                const decoded: any = jwtDecode(token);
-                                const userId = decoded.UserID;
-
-                                // 1. 먼저 결제 정보를 서버에 저장
-                                const paymentData = {
-                                    orderListId: order.orderListId,
-                                    userId,
-                                    totalAmount: order.totalAmount,
-                                    paymentAmount: order.paymentAmount,
-                                    pointUsed: pointsToUse,
-                                    couponUsed: selectedCoupon?.couponId,
-                                    recipientInfo: {
-                                        name: recipientData.name,
-                                        phone: recipientData.phone,
-                                        address: recipientData.address,
-                                    },
-                                    paymentMethod: 'Card',
-                                    status: 'PENDING', // 상태를 PENDING으로 변경
-                                };
-
-                                const transactionResponse = await axios.post(
-                                    `${process.env.NEXT_PUBLIC_API_URL}/api/transaction`,
-                                    paymentData
-                                );
-
-                                if (!transactionResponse.data.success) {
-                                    throw new Error('거래 정보 생성 실패');
-                                }
-
-                                const { transactionId } = transactionResponse.data;
-
-                                // 2. 토스페이먼츠 결제 요청
-                                const formattedOrderId = `ORDER-${String(
-                                    order.orderListId
-                                )}-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
-
-                                await widgets.requestPayment({
-                                    orderId: formattedOrderId,
-                                    orderName: `주문 ${order.orderListId}`,
-                                    successUrl: `${window.location.origin}/payment/success?transactionId=${transactionId}`,
-                                    failUrl: `${window.location.origin}/payment/fail?transactionId=${transactionId}`,
-                                    customerName: userData.UserName,
-                                    customerMobilePhone: userData.Phone,
-                                });
-                            } catch (error) {
-                                console.error('결제 처리 중 오류 발생:', error);
-                                alert('결제 처리 중 오류가 발생했습니다.');
-                            }
-                        }}
-                        style={{
-                            width: '100%',
-                            padding: '15px',
-                            fontSize: '16px',
-                            backgroundColor: ready ? '#3182f6' : '#ccc',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '5px',
-                            cursor: ready ? 'pointer' : 'not-allowed',
-                        }}
-                    >
-                        결제하기
-                    </button>
-                </div>
+                <button
+                    className={style.buttonClass}
+                    disabled={!ready}
+                    onClick={handlePayment}
+                    style={{
+                        width: '100%',
+                        padding: '15px',
+                        fontSize: '16px',
+                        backgroundColor: ready ? 'balck' : '#333',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: ready ? 'pointer' : 'not-allowed',
+                    }}
+                >
+                    결제하기
+                </button>
             </div>
-        </>
+        </div>
     );
 };
 

@@ -430,6 +430,7 @@ const Profile = () => {
                 </div>
             </div>
 
+            <div className={style.tabsContainer}>
             <Tabs defaultActiveKey="1">
                 <TabPane tab="구매 정보" key="1">
                     <div className={style.sectionTitle}>구매 정보</div>
@@ -528,6 +529,7 @@ const Profile = () => {
                     </div>
                 </TabPane>
             </Tabs>
+            </div>
         </div>
     );
 };

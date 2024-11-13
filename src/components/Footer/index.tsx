@@ -32,7 +32,7 @@ const Footer = () => {
                 </div>
                 <div className={styles.socialIcons}>
                   
-                    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+                    <a href="https://www.facebook.com/profile.php?id=61568595901060" target="_blank" rel="noopener noreferrer">
                         <Image
                             src="/icons/facebook.png"
                             alt="Facebook"
@@ -41,7 +41,7 @@ const Footer = () => {
                             className={styles.icon}
                         />
                     </a>
-                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+                    <a href="https://www.instagram.com/chargehere_/" target="_blank" rel="noopener noreferrer">
                         <Image
                             src="/icons/instagram.png"
                             alt="Instagram"
@@ -50,8 +50,6 @@ const Footer = () => {
                             className={styles.icon}
                         />
                     </a>
-         <FacebookOutlined className={styles.icon} onClick={facebook} />
-                    <InstagramOutlined className={styles.icon} onClick={insta} />
                 </div>
             </div>
             <div className={styles.infoContainer}>
