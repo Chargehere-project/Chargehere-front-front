@@ -1,3 +1,7 @@
+import styled from 'styled-components';
+
+const RwriteStyled = styled.div`
+
 .reviewContainer {
     width: 60%;
     margin: 0 auto;
@@ -36,7 +40,7 @@
     font-size: 16px;
     font-weight: bold;
     color: #444;
-    magin-top: 50px;
+    margin-top: 50px;
     padding-top: 20px;
 }
 
@@ -95,3 +99,8 @@
 .submitButton:hover {
     background-color: #333;
 }
+
+
+`;
+
+export default RwriteStyled;
