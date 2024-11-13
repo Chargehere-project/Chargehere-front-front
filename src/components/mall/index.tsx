@@ -3,7 +3,7 @@ import axios from 'axios';
 import { ArrowUpOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import Swipe from './Swipe';
-import styles from './MallIndex.module.css';
+import MallStyled from './styled';
 
 interface Product {
   ProductID: number;
@@ -47,53 +47,58 @@ const MallIndex = () => {
   };
 
   return (
-    <div className={styles.container}>
+
+    <MallStyled>
+          <div className='container'>
       <Swipe />
 
       {/* 버튼 3개 있는데 */}
-      <section className={styles.categorySection}>
-        <div className={styles.categoryCard} onClick={() => router.push('/map')}>
-          <img src="/charge_charge.png" alt="Charge" className={styles.categoryImage} />
-          <p className={styles.categoryText}>CHARGE</p>
+      <section className= 'categorySection'>
+        <div className= 'categoryCard' onClick={() => router.push('/map')}>
+          <img src="/charge_charge.png" alt="Charge" className= 'categoryImage' />
+          <p className= 'categoryText' >CHARGE</p>
         </div>
-        <div className={styles.categoryCard} onClick={() => router.push('/mall/product')}>
-          <img src="/charge_shop.png" alt="Shopping" className={styles.categoryImage} />
-          <p className={styles.categoryText}>SHOPPING</p>
+        <div className= 'categoryCard' onClick={() => router.push('/mall/product')}>
+          <img src="/charge_shop.png" alt="Shopping" className= 'categoryImage' />
+          <p className= 'categoryText' >SHOPPING</p>
         </div>
-        <div className={styles.categoryCard} onClick={() => router.push('/mall/evguide/1')}>
-          <img src="/charge_evguide.png" alt="EV Guide" className={styles.categoryImage} />
-          <p className={styles.categoryText}>EV GUIDE</p>
+        <div className= 'categoryCard' onClick={() => router.push('/mall/evguide/1')}>
+          <img src="/charge_evguide.png" alt="EV Guide" className= 'categoryImage' />
+          <p className= 'categoryText'>EV GUIDE</p>
         </div>
       </section>
 
       {/* 출첵 부분 */}
-      <section className={styles.attendanceSection} onClick={handleAttendanceClick}>
+      <section className= 'attendanceSection' onClick={handleAttendanceClick}>
         <h2>출석 체크 하기</h2>
       </section>
 
       {/* 상품 추천 부분 */}
-      <section className={styles.recommendedSection}>
-        <h2 className={styles.recommendedTitle}>추천 상품</h2>
-        <div className={styles.productContainer}>
+      <section className= 'recommendedSection'>
+        <h2 className= 'recommendedTitle'>추천 상품</h2>
+        <div className= 'productContainer'>
           {bestProducts.slice(0, 2).map((product) => (
-            <div key={product.ProductID} className={styles.productCard} onClick={() => handleProductClick(product.ProductID)}>
-              <img src={product.Image} alt={product.ProductName} className={styles.productImage} />
-              <p className={styles.productName}>{product.ProductName}</p>
-              <p className={styles.productPrice}>{product.Price.toLocaleString()}원</p>
+            <div key={product.ProductID} className= 'productCard' onClick={() => handleProductClick(product.ProductID)}>
+              <img src={product.Image} alt={product.ProductName} className= 'productImage' />
+              <p className= 'productName'>{product.ProductName}</p>
+              <p className= 'productPrice'>{product.Price.toLocaleString()}원</p>
             </div>
           ))}
         </div>
-        <button onClick={() => router.push('/mall/product')} className={styles.viewMoreButton}>상품 더보기</button>
+        <button onClick={() => router.push('/mall/product')} className= 'viewMoreButton'>상품 더보기</button>
       </section>
 
       {/* 위로 올리기 부분 */}
       <button
-        className={styles.scrollTopButton}
+        className= 'scrollTopButton'
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       >
         <ArrowUpOutlined style={{ fontSize: '20px' }} />
       </button>
     </div>
+      
+    </MallStyled>
+
   );
 };
 

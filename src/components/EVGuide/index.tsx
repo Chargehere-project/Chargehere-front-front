@@ -38,7 +38,7 @@ const EVGuide1 = () => {
 
             {/* 다음 글로 이동 버튼 */}
             <div style={{ marginTop: '20px' }}>
-                <Link href="/evguide2" legacyBehavior>
+                <Link href="/mall/evguide/2" legacyBehavior>
                     <a
                         style={{
                             display: 'inline-block',

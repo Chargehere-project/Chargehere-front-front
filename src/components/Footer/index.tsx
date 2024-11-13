@@ -1,6 +1,6 @@
 import React from 'react';
 import { FacebookOutlined, InstagramOutlined } from '@ant-design/icons';
-import styles from './Footer.module.css';
+import FooterStyled from './styled';
 import Image from 'next/image';
 import Router from 'next/router';
 
@@ -14,23 +14,24 @@ const Footer = () => {
         window.open('https://www.instagram.com/chargehere_/', '_blank');
     }
     return (
-        <footer className={styles.footer}>
-            <div className={styles.linkContainer}>
-                <div className={styles.links}>
-                    <a href="/laws/privacy" className={styles.link}>
+        <FooterStyled>
+            <footer className= 'footer'>
+            <div className= 'linkContainer'>
+                <div className= 'links'>
+                    <a href="/laws/privacy" className= 'link'>
                         PRIVACY POLICY
                     </a>
-                    <a href="/laws/terms" className={styles.link}>
+                    <a href="/laws/terms" className= 'link'>
                         TERMS AND CONDITIONS
                     </a>
-                    <a href="/notice" className={styles.link}>
+                    <a href="/notice" className= 'link'>
                         NOTICE
                     </a>
-                    <a href="/faqs" className={styles.link}>
+                    <a href="/faqs" className= 'link'>
                         FAQS
                     </a>
                 </div>
-                <div className={styles.socialIcons}>
+                <div className= 'socialIcons'>
                   
                     <a href="https://www.facebook.com/profile.php?id=61568595901060" target="_blank" rel="noopener noreferrer">
                         <Image
@@ -38,7 +39,7 @@ const Footer = () => {
                             alt="Facebook"
                             width={25}
                             height={25}
-                            className={styles.icon}
+                            className= 'icon'
                         />
                     </a>
                     <a href="https://www.instagram.com/chargehere_/" target="_blank" rel="noopener noreferrer">
@@ -47,12 +48,12 @@ const Footer = () => {
                             alt="Instagram"
                             width={27}
                             height={27}
-                            className={styles.icon}
+                            className= 'icon'
                         />
                     </a>
                 </div>
             </div>
-            <div className={styles.infoContainer}>
+            <div className= 'infoContainer'>
                 <p>
                     <strong>(주)Chargehere</strong>
                 </p>
@@ -62,6 +63,9 @@ const Footer = () => {
                 <p>호스팅서비스사업자: (주)Chargehere</p>
             </div>
         </footer>
+
+        </FooterStyled>
+        
     );
 };
 

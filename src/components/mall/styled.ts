@@ -1,8 +1,7 @@
-/* 전체 컨테이너 */
-.container {
-  /* background-color: #f4f4f4; */
-  
-}
+import styled from 'styled-components';
+
+const MallStyled = styled.div`
+
 
 /* 카테고리 섹션 */
 .categorySection {
@@ -17,7 +16,8 @@
 /* 카테고리 카드 */
 .categoryCard {
   position: relative;
-  flex: 1;
+  width: 30%;
+  height: 300px;
   text-align: center;
   cursor: pointer;
   background-color: #f2f2f2;
@@ -271,3 +271,7 @@
       padding: 8px;
   }
 }
+
+`;
+
+export default MallStyled;
