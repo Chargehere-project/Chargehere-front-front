@@ -6,8 +6,51 @@ import Router from 'next/router';
 import style from './profile.module.css';
 import { Button, Form, Input, Modal, Space, Tabs } from 'antd';
 import DaumPostcode from 'react-daum-postcode';
+import {
+    ProfileContainer,
+    Title,
+    InfoRow,
+    UserInfoContainer,
+    UserDetails,
+    Username,
+    Name,
+    LoginID,
+    EditButton,
+    SummaryContainer,
+    SummaryItem,
+    SummaryValue,
+    OrderStatusContainer,
+    OrderStatusItem,
+    Arrow,
+    TabsContainer,
+    SectionTitle,
+    SectionContainer,
+    OrderItem,
+    OrderDetails,
+    ProductImage,
+    ProductName,
+    ProductPrice,
+    OrderQuantity,
+    OrderDate,
+    OrderStatus,
+    ReviewButton,
+    PointItemContainer,
+} from './StyledProfile';
 
 const { TabPane } = Tabs;
+
+const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        hour12: true,
+    });
+};
 
 interface PointItem {
     Amount: number;
@@ -43,6 +86,7 @@ interface OrderItem {
     OrderListID: number;
 }
 
+
 const Profile = () => {
     const [form] = Form.useForm();
     const [name, setName] = useState<string>('');
@@ -63,97 +107,98 @@ const Profile = () => {
         shipping: 0,
         completed: 0,
     });
+
     
 
-    // useEffect(() => {
-    //     const fetchProfileData = async () => {
-    //         const token = localStorage.getItem('token');
-    //         if (!token) return;
+    useEffect(() => {
+        const fetchProfileData = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) return;
 
-    //         let userId;
-    //         try {
-    //             const decoded: any = jwtDecode(token);
-    //             userId = decoded.UserID;
-    //             const response = await axios.post(
-    //                 `${process.env.NEXT_PUBLIC_API_URL}/api/name`,
-    //                 { userId },
-    //                 {
-    //                     headers: {
-    //                         Authorization: `Bearer ${token}`,
-    //                     },
-    //                 }
-    //             );
-    //             setName(response.data.name);
-    //             setPoint(response.data.point);
-    //             setPhone(response.data.phone);
-    //             setAddress(response.data.address);
+            let userId;
+            try {
+                const decoded: any = jwtDecode(token);
+                userId = decoded.UserID;
+                const response = await axios.post(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/name`,
+                    { userId },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+                setName(response.data.name);
+                setPoint(response.data.point);
+                setPhone(response.data.phone);
+                setAddress(response.data.address);
 
-    //             form.setFieldsValue({
-    //                 phone: response.data.phone,
-    //                 residence: response.data.address,
-    //             });
-    //         } catch (error) {
-    //             console.error('프로필 정보를 가져오는데 실패했습니다:', error);
-    //             return;
-    //         }
+                form.setFieldsValue({
+                    phone: response.data.phone,
+                    residence: response.data.address,
+                });
+            } catch (error) {
+                console.error('프로필 정보를 가져오는데 실패했습니다:', error);
+                return;
+            }
 
-    //         try {
-    //             const response = await axios.post(
-    //                 `${process.env.NEXT_PUBLIC_API_URL}/api/orderlist`,
-    //                 { userId },
-    //                 {
-    //                     headers: {
-    //                         Authorization: `Bearer ${token}`,
-    //                     },
-    //                 }
-    //             );
+            try {
+                const response = await axios.post(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/orderlist`,
+                    { userId },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
 
-    //             // 응답 데이터 콘솔에 출력하여 확인
-    //             console.log('Order List Response:', response.data);
-    //             setOrderList(response.data.data);
-    //         } catch (error) {
-    //             console.error('구매내역을 가져오는데 실패했습니다:', error);
-    //         }
+                // 응답 데이터 콘솔에 출력하여 확인
+                console.log('Order List Response:', response.data);
+                setOrderList(response.data.data);
+            } catch (error) {
+                console.error('구매내역을 가져오는데 실패했습니다:', error);
+            }
 
-    //         try {
-    //             const response = await axios.post(
-    //                 `${process.env.NEXT_PUBLIC_API_URL}/api/chargelist`,
-    //                 { userId },
-    //                 {
-    //                     headers: {
-    //                         Authorization: `Bearer ${token}`,
-    //                     },
-    //                 }
-    //             );
+            try {
+                const response = await axios.post(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/chargelist`,
+                    { userId },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
 
-    //             if (response.data.result && response.data.data) {
-    //                 setPointList(response.data.data);
-    //             }
-    //         } catch (error) {
-    //             console.error('포인트 내역을 가져오는데 실패했습니다:', error);
-    //         }
+                if (response.data.result && response.data.data) {
+                    setPointList(response.data.data);
+                }
+            } catch (error) {
+                console.error('포인트 내역을 가져오는데 실패했습니다:', error);
+            }
 
-    //         try {
-    //             const response = await axios.post(
-    //                 `${process.env.NEXT_PUBLIC_API_URL}/api/couponlist`,
-    //                 { userId },
-    //                 {
-    //                     headers: {
-    //                         Authorization: `Bearer ${token}`,
-    //                     },
-    //                 }
-    //             );
+            try {
+                const response = await axios.post(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/couponlist`,
+                    { userId },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
 
-    //             if (response.data.result && response.data.data) {
-    //                 setCouponList(response.data.data);
-    //             }
-    //         } catch (error) {
-    //             console.error('쿠폰 목록을 가져오는데 실패했습니다:', error);
-    //         }
-    //     };
+                if (response.data.result && response.data.data) {
+                    setCouponList(response.data.data);
+                }
+            } catch (error) {
+                console.error('쿠폰 목록을 가져오는데 실패했습니다:', error);
+            }
+        };
 
-    //     fetchProfileData();
-    // }, [form]);
+        fetchProfileData();
+    }, [form]);
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -333,7 +378,7 @@ const Profile = () => {
 
         fetchUserInfo();
     }, [form]);
-    
+
     const handleReviewClick = (orderListId: number, productId: number) => {
         console.log('리뷰 페이지로 이동:', orderListId, productId);
         if (orderListId && productId) {
@@ -342,8 +387,6 @@ const Profile = () => {
             console.error('orderListId 또는 productId가 부족합니다');
         }
     };
-
-
 
     // const StatusText = (status: string) => {
     //     switch (status) {
@@ -374,163 +417,154 @@ const Profile = () => {
             }
         }
     };
+    
 
     return (
-        <div className={style.profileContainer}>
-            <h1 className={style.Title}>MY PAGE</h1>
-            <div className={style.infoRow}>
-                <div className={style.userInfoContainer}>
+        <ProfileContainer>
+            <Title>MY PAGE</Title>
+            <InfoRow>
+                <UserInfoContainer>
                     <Image src="/pr.png" alt="Profile Image" width={100} height={100} />
-                    <div className={style.userDetails}>
-                        <div className={style.username}>
-                            <span className={style.name}>{name}</span>
-                            <span className={style.loginID}>({loginID})</span>
-                        </div>
-                        <Button onClick={() => Router.push('/profile/edit')} className={style.editButton}>
-                            회원정보 수정
-                        </Button>
-                    </div>
-                </div>
+                    <UserDetails>
+                        <Username>
+                            <Name>{name}</Name>
+                            <LoginID>({loginID})</LoginID>
+                        </Username>
+                        <EditButton onClick={() => Router.push('/profile/edit')}>회원정보 수정</EditButton>
+                    </UserDetails>
+                </UserInfoContainer>
 
-                <div className={style.summaryContainer}>
-                    <div className={style.summaryItem}>
+                <SummaryContainer>
+                    <SummaryItem>
                         <span>쿠폰</span>
-                        <span className={style.summaryValue}>{couponCount}</span>
-                    </div>
-                    <div className={style.summaryItem}>
+                        <SummaryValue>{couponCount}</SummaryValue>
+                    </SummaryItem>
+                    <SummaryItem>
                         <span>포인트</span>
-                        <span className={style.summaryValue}>{point.toLocaleString()}</span>
-                    </div>
-                    <div className={style.summaryItem}>
+                        <SummaryValue>{point.toLocaleString()}</SummaryValue>
+                    </SummaryItem>
+                    <SummaryItem>
                         <span>작성가능 리뷰</span>
-                        <span className={style.summaryValue}>{reviewCount}</span>
-                    </div>
-                </div>
-            </div>
+                        <SummaryValue>{reviewCount}</SummaryValue>
+                    </SummaryItem>
+                </SummaryContainer>
+            </InfoRow>
 
-            <div className={style.orderStatusContainer}>
-                <div className={style.orderStatusItem}>
-                    <span>입금대기중</span>
+            <OrderStatusContainer>
+                <OrderStatusItem>
+                    <span>결제 대기중</span>
                     <span>{orderSummary.pending}</span>
-                </div>
-                <div className={style.arrow}>›</div>
-                <div className={style.orderStatusItem}>
-                    <span>결제완료</span>
+                </OrderStatusItem>
+                <Arrow>›</Arrow>
+                <OrderStatusItem>
+                    <span>결제 완료</span>
                     <span>{orderSummary.inPreparation}</span>
-                </div>
-                <div className={style.arrow}>›</div>
-                {/* <div className={style.orderStatusItem}>
-                    <span>배송준비중</span>
-                    <span>{orderSummary.shipping}</span>
-                </div>
-                <div className={style.arrow}>›</div> */}
-                <div className={style.orderStatusItem}>
-                    <span>배송완료</span>
+                </OrderStatusItem>
+                <Arrow>›</Arrow>
+                <OrderStatusItem>
+                    <span>배송 완료</span>
                     <span>{orderSummary.completed}</span>
-                </div>
-            </div>
+                </OrderStatusItem>
+            </OrderStatusContainer>
 
-            <div className={style.tabsContainer}>
-            <Tabs defaultActiveKey="1">
-                <TabPane tab="구매 정보" key="1">
-                    <div className={style.sectionTitle}>구매 정보</div>
-                    <div className={style.sectionContainer}>
-                        {orderList.map((item, index) => (
-                            <div key={index} className={style.orderItem}>
-                                <div className={style.orderDetails}>
-                                    <img
-                                        src={item.Product.Image}
-                                        alt="Product Image"
-                                        width={50}
-                                        height={50}
-                                        className={style.productImage}
-                                    />
-                                    <div className={style.productInfo}>
-                                        <div className={style.productNamePrice}>
-                                            <span className={style.productName}>{item.Product.ProductName}</span>
-                                            <span className={style.productPrice}>{item.Amount.toLocaleString()}원</span>
+            <TabsContainer>
+                <Tabs defaultActiveKey="1">
+                    <TabPane tab="구매 정보" key="1">
+                        <SectionTitle></SectionTitle>
+                        <SectionContainer>
+                            {orderList.map((item, index) => (
+                                <OrderItem key={index}>
+                                    <OrderDetails>
+                                        <ProductImage
+                                            src={item.Product.Image}
+                                            alt="Product Image"
+                                            width={100}
+                                            height={100}
+                                        />
+
+                                        <ProductName>{item.Product.ProductName}</ProductName>
+                                        <ProductPrice>
+                                            <span className="price">{item.Amount.toLocaleString()}</span>
+                                            <span className="currency">원</span>
+                                        </ProductPrice>
+                                    </OrderDetails>
+                                    <OrderQuantity>{item.Quantity || 1}개</OrderQuantity>
+                                    <OrderDate>{new Date(item.OrderDate).toLocaleString()}</OrderDate>
+                                    <OrderStatus>{StatusText(item.OrderStatus, item.TransactionStatus)}</OrderStatus>
+                                    <ReviewButton>
+                                        {item.OrderStatus === 'Completed' && !item.hasReview ? (
+                                            <span
+                                                onClick={() =>
+                                                    handleReviewClick(item.OrderListID, item.Product.ProductID)
+                                                }>
+                                                리뷰 작성
+                                            </span>
+                                        ) : item.OrderStatus === 'Completed' && item.hasReview ? (
+                                            <span style={{ color: 'gray' }}>리뷰 작성 완료</span>
+                                        ) : (
+                                            <span style={{ color: 'gray' }}>-</span>
+                                        )}
+                                    </ReviewButton>
+                                </OrderItem>
+                            ))}
+                        </SectionContainer>
+                    </TabPane>
+
+                    <TabPane tab="포인트 정보" key="2">
+                        <SectionContainer>
+                            {pointList.length > 0 ? (
+                                pointList.map((item, index) => (
+                                    <PointItemContainer key={index}>
+                                        <div className="pointAmount">{item.Amount.toLocaleString()} 포인트</div>
+                                        <div className="pointDescription">구매로 인한 적립</div>
+                                        <div className="pointDate">{formatDate(item.ChargeDate)}</div>
+                                        <div
+                                            className={`pointStatus ${
+                                                item.Amount > 0 ? 'point-positive' : 'point-negative'
+                                            }`}>
+                                            {item.Amount > 0 ? '적립' : '차감'}
+                                        </div>
+                                    </PointItemContainer>
+                                ))
+                            ) : (
+                                <div>포인트 내역이 없습니다.</div>
+                            )}
+                        </SectionContainer>
+                    </TabPane>
+
+                    <TabPane tab="쿠폰 정보" key="3">
+                        <SectionContainer>
+                            {couponList.length > 0 ? (
+                                couponList.map((item, index) => (
+                                    <div key={index}>
+                                        <div>{item.Coupon.CouponName}</div>
+                                        <div>시작일자: {item.Coupon.StartDate}</div>
+                                        <div>만료일자: {item.Coupon.ExpirationDate}</div>
+                                        <div className={item.isUsed ? 'couponStatusUsed' : 'couponStatusUnused'}>
+                                            {item.isUsed ? '사용완료' : '미사용'}
                                         </div>
                                     </div>
-                                </div>
-                                <div className={style.orderQuantity}>{item.Quantity || 1}개</div>
-                                <div className={style.orderDate}>{new Date(item.OrderDate).toLocaleString()}</div>
-                                <div className={style.orderStatus}>
-                                    {StatusText(item.OrderStatus, item.TransactionStatus)}
-                                </div>
-                                <div className={style.reviewButton}>
-                                    {item.OrderStatus === 'Completed' && !item.hasReview ? (
-                                        <span
-                                            onClick={() => handleReviewClick(item.OrderListID, item.Product.ProductID)}>
-                                            리뷰 작성
-                                        </span>
-                                    ) : item.OrderStatus === 'Completed' && item.hasReview ? (
-                                        <span style={{ color: 'gray' }}>리뷰 작성 완료</span>
-                                    ) : (
-                                        <span style={{ color: 'gray' }}>-</span>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </TabPane>
+                                ))
+                            ) : (
+                                <div>쿠폰이 없습니다.</div>
+                            )}
+                        </SectionContainer>
+                    </TabPane>
 
-                <TabPane tab="포인트 정보" key="2">
-                    <div className={style.sectionContainer}>
-                        {pointList.length > 0 ? (
-                            pointList.map((item, index) => (
-                                <div key={index} className={style.pointItem}>
-                                    <div className={style.itemInfo}>
-                                        포인트: {item.Amount}
-                                        <span
-                                            style={{
-                                                color: item.Amount < 0 ? 'red' : 'blue',
-                                                marginLeft: '10px',
-                                            }}>
-                                            ({item.Amount < 0 ? '사용' : '적립'})
-                                        </span>
-                                    </div>
-                                    <div className={style.itemInfo}>적립일자: {item.ChargeDate}</div>
-                                </div>
-                            ))
-                        ) : (
-                            <div>포인트 내역이 없습니다.</div>
-                        )}
-                    </div>
-                </TabPane>
+                    <TabPane tab="1:1 문의" key="4">
+                        <SectionContainer>
+                            <p>1:1 문의 내용이 여기에 표시됩니다.</p>
+                        </SectionContainer>
+                    </TabPane>
 
-                <TabPane tab="쿠폰 정보" key="3">
-                    <div className={style.sectionContainer}>
-                        {couponList.length > 0 ? (
-                            couponList.map((item, index) => (
-                                <div key={index} className={style.couponItem}>
-                                    <div className={style.itemTitle}>{item.Coupon.CouponName}</div>
-                                    <div className={style.itemInfo}>시작일자: {item.Coupon.StartDate}</div>
-                                    <div className={style.itemInfo}>만료일자: {item.Coupon.ExpirationDate}</div>
-                                    <div className={item.isUsed ? style.couponStatusUsed : style.couponStatusUnused}>
-                                        {item.isUsed ? '사용완료' : '미사용'}
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div>쿠폰이 없습니다.</div>
-                        )}
-                    </div>
-                </TabPane>
-
-                <TabPane tab="1:1 문의" key="4">
-                    <div className={style.sectionContainer}>
-                        <p>1:1 문의 내용이 여기에 표시됩니다.</p>
-                    </div>
-                </TabPane>
-
-                <TabPane tab="상품 문의" key="5">
-                    <div className={style.sectionContainer}>
-                        <p>상품 문의 내용이 여기에 표시됩니다.</p>
-                    </div>
-                </TabPane>
-            </Tabs>
-            </div>
-        </div>
+                    <TabPane tab="상품 문의" key="5">
+                        <SectionContainer>
+                            <p>상품 문의 내용이 여기에 표시됩니다.</p>
+                        </SectionContainer>
+                    </TabPane>
+                </Tabs>
+            </TabsContainer>
+        </ProfileContainer>
     );
 };
 
