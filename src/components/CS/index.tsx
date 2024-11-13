@@ -7,6 +7,7 @@ interface Inquiry {
     UserID: number;
     Title: string;
     Content: string;
+    CreatedAt: string;
     InquiryReplies: { ReplyID: number; ReplyContent: string; CreatedAt: string }[];
 }
 
@@ -14,31 +15,60 @@ function InquiryDetail() {
     const router = useRouter();
     const { inquiryId } = router.query;
     const [inquiry, setInquiry] = useState<Inquiry | null>(null);
+    const [inquiries, setInquiries] = useState<Inquiry[]>([]);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        const fetchInquiry = async () => {
-            if (!inquiryId) return;
-
-            try {
-                const response = await axios.get(`/api/inquiry/${inquiryId}`);
-                setInquiry(response.data);
-            } catch (err: unknown) {
-                if (axios.isAxiosError(err)) {
-                    if (err.response && err.response.status === 403) {
-                        setError("해당 문의를 볼 수 있는 권한이 없습니다.");
-                    } else {
-                        setError("서버 오류가 발생했습니다.");
-                    }
-                } else {
-                    setError("알 수 없는 오류가 발생했습니다.");
+   // 전체 문의 목록 가져오기
+useEffect(() => {
+    const fetchInquiries = async () => {
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/inquiries`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
+            });
+            if(response.data.result) {  // 서버 응답 구조에 맞게 수정
+                setInquiries(response.data.data);
             }
-        };
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                setError("문의 목록을 불러오는데 실패했습니다.");
+            }
+        }
+    };
 
-        fetchInquiry();
-    }, [inquiryId]);
+    fetchInquiries();
+}, []);
 
+// 특정 문의 상세 내용 가져오기
+useEffect(() => {
+    const fetchInquiry = async () => {
+        if (!inquiryId) return;
+
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/inquiry/${inquiryId}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            if(response.data.result) {  // 서버 응답 구조에 맞게 수정
+                setInquiry(response.data.data);
+            }
+        } catch (err: unknown) {
+            if (axios.isAxiosError(err)) {
+                if (err.response && err.response.status === 403) {
+                    setError("해당 문의를 볼 수 있는 권한이 없습니다.");
+                } else {
+                    setError("서버 오류가 발생했습니다.");
+                }
+            } else {
+                setError("알 수 없는 오류가 발생했습니다.");
+            }
+        }
+    };
+
+    fetchInquiry();
+}, [inquiryId]);
     const handleWriteClick = () => {
         router.push('/mall/cs/cwrite');
     };
@@ -49,6 +79,21 @@ function InquiryDetail() {
         <div style={styles.container}>
             <h1 style={styles.title}>고객센터</h1>
 
+            {/* 전체 문의 목록 표시 */}
+            <div style={styles.inquiriesList}>
+                {inquiries.map((item) => (
+                    <div 
+                        key={item.InquiryID} 
+                        style={styles.inquiryItem}
+                        onClick={() => router.push(`/mall/cs/${item.InquiryID}`)}
+                    >
+                        <h3>{item.Title}</h3>
+                        <p>{new Date(item.CreatedAt).toLocaleDateString()}</p>
+                    </div>
+                ))}
+            </div>
+
+            {/* 선택된 문의 상세 내용 */}
             <div style={styles.board}>
                 {inquiry ? (
                     <>
@@ -78,8 +123,6 @@ function InquiryDetail() {
     );
 }
 
-export default InquiryDetail;
-
 const styles: { [key: string]: React.CSSProperties } = {
     container: {
         maxWidth: '1500px',
@@ -87,13 +130,25 @@ const styles: { [key: string]: React.CSSProperties } = {
         padding: '20px',
         backgroundColor: '#f9f9f9',
         borderRadius: '8px',
-        position: 'relative', // 버튼 위치 조정을 위한 상대 위치
+        position: 'relative',
     },
     title: {
         fontSize: '24px',
         fontWeight: 'bold',
         textAlign: 'center' as 'center',
         marginBottom: '20px',
+    },
+    inquiriesList: {
+        marginBottom: '20px',
+        border: '1px solid #ddd',
+        borderRadius: '8px',
+        overflow: 'hidden',
+    },
+    inquiryItem: {
+        padding: '15px',
+        borderBottom: '1px solid #ddd',
+        cursor: 'pointer',
+        transition: 'background-color 0.2s',
     },
     writeButton: {
         position: 'absolute',
@@ -143,3 +198,5 @@ const styles: { [key: string]: React.CSSProperties } = {
         marginTop: '20px',
     },
 };
+
+export default InquiryDetail;
