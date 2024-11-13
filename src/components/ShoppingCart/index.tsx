@@ -3,7 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import Image from 'next/image';
 import Router from 'next/router';
-import style from './shoppingcart.module.css';
+import CartStyled from './styled';
 
 interface Product {
     ProductID: number;
@@ -203,59 +203,60 @@ const ShoppingCart = () => {
     };
 
     return (
-        <div className={style.cartContainer}>
-            <div className={style.cartMain}>
-                <h1 className={style.cartTitle}>CART</h1>
+        <CartStyled>
+            <div className= 'cartContainer'>
+            <div className= 'cartMain'>
+                <h1 className= 'cartTitle'>CART</h1>
                 {cart.length === 0 ? (
-                    <div className={style.emptyCartMessage}>장바구니에 상품이 없습니다</div>
+                    <div className= 'emptyCartMessage'>장바구니에 상품이 없습니다</div>
                 ) : (
                     <>
-                        <div className={style.selectAllContainer}>
-                            <label className={style.selectAllLabel}>
+                        <div className= 'selectAllContainer'>
+                            <label className= 'selectAllLabel'>
                                 <input
                                     type="checkbox"
-                                    className={style.selectAllCheckbox}
+                                    className= 'selectAllCheckbox'
                                     checked={selectedItems.length === cart.length}
                                     onChange={handleSelectAll}
                                 />{' '}
                                 전체 선택
                             </label>
                             {cart.length > 0 && (
-                                <button onClick={deleteAllItems} className={style.deleteAllButton}>
+                                <button onClick={deleteAllItems} className= 'deleteAllButton'>
                                     선택 삭제
                                 </button>
                             )}
                         </div>
-                        <div className={style.cartItems}>
+                        <div className= 'cartItems'>
                             {cart.map((item) => (
-                                <div key={item.CartID} className={style.cartItem}>
+                                <div key={item.CartID} className= 'cartItem'>
                                     <input
                                         type="checkbox"
                                         checked={selectedItems.includes(item.CartID)}
                                         onChange={() => handleSelectItem(item.CartID)}
-                                        className={style.itemCheckbox}
+                                        className= 'itemCheckbox'
                                     />
-                                    <div className={style.itemImageContainer}>
+                                    <div className= 'itemImageContainer'>
                                         <img
                                             src={item.Product.Image}
                                             alt={item.Product.ProductName}
-                                            className={style.itemImage}
+                                            className= 'itemImage'
                                         />
                                     </div>
 
-                                    <div className={style.itemDetails}>
+                                    <div className= 'itemDetails'>
                                         <div
-                                            className={style.itemName}
+                                            className= 'itemName'
                                             onClick={() => Router.push(`/mall/product/${item.Product.ProductID}`)}
                                             style={{ cursor: 'pointer' }}>
                                             {item.Product.ProductName}
                                         </div>
 
-                                        <div className={style.itemPrice}>
+                                        <div className= 'itemPrice'>
                                             {item.Product.Price.toLocaleString()}
                                             <span>원</span>
                                         </div>
-                                        <div className={style.itemQuantity}>
+                                        <div className= 'itemQuantity'>
                                             {editingId === item.CartID ? (
                                                 <select
                                                     value={item.Quantity}
@@ -263,7 +264,7 @@ const ShoppingCart = () => {
                                                         quantityChange(item.CartID, Number(e.target.value))
                                                     }
                                                     onBlur={() => setEditingId(null)}
-                                                    className={style.quantitySelector}>
+                                                    className='quantitySelector'>
                                                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
                                                         <option key={num} value={num}>
                                                             {num}
@@ -282,30 +283,32 @@ const ShoppingCart = () => {
                 )}
             </div>
             {cart.length > 0 && (
-                <div className={style.summaryContainer}>
-                    <h2 className={style.summaryTitle}>주문 내역</h2>
+                <div className= 'summaryContainer'>
+                    <h2 className= 'summaryTitle'>주문 내역</h2>
 
-                    <div className={style.summaryRow}>
+                    <div className= 'summaryRow'>
                         <span>상품 금액</span>
                         <span>{totalPrice.toLocaleString()}원</span>
                     </div>
 
-                    <div className={style.summaryRow}>
+                    <div className= 'summaryRow'>
                         <span>배송비</span>
                         <span>{fee() === 0 ? '무료' : `${fee().toLocaleString()}원`}</span>
                     </div>
 
-                    <div className={`${style.summaryRow} ${style.summaryTotal}`}>
+                    <div className={`$ 'summaryRow' $ 'summaryTotal'`}>
                         <span>총 결제 금액</span>
                         <span>{(totalPrice + fee()).toLocaleString()}원</span>
                     </div>
 
-                    <button onClick={goToOrder} className={style.orderButton}>
+                    <button onClick={goToOrder} className= 'orderButton'>
                         주문결제
                     </button>
                 </div>
             )}
         </div>
+        </CartStyled>
+        
     );
 };
 

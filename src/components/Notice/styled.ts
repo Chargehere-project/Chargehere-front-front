@@ -1,3 +1,7 @@
+import styled from 'styled-components';
+
+const NoticeStyled = styled.div`
+
 .noticeContainer {
     padding: 20px;
     max-width: 1000px;
@@ -96,3 +100,7 @@
     background-color: #eee;
     cursor: not-allowed;
   }
+
+  `;
+
+export default NoticeStyled;

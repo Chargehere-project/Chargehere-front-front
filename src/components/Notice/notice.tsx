@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import styles from './Notice.module.css';
+import NoticeStyled from './styled';
 import Pagination from '../Pagenation';
 
 interface Notice {
@@ -56,13 +56,14 @@ const NoticePage = () => {
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   if (isLoading) {
-    return <div className={styles.loading}>로딩 중...</div>;
+    return <div className='loading'>로딩 중...</div>;
   }
 
   return (
-    <div className={styles.noticeContainer}>
-      <h1 className={styles.noticeTitle}>공지사항</h1>
-      <table className={styles.noticeTable}>
+    <NoticeStyled>
+      <div className= 'noticeContainer'>
+      <h1 className= 'noticeTitle'>공지사항</h1>
+      <table className='noticeTable'>
         <thead>
           <tr>
             <th>No</th>
@@ -78,7 +79,7 @@ const NoticePage = () => {
                 <td>{notice.NoticeID}</td>
                 <td>
                   {notice.Title}
-                  {notice.isNew && <span className={styles.newBadge}>N</span>}
+                  {notice.isNew && <span className= 'newBadge'>N</span>}
                 </td>
                 <td>관리자</td>
                 <td>
@@ -92,7 +93,7 @@ const NoticePage = () => {
             ))
           ) : (
             <tr>
-              <td colSpan={4} className={styles.noData}>
+              <td colSpan={4} className= 'noData'>
                 등록된 공지사항이 없습니다.
               </td>
             </tr>
@@ -108,6 +109,9 @@ const NoticePage = () => {
         />
       )}
     </div>
+
+    </NoticeStyled>
+    
   );
 };
 
