@@ -1,4 +1,3 @@
-// babel.config.js
 module.exports = {
     presets: ['next/babel'],
     plugins: [
@@ -8,6 +7,6 @@ module.exports = {
             { libraryName: '@ant-design/icons', libraryDirectory: 'es/icons', camel2DashComponentName: false },
             'ant-design-icons',
         ],
+        ['styled-components', { ssr: true, displayName: true, preprocess: false }],
     ],
 };
-        
