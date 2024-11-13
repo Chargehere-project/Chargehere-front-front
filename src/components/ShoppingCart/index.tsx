@@ -111,6 +111,7 @@ const ShoppingCart = () => {
 
             if (response.data.result) {
                 setCart(cart.filter((item) => item.CartID !== cartId));
+                window.dispatchEvent(new Event('cartUpdated'));
                 alert('상품이 삭제되었습니다.');
             }
         } catch (error) {
@@ -142,6 +143,7 @@ const ShoppingCart = () => {
 
             // 선택된 항목 삭제 후 상태 업데이트
             setCart(cart.filter((item) => !selectedItems.includes(item.CartID)));
+            window.dispatchEvent(new Event('cartUpdated'));
             setSelectedItems([]);
             alert('선택된 항목이 삭제되었습니다.');
         } catch (error) {
