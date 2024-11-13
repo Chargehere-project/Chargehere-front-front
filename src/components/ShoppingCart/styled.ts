@@ -224,10 +224,63 @@ const CartStyled = styled.div`
         margin-top: 0; /* 명시적으로 margin-top 제거 */
     }
 
+
     .itemDetails {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
+      flex: 1;
+      min-width: 0;
+      padding-right: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-end;
+      text-align: right;
+    }
+
+    .itemName {
+      font-size: 14px;
+      font-weight: bold;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      word-break: break-word;
+      white-space: normal;
+      min-height: 32px;
+      width: 100%;
+      text-align: right;
+      padding-left: 20px;
+    }
+
+    .priceQuantityContainer {
+      display: inline-flex; // flex를 inline-flex로 변경
+      justify-content: flex-end;
+      align-items: center;
+      gap: 15px;
+      text-align: right;
+      margin-left: auto; // 오른쪽 정렬을 위해 추가
+    }
+
+    .itemPrice {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      white-space: nowrap;
+      color: #333;
+      justify-content: flex-end; // 오른쪽 정렬
+
+      span {
+        margin: 0;
+        padding: 0;
+        min-width: auto;
+        margin-left: 2px; // 숫자와 '원' 사이의 간격만 최소화
+      }
+    }
+
+    .itemQuantity {
+      font-size: 14px;
+      white-space: nowrap;
+      text-align: right;
     }
 
     .summaryContainer {
@@ -249,111 +302,156 @@ const CartStyled = styled.div`
 /* 모바일 (480px 이하) */
 @media screen and (max-width: 480px) {
     .cartContainer {
-        padding: 10px;
+      padding: 10px;
     }
 
     .cartTitle {
-        font-size: 24px;
-        padding: 15px 0;
+      font-size: 24px;
+      padding: 15px 0;
     }
 
     .cartItem {
-        padding: 15px 10px;
-        position: relative; /* 추가 */
+      display: flex;
+      padding: 15px 10px;
+      position: relative;
+      align-items: flex-start;
+      gap: 10px;
+      border-bottom: 1px solid #eaeaea;
     }
 
     .itemCheckbox {
-        position: absolute; /* 변경 */
-        top: 15px;
-        left: 10px;
+      position: absolute;
+      top: 15px;
+      left: 10px;
     }
 
     .itemImageContainer {
-        width: 80px; /* 변경 */
-        height: 80px; /* 변경 */
-        margin-left: 30px; /* 추가 - 체크박스 공간 확보 */
-    }
-
-    .itemImage {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+      width: 80px;
+      height: 80px;
+      margin-left: 30px;
+      flex-shrink: 0;
     }
 
     .itemDetails {
-        width: calc(100% - 120px); /* 변경 - 이미지 공간 제외한 너비 */
-        flex-direction: row; /* 변경 - 가로 정렬 */
-        justify-content: space-between; /* 변경 */
-        align-items: center; /* 변경 */
-        margin-left: 10px; /* 추가 */
+      flex: 1;
+      min-width: 0;
+      padding-right: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-end;
+      text-align: right;
     }
 
     .itemName {
-        font-size: 14px; /* 변경 */
-        flex: 1; /* 추가 - 남은 공간 차지 */
-        margin-right: 10px; /* 추가 */
-        word-break: break-word; /* 추가 - 긴 상품명 처리 */
+      font-size: 14px;
+      font-weight: bold;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      word-break: break-word;
+      white-space: normal;
+      min-height: 32px;
+      width: 100%;
+      text-align: right;
+      padding-left: 20px;
+    }
+
+    .priceQuantityContainer {
+      display: inline-flex; // flex를 inline-flex로 변경
+      justify-content: flex-end;
+      align-items: center;
+      gap: 15px;
+      text-align: right;
+      margin-left: auto; // 오른쪽 정렬을 위해 추가
     }
 
     .itemPrice {
-        font-size: 14px; /* 변경 */
-        white-space: nowrap; /* 추가 - 가격 줄바꿈 방지 */
-        margin-right: 10px; /* 추가 */
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      white-space: nowrap;
+      color: #333;
+      justify-content: flex-end; // 오른쪽 정렬
+
+      span {
+        margin: 0;
+        padding: 0;
+        min-width: auto;
+        margin-left: 2px; // 숫자와 '원' 사이의 간격만 최소화
+      }
     }
 
     .itemQuantity {
-        font-size: 14px; /* 변경 */
-        white-space: nowrap; /* 추가 */
+      font-size: 14px;
+      white-space: nowrap;
+      text-align: right;
     }
 
     .deleteButton {
-        position: absolute; /* 변경 */
-        top: 15px;
-        right: 10px;
+      position: absolute;
+      top: 15px;
+      right: 10px;
+      font-size: 14px;
     }
 
-    .cartItem {
-        display: flex;
-        align-items: center;
-        padding: 15px 10px;
-        position: relative;
-        margin-bottom: 10px;
-    }
     .summaryContainer {
-        padding: 15px;
-        margin-bottom: 20px; /* 추가 - 하단 여백 */
+      padding: 15px;
+      margin-bottom: 20px;
     }
 
     .summaryTitle {
-        font-size: 18px; /* 크기 조정 */
-        margin-bottom: 15px;
+      font-size: 18px;
+      margin-bottom: 15px;
     }
 
     .summaryRow {
-        font-size: 14px; /* 크기 조정 */
-        padding: 5px 0; /* 추가 - 행간 간격 */
+      font-size: 14px;
+      padding: 5px 0;
     }
 
     .summaryTotal {
-        font-size: 16px; /* 크기 조정 */
-        margin-top: 15px;
-        padding-top: 15px; /* 추가 */
-        border-top: 1px solid #eaeaea; /* 추가 - 구분선 */
+      font-size: 16px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #eaeaea;
     }
 
     .orderButton {
-        margin-top: 15px;
-        padding: 12px 0;
-        font-size: 16px;
-        width: 100%;
+      margin-top: 15px;
+      padding: 12px 0;
+      font-size: 16px;
+      width: 100%;
+      border-radius: 25px;
     }
 
-    /* 컨테이너 전체에 하단 패딩 추가 */
     .cartContainer {
-        padding-bottom: 30px;
+      padding-bottom: 30px;
     }
-}
 
+    .selectAllContainer {
+      padding: 0 10px;
+    }
+
+    .selectAllLabel {
+      font-size: 14px;
+    }
+
+    .deleteAllButton {
+      font-size: 14px;
+    }
+
+    .cartItems {
+      gap: 10px;
+    }
+
+    .itemImage {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
 `;
-
 export default CartStyled;
