@@ -7,6 +7,10 @@ module.exports = {
             { libraryName: '@ant-design/icons', libraryDirectory: 'es/icons', camel2DashComponentName: false },
             'ant-design-icons',
         ],
+
         '@babel/plugin-transform-runtime',
+    ],
+};
+        ['styled-components', { ssr: true, displayName: true, preprocess: false }],
     ],
 };

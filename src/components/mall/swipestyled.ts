@@ -1,3 +1,7 @@
+import styled from 'styled-components';
+
+const SwipeStyled = styled.div`
+
 .swiperContainer {
     display: flex;
     justify-content: center;
@@ -60,3 +64,8 @@
         bottom: 5px !important;
     }
 }
+
+
+`;
+
+export default SwipeStyled;

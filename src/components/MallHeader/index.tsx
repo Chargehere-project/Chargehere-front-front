@@ -63,15 +63,26 @@ const MallHeader = () => {
             const userToken = localStorage.getItem('token');
             setIsLoggedIn(!!userToken);
         };
+        
+        // 장바구니 업데이트 이벤트 리스너 추가
+        const handleCartUpdate = () => {
+            fetchCartCount();
+        };
+
         checkLoginStatus();
         fetchCartCount();
 
+        // 커스텀 이벤트 리스너 등록
+        window.addEventListener('cartUpdated', handleCartUpdate);
+
         Router.events.on('routeChangeComplete', () => {
             checkLoginStatus();
-            setIsMenuOpen(false); // 페이지 이동 시 메뉴 닫기
+            fetchCartCount(); // 페이지 이동할 때마다 카운트 업데이트
+            setIsMenuOpen(false);
         });
 
         return () => {
+            window.removeEventListener('cartUpdated', handleCartUpdate);
             Router.events.off('routeChangeComplete', checkLoginStatus);
         };
     }, []);
@@ -85,7 +96,7 @@ const MallHeader = () => {
                     </div>
 
                     <nav className={`navContainer ${isMenuOpen ? 'navOpen' : ''}`}>
-                        <span className="navItem" onClick={() => Router.push('/')}>HOME</span>
+                        <span className="navItem" onClick={() => Router.push('/mall')}>HOME</span>
                         <span className="navItem" onClick={() => Router.push('/mall/product')}>PRODUCTS</span>
                         <span className="navItem" onClick={() => Router.push('/mall/evguide/1')}>EV GUIDE</span>
                         <span className="navItem" onClick={() => Router.push('/mall/cs')}>CS</span>

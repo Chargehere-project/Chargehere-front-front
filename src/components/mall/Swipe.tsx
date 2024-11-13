@@ -5,13 +5,14 @@ import 'swiper/css/pagination';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React from 'react';
-import styles from './Swipe.module.css';
+import SwipeStyled from './swipestyled';
 
 const MainSwipe = () => {
     const router = useRouter();
 
     return (
-        <div className={styles.swiperContainer}>
+        <SwipeStyled>
+             <div className= 'swiperContainer'>
             <Swiper
                 centeredSlides={true}
                 spaceBetween={50}
@@ -19,19 +20,22 @@ const MainSwipe = () => {
                 autoplay={{ delay: 5000 }}
                 pagination={{ clickable: true }}
                 modules={[Pagination, Autoplay]}
-                className={styles.swiper}>
+                className= 'swiper'>
                 <SwiperSlide onClick={() => router.push('/event/1')}>
-                    <div className={styles.slideImageContainer}>
-                        <Image src="/main_banner1.png" alt="Slide 1" fill className={styles.slideImage} priority  />
+                    <div className= 'slideImageContainer'>
+                        <Image src="/main_banner1.png" alt="Slide 1" fill className= 'slideImage' priority  />
                     </div>
                 </SwiperSlide>
                 <SwiperSlide onClick={() => router.push('/event/2')}>
-                    <div className={styles.slideImageContainer}>
-                        <Image src="/main_banner2.png" alt="Slide 2" fill className={styles.slideImage} priority />
+                    <div className= 'slideImageContainer'>
+                        <Image src="/main_banner2.png" alt="Slide 2" fill className= 'slideImage' priority />
                     </div>
                 </SwiperSlide>
             </Swiper>
         </div>
+
+        </SwipeStyled>
+       
     );
 };
 

@@ -1,3 +1,7 @@
+import styled from 'styled-components';
+
+const PageStyled = styled.div`
+
 .reviewContainer {
     max-width: 800px;
     margin: 0 auto;
@@ -53,3 +57,6 @@
     color: #333;
   }
   
+  `;
+
+export default PageStyled;

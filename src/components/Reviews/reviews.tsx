@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './review.module.css';
+import ReviewStyled from './styled';
 
 interface ReviewProps {
   reviewId: number;
@@ -17,33 +17,36 @@ interface ReviewItemProps {
 function ReviewItem({ reviews = [] }: ReviewItemProps) {
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
-      <span key={i} className={i < rating ? styles.starFilled : styles.starEmpty}>★</span>
+      <span key={i} className={i < rating ? 'starFilled' : 'starEmpty'}>★</span>
     ));
   };
 
   return (
-    <div className={styles.reviewPage}>
-      <h2 className={styles.pageTitle}>리뷰</h2>
+    <ReviewStyled>
+      <div className= 'reviewPage'>
+      <h2 className= 'pageTitle'>리뷰</h2>
       {reviews.length === 0 ? (
-        <p className={styles.noReviewsMessage}>아직 작성된 리뷰가 없습니다.</p>
+        <p className= 'noReviewsMessage'>아직 작성된 리뷰가 없습니다.</p>
       ) : (
         reviews.map(({ reviewId, userName, rating, content, reviewDate, userImage }) => (
-          <div key={reviewId} className={styles.reviewItem}>
-            <div className={styles.reviewHeader}>
-              <img src={userImage} alt={`${userName} profile`} className={styles.userImage} />
-              <div className={styles.userInfo}>
-                <h3 className={styles.userName}>{userName}</h3>
-                <p className={styles.reviewDate}>{new Date(reviewDate).toLocaleDateString()}</p>
+          <div key={reviewId} className= 'reviewItem'>
+            <div className= 'reviewHeader'>
+              <img src={userImage} alt={`${userName} profile`} className= 'userImage' />
+              <div className= 'userInfo'>
+                <h3 className= 'userName'>{userName}</h3>
+                <p className= 'reviewDate'>{new Date(reviewDate).toLocaleDateString()}</p>
               </div>
             </div>
-            <div className={styles.reviewBody}>
-              <div className={styles.rating}>{renderStars(rating)} ({rating} / 5)</div>
-              <p className={styles.reviewContent}>{content}</p>
+            <div className= 'reviewBody'>
+              <div className= 'rating'>{renderStars(rating)} ({rating} / 5)</div>
+              <p className= 'reviewContent'>{content}</p>
             </div>
           </div>
         ))
       )}
     </div>
+    </ReviewStyled>
+    
   );
 }
 

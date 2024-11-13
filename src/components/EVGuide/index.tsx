@@ -1,9 +1,88 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import styled from 'styled-components';
+
+const RetroContainer = styled.div`
+  width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  font-family: "돋움", Dotum, Arial, sans-serif;
+
+  h2 {
+    font-size: 20px;
+    color: #004080;
+    border-bottom: 2px solid #004080;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+  }
+
+  .post-meta {
+    font-size: 12px;
+    color: #666666;
+    background-color: #f5f5f5;
+    padding: 5px 10px;
+    border: 1px solid #dddddd;
+    margin: 10px 0;
+  }
+
+  .post-content {
+    font-size: 12px;
+    line-height: 1.6;
+    color: #333333;
+    margin: 20px 0;
+
+    p {
+      margin: 15px 0;
+      text-align: justify;
+    }
+  }
+
+  .image-container {
+    text-align: center;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border: 1px solid #dddddd;
+    margin: 15px 0;
+  }
+
+  .navigation-button {
+    text-align: right;
+    margin-top: 30px;
+    padding-top: 15px;
+    border-top: 1px solid #dddddd;
+
+    a {
+      display: inline-block;
+      padding: 5px 15px;
+      background-color: #6699cc;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 12px;
+      border: 1px solid #336699;
+
+      &:hover {
+        background-color: #336699;
+      }
+    }
+  }
+
+  .title-text {
+    font-size: 16px;
+    color: #333333;
+    font-weight: bold;
+    background-color: #f0f0f0;
+    padding: 8px;
+    border-left: 5px solid #004080;
+    margin: 15px 0;
+  }
+`;
 
 const EVGuide1 = () => {
     return (
         <>
+        <RetroContainer>
             <h2>전기차 기초 정보</h2>
             <p style={{ fontSize: '20px' }}>아파트 주차장에 설치된 전기차 급속충전기 얼마나 사용할까요</p>
             <p>2022.05.14</p>
@@ -54,6 +133,7 @@ const EVGuide1 = () => {
                     </a>
                 </Link>
             </div>
+            </RetroContainer>
         </>
     );
 };
