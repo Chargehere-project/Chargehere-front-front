@@ -3,8 +3,9 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: 640px;
+    height: calc(100vw / 2.1875); 
     overflow: hidden;
+    position: relative;
 }
 
 .swiperContainer :global .swiper-pagination-bullet {
@@ -17,7 +18,6 @@
     opacity: 1;
 }
 
-
 .swiper {
     width: 100%;
     height: 100%;
@@ -26,33 +26,25 @@
 .slideImageContainer {
     position: relative;
     width: 100%;
-    height: 640px;
+    height: 100%; /* 부모 컨테이너에 맞춰 높이 설정 */
     cursor: pointer;
 }
 
-.slideContent {
-    text-align: center;
-    margin-top: 20px;
+.slideImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 이미지 비율을 유지하면서 가로/세로 꽉 채우기 */
 }
 
-/* 태블릿 (1024px 이하) */
+/* 반응형 설정 */
 @media screen and (max-width: 1024px) {
     .swiperContainer {
         height: 480px;
     }
-
-    .slideImageContainer {
-        height: 480px;
-    }
 }
 
-/* 작은 태블릿 (768px 이하) */
 @media screen and (max-width: 768px) {
     .swiperContainer {
-        height: 360px;
-    }
-
-    .slideImageContainer {
         height: 360px;
     }
     .swiperContainer :global .swiper-pagination-bullets {
@@ -60,13 +52,8 @@
     }
 }
 
-/* 모바일 (480px 이하) */
 @media screen and (max-width: 480px) {
     .swiperContainer {
-        height: 160px;
-    }
-
-    .slideImageContainer {
         height: 160px;
     }
     .swiperContainer :global .swiper-pagination-bullets {

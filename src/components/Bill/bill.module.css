@@ -1,10 +1,11 @@
 .billPage {
     max-width: 1200px;
+    max-width: 1200px;
     margin: 0 auto;
+    padding: 40px 20px;
     padding: 40px 20px;
     font-family: Arial, sans-serif;
 }
-
 .headerTitle {
     text-align: center;
     font-size: 32px;
@@ -32,11 +33,13 @@
     font-size: 24px;
     color: #333;
     margin-bottom: 15px;
+    margin-bottom: 15px;
 }
 
 .leftSection .radio-group {
     display: flex;
     align-items: center;
+    gap: 10px;
     gap: 10px;
     margin-bottom: 15px;
 }
@@ -86,6 +89,7 @@
     width: 80px;
     height: 80px;
     object-fit: cover;
+    object-fit: cover;
     border-radius: 4px;
 }
 
@@ -129,6 +133,9 @@
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
     font-size: 16px;
 }
 
@@ -138,9 +145,12 @@
     font-size: 18px;
     color: #fff;
     background-color: black;
+    background-color: black;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
     transition: background-color 0.3s;
     margin-top: 20px;
 }

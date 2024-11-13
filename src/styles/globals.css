@@ -1,11 +1,30 @@
+/* src/styles/globals.css */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --button-color: #4098d7; /* 다크 모드용 버튼 색상 */
-    --button-hover-color: #8cbbe3; /* 다크 모드용 버튼 호버 색상 */
-  }
+/* 폰트 설정 */
+@font-face {
+  font-family: 'GmarketSans';
+  src: url('/fonts/GmarketSansTTFMedium.ttf') format('truetype'),
+       url('/fonts/GmarketSansTTFBold.ttf') format('truetype'),
+       url('/fonts/GmarketSansTTFLight.ttf') format('truetype');
+  font-weight: 400 700; /* Medium과 Bold로 설정 */
+  font-display: swap;
+}
+
+/* 색상 변수 */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --button-color: #0597F2;
+  --button-hover-color: #BBDDF2;
+  --font-family: 'GmarketSans', Arial, Helvetica, sans-serif; /* 새로운 폰트 변수 */
+}
+
+/* 기본 초기화 스타일 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font-family); /* 모든 요소에 폰트 적용 */
 }
 
 /* 기본 레이아웃 설정 */
@@ -17,11 +36,11 @@ html, body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
 }
-
 
 /* 링크 스타일 */
 a {
@@ -53,12 +72,8 @@ button:hover {
 
 .content {
   flex: 1;
+  margin-top: 70px; /* 헤더 높이에 맞춰 여백 설정 */
 }
-
-.content {
-  margin-top: 120px; /* 헤더 높이에 맞춰 여백 설정 */
-}
-
 
 /* 다크 모드 지원 */
 @media (prefers-color-scheme: dark) {

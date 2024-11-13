@@ -28,7 +28,9 @@ const MallHeader = () => {
         const user = token();
         if (user) {
             try {
-                const response = await axios.get(`/api/cart/${user}/count`);
+                const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/cart/count`, {
+                    userId: user
+                });
                 setCartCount(response.data.count);
             } catch (error) {
                 console.error('장바구니 개수 불러오기 에러:', error);
@@ -57,7 +59,7 @@ const MallHeader = () => {
     };
 
     const logo = () => {
-        Router.push('/mall');
+        Router.push('/');
     };
 
 
@@ -108,14 +110,9 @@ const MallHeader = () => {
         <header className={styles.header}>
             <div className={styles.headerContent}>
                 <div className={styles.logoContainer} onClick={logo}>
-                    <Image
-                        src="/main.png"
-                        alt="로고"
-                        width={150}
-                        height={50}
-                    />
+                    <Image src="/main.png" alt="로고" width={150} height={50} />
                 </div>
-                
+
                 <nav className={`${styles.navContainer} ${isMenuOpen ? styles.navOpen : ''}`}>
                     <span className={styles.navItem} onClick={() => Router.push('/')}>HOME</span>
                     <span className={styles.navItem} onClick={() => Router.push('/mall/product')}>PRODUCTS</span>
@@ -124,24 +121,22 @@ const MallHeader = () => {
                 </nav>
 
                 <div className={styles.iconContainer}>
+                    <UserOutlined className={styles.icon} onClick={profile} />
                     <div className={styles.cartIconContainer} onClick={cart}>
                         <ShoppingOutlined className={styles.icon} />
                         {cartCount > 0 && <span className={styles.cartCount}>{cartCount}</span>}
                     </div>
-                    <UserOutlined className={styles.icon} onClick={profile} />
-                    {isLoggedIn && (
-                        <LoginOutlined className={styles.icon} onClick={handleLogout} />
-                    )}
+                    {isLoggedIn && <LoginOutlined className={styles.icon} onClick={handleLogout} />}
                 </div>
-                <button 
-                className={`${styles.menuButton} ${isMenuOpen ? styles.menuButtonActive : ''}`} 
-                onClick={toggleMenu}
-            >
-                <MenuOutlined />
-            </button>
+                <button
+                    className={`${styles.menuButton} ${isMenuOpen ? styles.menuButtonActive : ''}`}
+                    onClick={toggleMenu}>
+                    <MenuOutlined />
+                </button>
             </div>
         </header>
     );
+
 };
 
 export default MallHeader;

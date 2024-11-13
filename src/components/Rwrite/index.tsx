@@ -1,37 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { FaRegStar, FaStar } from 'react-icons/fa';
+import { Rate, Button } from 'antd';
 import styled from 'styled-components';
 import style from './ReviewWrite.module.css';
-import { jwtDecode } from 'jwt-decode';  // jwtDecode 추가
+import { jwtDecode } from 'jwt-decode'; // jwtDecode 추가
 
-const StarSection = styled.div`
+const PreviewContainer = styled.div`
+    width: 50%; // 이미지 미리보기 크기 설정
+    margin-top: 10px;
     display: flex;
-    align-items: center;
-    gap: 5px;
+    justify-content: center; // 중앙 정렬
+    align-items: center; // 중앙 정렬
+    img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
 `;
 
-const StarIcon = styled.span<{ $isFilled: boolean }>`
-    color: ${(props) => (props.$isFilled ? '#FEE500' : '#ccc')};
-    font-size: 30px;
-    cursor: pointer;
-    transition: color 0.2s;
+const RatingContainer = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 10px;
+`;
 
-    &:hover {
-        color: #FEE500;
-    }
+const FileInputContainer = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+`;
+
+const FileInput = styled.input`
+    cursor: pointer; // 파일 선택 시 마우스 포인터 변경
 `;
 
 function Rwrite() {
     const router = useRouter();
-    const { productId, orderId } = router.query;
-    const [rating, setRating] = useState<number>(0);
-    const [content, setContent] = useState<string>('');
-    const [image, setImage] = useState<File | null>(null);
+    const { orderListId, productId } = router.query; // 동적 파라미터를 받아옵니다
 
-    // 별점 클릭 핸들러 함수 추가
-    const handleClick = (value: number) => {
+    const [rating, setRating] = useState<number>(0); // 별점 상태
+    const [content, setContent] = useState<string>(''); // 리뷰 내용
+    const [image, setImage] = useState<File | null>(null); // 이미지 상태
+    const [previewImage, setPreviewImage] = useState<string | null>(null); // 미리보기 이미지 상태
+    const [fileInputKey, setFileInputKey] = useState<number>(0); // 파일 업로드 input의 key 값으로 상태 변경
+
+    console.log('Received orderListId:', orderListId, 'Received productId:', productId);
+
+    useEffect(() => {
+        if (orderListId && productId) {
+            console.log('orderListId:', orderListId);
+            console.log('productId:', productId);
+        }
+    }, [router.query]);
+
+    // 별점 클릭 핸들러 함수
+    const handleRatingChange = (value: number) => {
         setRating(value);
     };
 
@@ -53,42 +78,53 @@ function Rwrite() {
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
-            setImage(e.target.files[0]);
+            const file = e.target.files[0];
+            setImage(file);
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewImage(reader.result as string); // 이미지 미리보기
+            };
+            reader.readAsDataURL(file);
         }
+    };
+
+    // 이미지 미리보기 취소 및 파일 초기화
+    const handleImageCancel = () => {
+        setImage(null);
+        setPreviewImage(null); // 이미지 취소 시 미리보기 이미지 제거
+        setFileInputKey((prevKey) => prevKey + 1); // 파일 input의 key를 변경하여 초기화
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
         const userId = getUserId();
-        
-        if (!productId || !orderId || !userId) {
-            alert("필요한 정보가 부족합니다.");
+
+        // orderListId와 productId가 존재하는지 확인
+        if (!orderListId || !productId || !userId) {
+            alert('필요한 정보가 부족합니다.');
             return;
         }
-    
+
         try {
-            // FormData 대신 일반 객체 사용
             const reviewData = {
-                OrderListID: orderId,
+                OrderListID: orderListId, // URL에서 받은 orderListId 사용
                 UserID: userId,
-                ProductID: productId,
+                ProductID: productId, // URL에서 받은 productId 사용
                 Rating: rating,
                 Content: content,
             };
-    
-            console.log('전송할 데이터:', reviewData);  // 데이터 확인용 로그
-    
-            const response = await axios.post(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/reviews`, 
-                reviewData,  // FormData 대신 일반 객체 사용
-                {
-                    headers: { 
-                        'Content-Type': 'application/json',  // multipart/form-data 대신 application/json 사용
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                }
-            );
-    
+
+            console.log('전송할 데이터:', reviewData);
+
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/reviewwrite`, reviewData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+
             if (response.data.result) {
                 alert('리뷰가 성공적으로 등록되었습니다.');
                 router.push('/mall/profile');
@@ -101,21 +137,17 @@ function Rwrite() {
 
     return (
         <div className={style.reviewContainer}>
-            <h2 className={style.title}>리뷰 작성</h2>
+            <h2 className={style.Title}>리뷰 작성</h2>
             <form onSubmit={handleSubmit} className={style.reviewForm}>
                 <div className={style.label}>평점</div>
-                <StarSection>
-                    {[1, 2, 3, 4, 5].map((star) => (
-                        <StarIcon
-                            key={star}
-                            $isFilled={star <= rating}
-                            onClick={() => handleClick(star)}  // handleStarClick을 handleClick으로 변경
-                        >
-                            {star <= rating ? <FaStar /> : <FaRegStar />}
-                        </StarIcon>
-                    ))}
+                <RatingContainer>
+                    <Rate
+                        allowHalf={false} // 0.5점 없이 1점씩만 선택 가능하게 설정
+                        value={rating}
+                        onChange={handleRatingChange}
+                    />
                     <span>{rating} / 5</span>
-                </StarSection>
+                </RatingContainer>
 
                 <label className={style.label}>리뷰 내용</label>
                 <textarea
@@ -127,9 +159,26 @@ function Rwrite() {
                 />
 
                 <label className={style.label}>이미지 업로드</label>
-                <input type="file" accept="image/*" onChange={handleImageChange} className={style.fileInput} />
+                <FileInputContainer>
+                    <FileInput
+                        key={fileInputKey} // key값을 변경하여 초기화 효과를 줌
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className={style.fileInput}
+                    />
+                    {previewImage && <Button onClick={handleImageCancel}>이미지 취소</Button>}
+                </FileInputContainer>
 
-                <button type="submit" className={style.submitButton}>리뷰 등록</button>
+                {previewImage && (
+                    <PreviewContainer>
+                        <img src={previewImage} alt="Preview" className={style.previewImage} />
+                    </PreviewContainer>
+                )}
+
+                <button onClick={handleSubmit} className={style.submitButton}>
+                    리뷰 등록
+                </button>
             </form>
         </div>
     );

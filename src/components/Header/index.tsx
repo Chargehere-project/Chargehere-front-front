@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { UserOutlined, ShopOutlined, LoginOutlined } from '@ant-design/icons';
 import Router from 'next/router';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { useState, useEffect } from 'react';
 
 const Header = () => {
@@ -73,10 +73,8 @@ const Header = () => {
             />
             <div style={iconContainerStyle}>
                 <UserOutlined style={iconStyle} onClick={profile} />
+                {isLoggedIn && <LoginOutlined style={iconStyle} onClick={handleLogout} />}
                 <ShopOutlined style={iconStyle} onClick={mall} />
-                {isLoggedIn && (
-                    <LoginOutlined style={iconStyle} onClick={handleLogout} />
-                )}
             </div>
         </header>
     );

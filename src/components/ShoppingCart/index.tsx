@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
+import Image from 'next/image';
 import Router from 'next/router';
 import style from './shoppingcart.module.css';
 
@@ -8,6 +9,8 @@ interface Product {
     ProductID: number;
     ProductName: string;
     ProductImage: string;
+    Image: string;
+    Price: number;
 }
 
 interface CartItem {
@@ -42,11 +45,13 @@ const ShoppingCart = () => {
                         },
                     }
                 );
+                console.log('Cart Data:', response.data.data); // 응답 데이터 확인
                 setCart(response.data.data);
             } catch (error) {
                 console.error('장바구니 내역을 가져오는데 실패했습니다.');
             }
         };
+
         fetchCart();
     }, []);
 
@@ -80,14 +85,12 @@ const ShoppingCart = () => {
     };
 
     const handleSelectItem = (cartId: number) => {
-        setSelectedItems((prev) =>
-            prev.includes(cartId) ? prev.filter((id) => id !== cartId) : [...prev, cartId]
-        );
+        setSelectedItems((prev) => (prev.includes(cartId) ? prev.filter((id) => id !== cartId) : [...prev, cartId]));
     };
 
     const totalPrice = cart.reduce((sum, item) => {
         if (selectedItems.includes(item.CartID)) {
-            return sum + item.Price * item.Quantity;
+            return sum + item.Product.Price * item.Quantity;
         }
         return sum;
     }, 0);
@@ -158,22 +161,18 @@ const ShoppingCart = () => {
             }
             const decoded: any = jwtDecode(token);
             // 세션 체크
-            const sessionResponse = await axios.get(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/check-session`,
-                {
-                    withCredentials: true,
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }
-            );
+            const sessionResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/check-session`, {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             if (!sessionResponse.data.result) {
                 alert('세션 정보가 없습니다.');
                 return;
             }
             // 선택된 상품들의 총 금액 계산
-            const totalAmount = selectedProducts.reduce((sum, item) =>
-                sum + (item.Price * item.Quantity), 0) + fee();
+            const totalAmount = selectedProducts.reduce((sum, item) => sum + item.Price * item.Quantity, 0) + fee();
             // 주문 데이터 구성
             const orderData = {
                 UserID: decoded.UserID,
@@ -182,119 +181,130 @@ const ShoppingCart = () => {
                 CustomerAddress: sessionResponse.data.userDetails.address,
                 TotalAmount: totalAmount,
                 OrderStatus: 'Pending',
-                orderItems: selectedProducts.map(item => ({
+                orderItems: selectedProducts.map((item) => ({
                     ProductID: item.Product.ProductID,
                     Quantity: item.Quantity,
                     Price: item.Price,
                     // Subtotal은 서버에서 계산됨
-                }))
+                })),
             };
-            const response = await axios.post(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/orders/create`,
-                orderData,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }
-            );
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/create`, orderData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             if (response.data.result) {
                 Router.push(`/order/${response.data.orderListId}`);
             }
         } catch (error) {
             console.error('주문 생성 중 오류 발생:', error);
-            alert('주문 처리 중 오류가 발생했습니다.');
+            alert('주문할 상품을 선택해주세요');
         }
-     };
+    };
 
     return (
         <div className={style.cartContainer}>
             <div className={style.cartMain}>
                 <h1 className={style.cartTitle}>CART</h1>
-                <div className={style.selectAllContainer}>
-                    <label className={style.selectAllLabel}>
-                        <input
-                            type="checkbox"
-                            className={style.selectAllCheckbox}
-                            checked={selectedItems.length === cart.length}
-                            onChange={handleSelectAll}
-                        /> 전체 선택
-                    </label>
-                    {cart.length > 0 && (
-                        <button 
-                            onClick={deleteAllItems}
-                            className={style.deleteAllButton}
-                        >
-                            선택 삭제
-                        </button>
-                    )}
-                </div>
-                <div className={style.cartItems}>
-                    {cart.map((item) => (
-                        <div key={item.CartID} className={style.cartItem}>
-                            <input
-                                type="checkbox"
-                                checked={selectedItems.includes(item.CartID)}
-                                onChange={() => handleSelectItem(item.CartID)}
-                                className={style.itemCheckbox}
-                            />
-                            <div className={style.itemImageContainer}>
-                                <img
-                                    src={item.Product.ProductImage}
-                                    alt={item.Product.ProductName}
-                                    className={style.itemImage}
-                                />
-                            </div>
-                            <div className={style.itemDetails}>
-                                <div className={style.itemName}>{item.Product.ProductName}</div>
-                                <div className={style.itemPrice}>{item.Price.toLocaleString()}원</div>
-                                <div className={style.itemQuantity}>
-                                    {editingId === item.CartID ? (
-                                        <select
-                                            value={item.Quantity}
-                                            onChange={(e) => quantityChange(item.CartID, Number(e.target.value))}
-                                            onBlur={() => setEditingId(null)}
-                                            className={style.quantitySelector}
-                                        >
-                                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                                                <option key={num} value={num}>
-                                                    {num}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    ) : (
-                                        <span onClick={() => setEditingId(item.CartID)}>{item.Quantity}개</span>
-                                    )}
-                                </div>
-                            </div>
-                            <div
-                                className={style.deleteButton}
-                                onClick={() => deleteItem(item.CartID)}
-                            >
-                                삭제
-                            </div>
+                {cart.length === 0 ? (
+                    <div className={style.emptyCartMessage}>장바구니에 상품이 없습니다</div>
+                ) : (
+                    <>
+                        <div className={style.selectAllContainer}>
+                            <label className={style.selectAllLabel}>
+                                <input
+                                    type="checkbox"
+                                    className={style.selectAllCheckbox}
+                                    checked={selectedItems.length === cart.length}
+                                    onChange={handleSelectAll}
+                                />{' '}
+                                전체 선택
+                            </label>
+                            {cart.length > 0 && (
+                                <button onClick={deleteAllItems} className={style.deleteAllButton}>
+                                    선택 삭제
+                                </button>
+                            )}
                         </div>
-                    ))}
-                </div>
+                        <div className={style.cartItems}>
+                            {cart.map((item) => (
+                                <div key={item.CartID} className={style.cartItem}>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedItems.includes(item.CartID)}
+                                        onChange={() => handleSelectItem(item.CartID)}
+                                        className={style.itemCheckbox}
+                                    />
+                                    <div className={style.itemImageContainer}>
+                                        <img
+                                            src={item.Product.Image}
+                                            alt={item.Product.ProductName}
+                                            className={style.itemImage}
+                                        />
+                                    </div>
+
+                                    <div className={style.itemDetails}>
+                                        <div
+                                            className={style.itemName}
+                                            onClick={() => Router.push(`/mall/product/${item.Product.ProductID}`)}
+                                            style={{ cursor: 'pointer' }}>
+                                            {item.Product.ProductName}
+                                        </div>
+
+                                        <div className={style.itemPrice}>
+                                            {item.Product.Price.toLocaleString()}
+                                            <span>원</span>
+                                        </div>
+                                        <div className={style.itemQuantity}>
+                                            {editingId === item.CartID ? (
+                                                <select
+                                                    value={item.Quantity}
+                                                    onChange={(e) =>
+                                                        quantityChange(item.CartID, Number(e.target.value))
+                                                    }
+                                                    onBlur={() => setEditingId(null)}
+                                                    className={style.quantitySelector}>
+                                                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                                                        <option key={num} value={num}>
+                                                            {num}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            ) : (
+                                                <span onClick={() => setEditingId(item.CartID)}>{item.Quantity}개</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
+                )}
             </div>
-            <div className={style.summaryContainer}>
-                <h2 className={style.summaryTitle}>주문 내역</h2>
-                <div className={style.summaryRow}>
-                    <span>상품 금액</span>
-                    <span>{totalPrice.toLocaleString()}원</span>
+            {cart.length > 0 && (
+                <div className={style.summaryContainer}>
+                    <h2 className={style.summaryTitle}>주문 내역</h2>
+
+                    <div className={style.summaryRow}>
+                        <span>상품 금액</span>
+                        <span>{totalPrice.toLocaleString()}원</span>
+                    </div>
+
+                    <div className={style.summaryRow}>
+                        <span>배송비</span>
+                        <span>{fee() === 0 ? '무료' : `${fee().toLocaleString()}원`}</span>
+                    </div>
+
+                    <div className={`${style.summaryRow} ${style.summaryTotal}`}>
+                        <span>총 결제 금액</span>
+                        <span>{(totalPrice + fee()).toLocaleString()}원</span>
+                    </div>
+
+                    <button onClick={goToOrder} className={style.orderButton}>
+                        주문결제
+                    </button>
                 </div>
-                <div className={style.summaryRow}>
-                    <span>배송비</span>
-                    <span>{fee().toLocaleString()}원</span>
-                </div>
-                <div className={`${style.summaryRow} ${style.summaryTotal}`}>
-                    <span>총 결제 금액</span>
-                    <span>{(totalPrice + fee()).toLocaleString()}원</span>
-                </div>
-                <button onClick={goToOrder} className={style.orderButton}>
-                    주문하기
-                </button>
-            </div>
+            )}
         </div>
     );
 };
