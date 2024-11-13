@@ -109,6 +109,7 @@ const Detail = () => {
             );
 
             if (response.data.result) {
+                window.dispatchEvent(new Event('cartUpdated'));
                 alert('장바구니에 추가되었습니다.');
             }
         } catch (error) {
