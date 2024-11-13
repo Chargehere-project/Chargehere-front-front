@@ -49,7 +49,6 @@ const Detail = () => {
     const [expandShipping, setExpandShipping] = useState(false);
     const [isShippingInfoVisible, setIsShippingInfoVisible] = useState(false);
 
-
     useEffect(() => {
         const fetchProduct = async () => {
             if (!router.isReady || !id) return;
@@ -200,17 +199,8 @@ const Detail = () => {
                     <img src={product.Image} alt={product.ProductName} style={{ width: '100%', borderRadius: '8px' }} />
                 </div>
                 <div style={{ flex: '1', marginLeft: '50px' }}>
-                    <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginTop: '30px' }}>{product.ProductName}</h1>
-                    <p
-                        style={{
-                            fontSize: '20px',
-                            fontWeight: 'bold',
-                            color: '#333',
-                            marginTop: '20px',
-                            marginBottom: '20px',
-                        }}>
-                        {product.Price.toLocaleString()}원
-                    </p>
+                    <h1 style={{ fontSize: '32px', fontWeight: 'bold' }}>{product.ProductName}</h1>
+                    <p style={{ fontSize: '20px', fontWeight: 'bold' }}>{product.Price.toLocaleString()}원</p>
                     {product.Discount > 0 && (
                         <p style={{ fontSize: '18px', color: '#888' }}>
                             할인가: {(product.Price * (1 - product.Discount / 100)).toLocaleString()}원 (
@@ -218,207 +208,54 @@ const Detail = () => {
                         </p>
                     )}
                     <div style={{ display: 'flex', gap: '10px', marginTop: '30px' }}>
-                        <Button type="primary" style={{ width: '150px', height: '45px' }}>
+                        <Button type="primary" onClick={buyNow}>
                             구매하기
                         </Button>
-                        <Button style={{ width: '150px', height: '45px' }}>장바구니</Button>
+                        <Button onClick={addToCart}>장바구니</Button>
                     </div>
-                    <div
-                        style={{
-                            display: 'flex',
-                            width: '650px',
-                            alignItems: 'center',
-                            marginTop: '50px',
-                            cursor: 'pointer',
-                            // borderBottom: '1px solid #ddd',
-                            borderTop: '1px solid #ddd',
-                            paddingBottom: '20px',
-                            paddingTop: '20px',
-                        }}
-                        onClick={toggleShippingDetails}>
-                        <span style={{ fontSize: '16px' }}>무료 배송 및 반품</span>
-                        {expandShipping ? (
-                            <UpOutlined style={{ marginLeft: '500px' }} />
-                        ) : (
-                            <DownOutlined style={{ marginLeft: '500px' }} />
-                        )}
-                    </div>
-                    {expandShipping && (
-                        <div style={{ marginTop: '10px', fontSize: '14px', color: '#666' }}>
-                            <p>
-                                <strong>일반 배송</strong>
-                            </p>
-                            <ul style={{ paddingLeft: '20px' }}>
-                                <li>배송지역: 전국 (일부 지역 제외)</li>
-                                <li>배송비: 무료배송</li>
-                                <li>제품 수령일로부터 14일 이내에 무료 반품이 가능합니다.</li>
-                            </ul>
-                            <a href="#" style={{ color: '#000000', textDecoration: 'underline' }}>
-                                일반 배송 자세히 알아보기
-                            </a>
-                            <br />
-                            <a href="#" style={{ color: '#000000', textDecoration: 'underline' }}>
-                                반품 자세히 알아보기
-                            </a>
 
-                            <p style={{ marginTop: '10px' }}>
-                                <strong>A/S 안내</strong>
+                    <div
+                        style={{ display: 'flex', alignItems: 'center', marginTop: '20px', cursor: 'pointer' }}
+                        onClick={() => setIsShippingInfoVisible(!isShippingInfoVisible)}>
+                        <span>무료 배송 및 반품</span>
+                        {isShippingInfoVisible ? <UpOutlined /> : <DownOutlined />}
+                    </div>
+
+                    {isShippingInfoVisible && (
+                        <div style={{ marginTop: '10px' }}>
+                            <p>
+                                <strong>배송 안내</strong>
                             </p>
-                            <ul style={{ paddingLeft: '20px' }}>
-                                <li>
-                                    온라인에서 구매한 제품에 대한 A/S는 고객센터(080-012-3456)에서 유선으로만 접수
-                                    가능합니다.
-                                </li>
-                            </ul>
-                            <a href="#" style={{ color: '#000000', textDecoration: 'underline' }}>
-                                자세히 알아보기
-                            </a>
+                            <p>{shippingInfo.delivery}</p>
+                            <p>
+                                <strong>반품 안내</strong>
+                            </p>
+                            <p>{shippingInfo.returns}</p>
                         </div>
                     )}
-        <div className={styles.container}>
-        <div className={styles.productSection}>
-            <div className={styles.imageSection}>
-                <img 
-                    src={product.Image} 
-                    alt={product.ProductName} 
-                    style={{ width: '100%', borderRadius: '8px' }} 
-                />
-            </div>
-            <div className={styles.infoSection}>
-                <h1 style={{ margin: '0px' }}>{product.ProductName}</h1>
-                <p style={{ margin: '0px' }}> {product.Price.toLocaleString()}원</p>
-                {product.Discount > 0 && (
-                    <p style={{ margin: '0px' }}>
-                        할인가: {(product.Price * (1 - product.Discount / 100)).toLocaleString()}원 ({product.Discount}% 할인)
-                    </p>
-                )}
-                <button
-                    onClick={() => setIsShippingInfoVisible(!isShippingInfoVisible)}
-                    className={styles.shippingButton}
-                >
-                    <span style={{fontSize:'16px'}}>배송 및 반품</span>
-                    {isShippingInfoVisible ? (
-                        <ChevronUp className="w-5 h-5" />
-                    ) : (
-                        <ChevronDown className="w-5 h-5" />
-                    )}
-                </button>
-                {isShippingInfoVisible && (
-    <div
-        style={{
-            marginTop: '8px',
-            padding: '16px',
-            backgroundColor: 'white',
-            border: '1px solid #e5e5e5',
-            borderRadius: '8px',
-        }}
-    >
-        <div style={{ marginBottom: '16px' }}>
-            <h4
-                style={{
-                    fontWeight: '600',
-                    marginBottom: '8px',
-                }}
-            >
-                배송 안내
-            </h4>
-            {shippingInfo.delivery.split('\n').map((text, index) => (
-                <p
-                    key={index}
-                    style={{
-                        margin: '4px 0',
-                        color: '#666',
-                    }}
-                >
-                    {text}
-                </p>
-            ))}
-        </div>
-        <div>
-            <h4
-                style={{
-                    fontWeight: '600',
-                    marginBottom: '8px',
-                }}
-            >
-                반품 안내
-            </h4>
-            {shippingInfo.returns.split('\n').map((text, index) => (
-                <p
-                    key={index}
-                    style={{
-                        margin: '4px 0',
-                        color: '#666',
-                    }}
-                >
-                    {text}
-                </p>
-            ))}
-        </div>
-    </div>
-)}
-                <div className={styles.buttonGroup}>
-                    <Button type="primary" onClick={buyNow} style={{ width: '150px', height: '45px' }}>
-                        구매하기
-                    </Button>
-                    <Button onClick={addToCart} style={{ width: '150px', height: '45px' }}>
-                        장바구니
-                    </Button>
                 </div>
             </div>
-        </div>
 
             <Tabs defaultActiveKey="1" style={{ marginTop: '40px' }}>
                 <Tabs.TabPane tab="상세정보" key="1">
                     <p>{product.Description}</p>
                 </Tabs.TabPane>
-                <Tabs.TabPane tab="사용후기" key="2">
-                    <List dataSource={[]} renderItem={() => <div>No reviews</div>} />
-                </Tabs.TabPane>
-                <Tabs.TabPane tab="상품 Q&A" key="3">
-                    <List dataSource={[]} renderItem={() => <div>No Q&A</div>} />
-                    <Form layout="inline" style={{ marginTop: '20px' }}>
-                        <Form.Item>
-                            <Button type="primary">질문하기</Button>
-
                 <Tabs.TabPane tab={`사용후기 (${reviews.length})`} key="2">
                     <List
                         dataSource={reviews}
                         renderItem={(review) => (
                             <List.Item key={review.ReviewID}>
-                                <List.Item.Meta
-                                    title={
-                                        <div>
-                                            <span>평점: {review.Rating}</span>
-                                            {review.User && (
-                                                <span style={{ marginLeft: '10px' }}>{review.User.UserName}</span>
-                                            )}
-                                        </div>
-                                    }
-                                    description={
-                                        <div>
-                                            <div>{review.Content}</div>
-                                            <div style={{ color: '#888', fontSize: '12px', marginTop: '5px' }}>
-                                                {new Date(review.ReviewDate).toLocaleDateString()}
-                                            </div>
-                                        </div>
-                                    }
-                                />
+                                <List.Item.Meta title={`평점: ${review.Rating}`} description={review.Content} />
                             </List.Item>
                         )}
                     />
                 </Tabs.TabPane>
-
                 <Tabs.TabPane tab={`상품 Q&A (${qas.length})`} key="3">
                     <List
                         dataSource={qas}
                         renderItem={(qa) => (
                             <List.Item key={qa.QID}>
-                                <List.Item.Meta
-                                    title={`Q. ${qa.Question}`}
-                                    description={qa.Answer ? `A. ${qa.Answer}` : '답변 대기 중'}
-                                />
-                                <div>{qa.Date}</div>
+                                <List.Item.Meta title={`Q. ${qa.Question}`} description={qa.Answer || '답변 대기 중'} />
                             </List.Item>
                         )}
                     />

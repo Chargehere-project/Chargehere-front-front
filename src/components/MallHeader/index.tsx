@@ -126,10 +126,6 @@ const MallHeader = () => {
                     <span className={styles.navItem} onClick={() => Router.push('/cs')}>
                         CS
                     </span>
-                    <span className={styles.navItem} onClick={() => Router.push('/mall')}>HOME</span>
-                    <span className={styles.navItem} onClick={() => Router.push('/mall/product')}>PRODUCTS</span>
-                    <span className={styles.navItem} onClick={() => Router.push('/ev-guide')}>EV GUIDE</span>
-                    <span className={styles.navItem} onClick={() => Router.push('/cs')}>CS</span>
                 </nav>
 
                 <div className={styles.iconContainer}>

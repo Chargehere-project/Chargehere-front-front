@@ -50,8 +50,6 @@ const Footer = () => {
                             className={styles.icon}
                         />
                     </a>
-         <FacebookOutlined className={styles.icon} onClick={facebook} />
-                    <InstagramOutlined className={styles.icon} onClick={insta} />
                 </div>
             </div>
             <div className={styles.infoContainer}>
