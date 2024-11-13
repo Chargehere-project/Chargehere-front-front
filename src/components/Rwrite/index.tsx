@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import { Rate, Button } from 'antd';
 import styled from 'styled-components';
-import style from './ReviewWrite.module.css';
+import RwriteStyled from './styled';
 import { jwtDecode } from 'jwt-decode'; // jwtDecode 추가
 
 const PreviewContainer = styled.div`
@@ -136,10 +136,11 @@ function Rwrite() {
     };
 
     return (
-        <div className={style.reviewContainer}>
-            <h2 className={style.Title}>리뷰 작성</h2>
-            <form onSubmit={handleSubmit} className={style.reviewForm}>
-                <div className={style.label}>평점</div>
+        <RwriteStyled>
+            <div className= 'reviewContainer'>
+            <h2 className= 'Title'>리뷰 작성</h2>
+            <form onSubmit={handleSubmit} className= 'reviewForm'>
+                <div className= 'label'>평점</div>
                 <RatingContainer>
                     <Rate
                         allowHalf={false} // 0.5점 없이 1점씩만 선택 가능하게 설정
@@ -149,38 +150,41 @@ function Rwrite() {
                     <span>{rating} / 5</span>
                 </RatingContainer>
 
-                <label className={style.label}>리뷰 내용</label>
+                <label className= 'label'>리뷰 내용</label>
                 <textarea
                     value={content}
                     onChange={handleContentChange}
                     placeholder="제품에 대한 솔직한 의견을 남겨주세요."
-                    className={style.textarea}
+                    className= 'textarea'
                     rows={5}
                 />
 
-                <label className={style.label}>이미지 업로드</label>
+                <label className= 'label'>이미지 업로드</label>
                 <FileInputContainer>
                     <FileInput
                         key={fileInputKey} // key값을 변경하여 초기화 효과를 줌
                         type="file"
                         accept="image/*"
                         onChange={handleImageChange}
-                        className={style.fileInput}
+                        className= 'fileInput'
                     />
                     {previewImage && <Button onClick={handleImageCancel}>이미지 취소</Button>}
                 </FileInputContainer>
 
                 {previewImage && (
                     <PreviewContainer>
-                        <img src={previewImage} alt="Preview" className={style.previewImage} />
+                        <img src={previewImage} alt="Preview" className= 'previewImage' />
                     </PreviewContainer>
                 )}
 
-                <button onClick={handleSubmit} className={style.submitButton}>
+                <button onClick={handleSubmit} className= 'submitButton'>
                     리뷰 등록
                 </button>
             </form>
         </div>
+
+        </RwriteStyled>
+        
     );
 }
 

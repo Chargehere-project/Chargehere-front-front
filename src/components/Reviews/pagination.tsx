@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ReviewItem from './reviews';
-import styles from './PaginatedReviews.module.css';
+import PageStyled from './pagestyled';
 
 interface ReviewProps {
   reviewId: number;
@@ -45,26 +45,27 @@ function PaginatedReviews({ reviews = [], itemsPerPage }: PaginatedReviewsProps)
   };
 
   return (
-    <div className={styles.reviewContainer}>
-      <div className={styles.sortContainer}>
+    <PageStyled>
+      <div className= 'reviewContainer'>
+      <div className= 'sortContainer'>
         <span>평균 평점: {averageRating} / 5</span>
-        <select onChange={(e) => handleSortChange(e.target.value as 'latest' | 'highRating')} className={styles.sortSelect}>
+        <select onChange={(e) => handleSortChange(e.target.value as 'latest' | 'highRating')} className= 'sortSelect'>
           <option value="latest">최신순</option>
           <option value="highRating">평점 높은순</option>
         </select>
       </div>
 
-      <div className={styles.reviewGrid}>
+      <div className= 'reviewGrid'>
         {currentReviews.map((review) => (
           <ReviewItem key={review.reviewId} {...review} />
         ))}
       </div>
 
-      <div className={styles.pagination}>
+      <div className= 'pagination'>
         {Array.from({ length: totalPages }, (_, index) => (
           <button
             key={index}
-            className={`${styles.pageButton} ${index + 1 === currentPage ? styles.pageButtonActive : ''}`}
+            className={`$ 'pageButton' ${index + 1 === currentPage ? 'pageButtonActive' : ''}`}
             onClick={() => handlePageChange(index + 1)}
             disabled={index + 1 === currentPage}
           >
@@ -73,6 +74,9 @@ function PaginatedReviews({ reviews = [], itemsPerPage }: PaginatedReviewsProps)
         ))}
       </div>
     </div>
+
+    </PageStyled>
+    
   );
 }
 

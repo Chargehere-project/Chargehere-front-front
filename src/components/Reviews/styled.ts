@@ -1,4 +1,6 @@
-/* 전체 리뷰 페이지 스타일 */
+import styled from 'styled-components';
+
+const ReviewStyled = styled.div`
 .reviewPage {
   padding: 20px;
   max-width: 1100px;
@@ -96,3 +98,7 @@
   font-size: 16px;
   padding: 20px;
 }
+
+`;
+
+export default ReviewStyled;
