@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import ProductItem from './ProductItem';
+import SortDropdown from './SortDropdown';
 import { Input, Select } from 'antd';
 import axios from 'axios';
+import { 
+    ProductGrid, 
+    SearchContainer, 
+    SearchIconButton, 
+    SearchInput, 
+    TopContainer,
+    ProductTitle
+} from '../../styles/Product.styles';
+import { SearchIcon } from 'lucide-react';
 
 interface ProductData {
     ProductID: number;
@@ -17,7 +27,9 @@ const Product = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [products, setProducts] = useState<ProductData[]>([]);
     const [loading, setLoading] = useState(true);
-    const [sortType, setSortType] = useState<string>('latest');
+    const [sortType, setSortType] = useState<string>('');
+    const [isSearchVisible, setIsSearchVisible] = useState(false);
+
     const itemsPerPage = 20;
 
     // 데이터 가져오기
@@ -40,6 +52,11 @@ const Product = () => {
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
     const getSortedProducts = (products: ProductData[]) => {
+        // sortType이 빈 문자열일 때도 기본 정렬 처리
+        if (!sortType) {
+            return products;
+        }
+
         switch (sortType) {
             case 'latest':
                 return [...products].sort((a, b) => b.ProductID - a.ProductID);
@@ -82,57 +99,30 @@ const Product = () => {
 
     return (
         <div>
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '20px',
-                    marginTop: '20px',
-                    marginBottom: '20px',
-                }}
+            <ProductTitle>PRODUCT</ProductTitle>
+            <TopContainer
             >
-                <Input
-                    type="text"
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                    placeholder="검색어를 입력하세요"
-                    style={{
-                        padding: '10px',
-                        width: '500px',
+                <SearchContainer>
+                    <SearchInput
+                        type="search"
+                        placeholder="검색어를 입력하세요"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        isVisible={isSearchVisible}
+                    />
+                    <SearchIconButton onClick={() => setIsSearchVisible(!isSearchVisible)}>
+                        <SearchIcon size={20} />
+                    </SearchIconButton>
+                </SearchContainer>
+                <SortDropdown
+                    value={sortType}
+                    onChange={(value) => {
+                        setSortType(value);
+                        setCurrentPage(1);
                     }}
                 />
-                <div
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px', // 라벨과 Select 사이 간격
-                    }}
-                >
-                    <span
-                        style={{
-                            fontWeight: 'bold', // 글자 굵게
-                            color: '#333', // 글자 색상
-                        }}
-                    >
-                        정렬기준
-                    </span>
-                    <Select defaultValue="latest" style={{ width: 200 }} onChange={handleSortChange}>
-                        <Option value="latest">최신순</Option>
-                        <Option value="priceLow">가격 낮은순</Option>
-                        <Option value="priceHigh">가격 높은순</Option>
-                        <Option value="discountHigh">할인율 높은순</Option>
-                    </Select>
-                </div>
-            </div>
-            <div
-                style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(5, 1fr)',
-                    gap: '16px',
-                    justifyContent: 'center',
-                }}
-            >
+            </TopContainer>
+            <ProductGrid>
                 {currentProducts.length > 0 ? (
                     currentProducts.map((product) => (
                         <ProductItem
@@ -145,9 +135,9 @@ const Product = () => {
                         />
                     ))
                 ) : (
-                    <p style={{ gridColumn: 'span 5', textAlign: 'center' }}>검색 결과가 없습니다.</p>
+                    <div style={{ gridColumn: 'span 4', textAlign: 'center' }}>검색 결과가 없습니다.</div>
                 )}
-            </div>
+            </ProductGrid>
 
             <div style={{ marginTop: '20px', textAlign: 'center' }}>
                 {totalPages > 1 &&
