@@ -11,7 +11,7 @@ const NoticeStyled = styled.div`
     font-size: 2em;
     text-align: center;
     margin-bottom: 20px;
-    color: #0056B3;
+    color: #333;
   }
   .noticeTable {
     width: 100%;
