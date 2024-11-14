@@ -10,7 +10,7 @@ import {
 import axios from 'axios';
 import Router from 'next/router';
 import Image from 'next/image';
-import SignupStyled from './styled'; // 스타일링 파일 import
+import SignupStyled from './styled';
 
 const SignUp = () => {
     const [form] = Form.useForm();
@@ -23,22 +23,27 @@ const SignUp = () => {
         try {
             const userId = form.getFieldValue('id');
             if (!userId) {
-                setErrorMessage('아이디를 입력해주세요');
+                Modal.warning({
+                    title: '아이디 입력 필요',
+                    content: '아이디를 입력해주세요',
+                });
                 setIsIdChecked(false);
                 return;
             }
-    
+
             // 이메일 형식 검사
             const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
             if (!emailRegex.test(userId)) {
-                setErrorMessage('올바른 이메일 형식이 아닙니다');
+                Modal.warning({
+                    title: '잘못된 이메일 형식',
+                    content: '올바른 이메일 형식이 아닙니다',
+                });
                 setIsIdChecked(false);
                 setCheckId('');
                 return;
             }
-    
+
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/checkid`, { userId });
-            console.log('데이터확인', response.data);
             if (response.data.result === true) {
                 setCheckId(response.data.message);
                 setErrorMessage('');
@@ -58,12 +63,14 @@ const SignUp = () => {
             setIsIdChecked(false);
             console.error('아이디 중복 검사 실패:', error);
         }
-        // 아이디 중복 확인 로직
     };
 
     const onFinish = async (values: any) => {
         if (!isIdChecked) {
-            alert('아이디 중복검사를 해주세요.');
+            Modal.warning({
+                title: '아이디 중복 검사 필요',
+                content: '아이디 중복검사를 해주세요.',
+            });
             return;
         }
 
@@ -75,20 +82,24 @@ const SignUp = () => {
                 residence: values.residence,
                 phone: values.phone,
             });
-            console.log('성공:', response.data);
             setErrorMessage('');
-            Router.push('/mall/login');
+            
+            Modal.success({
+                title: '회원가입 완료',
+                content: '회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.',
+                onOk() {
+                    Router.push('/mall/login');
+                },
+            });
+
         } catch (err) {
-            console.log('실패:', err);
             if (axios.isAxiosError(err) && err.response) {
                 setErrorMessage(err.response.data.message || '회원가입에 실패했습니다.');
             } else {
                 setErrorMessage('알 수 없는 오류가 발생했습니다.');
             }
         }
-        // 회원가입 완료 로직
     };
-
 
     const handleIdChange = () => {
         setIsIdChecked(false);
@@ -112,8 +123,6 @@ const SignUp = () => {
                 <div className="logo-container" onClick={() => Router.push('/mall')}>
                     <Image src="/main.png" alt="Main Logo" width={300} height={100} />
                 </div>
-
-                {/* <h2 className="title">Signup</h2> */}
 
                 <Form
                     form={form}
@@ -229,14 +238,14 @@ const SignUp = () => {
                         <p>시행일자: 2021년 08월 14일</p>
                         <h3>제 1 조 목적</h3>
                         <p>
-                        제1조 목적 <br />
+                            제1조 목적 <br />
                             이 약관은 한국학술연구원(이하"회사"라 한다)이 운영하는 iks.or.kr (이하"사이트"라 한다)에서 제공하는 문자메세지 전송 서비스(이하 "서비스"라 한다)의 이용조건 및 절차, 회사와 회원간의 권리, 의무, 기타 필요한 사항을 규정함을 목적으로 합니다.<br />
-                        제2조 약관의 효력 및 변경<br />
+                            제2조 약관의 효력 및 변경<br />
                             1. 이 약관은 그 내용을 회사 사이트에 게시하여 이용회원에게 공지함으로써 효력을 발생합니다.<br />
                             2. 회사는 관련법을 위배하지 않는 범위에서 이 약관을 정할 수 있으며 필요시 약관을 변경할 수 있습니다.<br />
                             3. 회사가 약관을 변경할 경우에는 회사 사이트에 그 적용일자 7일 이전부터 적용일자 전일까지 공지하며, 제1항과 같은 방법으로 효력이 발생합니다.<br />
                             4. 회원은 변경된 약관 사항에 동의하지 않으면 서비스 이용을 중단하고 언제든지 탈퇴할 수 있습니다. 약관의 효력발생일 이후의 계속적인 서비스 이용은 약관의 변경사항에 동의한 것으로 간주합니다. <br />
-                        제3조 약관의 적용<br />
+                            제3조 약관의 적용<br />
                             1. 이 약관에서 정하지 않은 사항은 관계법규에 의하거나, 관계법규 등에도 정함이 없는 경우 일반적인 상관례에 따릅니다.
                         </p>
                     </div>

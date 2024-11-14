@@ -5,6 +5,7 @@ import { UserOutlined, ShoppingOutlined, LoginOutlined, MenuOutlined } from '@an
 import axios from 'axios';
 import {jwtDecode} from 'jwt-decode';
 import HeaderStyled from './styled';
+import { Modal } from 'antd';
 
 const MallHeader = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -42,19 +43,31 @@ const MallHeader = () => {
         if (user || path === '/mall/login') {
             Router.push(path);
         } else {
-            alert('로그인이 필요합니다.');
-            Router.push('/mall/login');
+            Modal.warning({
+                title: '로그인 필요',
+                content: '로그인이 필요합니다.',
+                onOk() {
+                    Router.push('/mall/login');
+                },
+            });
         }
     };
 
     const handleLogout = () => {
-        if (window.confirm('로그아웃 하시겠습니까?')) {
-            localStorage.removeItem('token'); // 토큰 제거
-            setIsLoggedIn(false);            // 로그인 상태 해제
-            setCartCount(0);                 // 장바구니 개수 초기화
-            Router.push('/');
-            alert('로그아웃 되었습니다.');
-        }
+        Modal.confirm({
+            title: '로그아웃 확인',
+            content: '로그아웃 하시겠습니까?',
+            onOk() {
+                localStorage.removeItem('token'); // 토큰 제거
+                setIsLoggedIn(false);            // 로그인 상태 해제
+                setCartCount(0);                 // 장바구니 개수 초기화
+                Router.push('/');
+                Modal.info({
+                    title: '로그아웃 완료',
+                    content: '로그아웃 되었습니다.',
+                });
+            },
+        });
     };
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
