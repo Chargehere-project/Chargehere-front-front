@@ -1,13 +1,26 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import { Button, Input, List, Tabs, Form, message } from 'antd';
-import { DownOutlined, UpOutlined } from '@ant-design/icons';
-import {jwtDecode} from 'jwt-decode';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { Button, List, Tabs, Form, message } from 'antd';
+import { jwtDecode } from 'jwt-decode';
 import styles from './Detail.module.css';
 import ProductQA from './ProductQA';
-
+import {
+    Container,
+    ProductSection,
+    ImageSection,
+    InfoSection,
+    ProductTitle,
+    ProductPrice,
+    ButtonGroup,
+    BuyButton,
+    CartButton,
+    ShippingInfoContainer,
+    ShippingInfoTitle,
+    ShippingSectionTitle,
+    ShippingText,
+    TabsContainer,
+} from './DetailStyles';
 
 interface Product {
     ProductID: number;
@@ -26,10 +39,10 @@ interface Review {
     Content: string;
     ReviewDate: string;
     User?: {
-        // 유저 정보 추가 (필요한 경우)
         UserName: string;
     };
 }
+
 interface QA {
     QID: number;
     ProductID: number;
@@ -41,13 +54,14 @@ interface QA {
 
 const Detail = () => {
     const router = useRouter();
-    const { id } = router.query; // 상품 ID
+    const { id } = router.query;
     const [product, setProduct] = useState<Product | null>(null);
     const [reviews, setReviews] = useState<Review[]>([]);
     const [qas, setQAs] = useState<QA[]>([]);
     const [qasCount, setQasCount] = useState<number>(0); // Q&A 개수를 저장할 상태
     const [expandShipping, setExpandShipping] = useState(false);
     const [isShippingInfoVisible, setIsShippingInfoVisible] = useState(false);
+    const [newQuestion, setNewQuestion] = useState<string>('');
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -64,6 +78,7 @@ const Detail = () => {
                 // Q&A 개수를 가져오는 요청
                 const qaCountResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/qas/count?productId=${id}`);
                 setQasCount(qaCountResponse.data.count); // 백엔드에서 'count' 필드로 개수를 반환한다고 가정
+
             } catch (error) {
                 console.error('데이터를 불러오는데 실패했습니다.', error);
             }
@@ -73,23 +88,22 @@ const Detail = () => {
     }, [router.isReady, id]);
 
     const addToCart = async () => {
-        const authToken = localStorage.getItem('token');
-        if (!authToken) {
-            alert('로그인이 필요합니다.');
-            router.push('/mall/login'); // 로그인 페이지로 리다이렉트
-            return;
-        }
-
-        let userId;
         try {
-            const decoded: any = jwtDecode(authToken);
-            userId = decoded.UserID;
-        } catch (error) {
-            console.error('토큰 디코드 에러:', error);
-            return;
-        }
+            const authToken = localStorage.getItem('token');
+            if (!authToken) {
+                alert('로그인이 필요합니다.');
+                return;
+            }
 
-        try {
+            let userId;
+            try {
+                const decoded: any = jwtDecode(authToken);
+                userId = decoded.UserID;
+            } catch (error) {
+                console.error('토큰 디코드 에러:', error);
+                return;
+            }
+
             const response = await axios.post(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/savecart`,
                 {
@@ -107,7 +121,6 @@ const Detail = () => {
             );
 
             if (response.data.result) {
-                window.dispatchEvent(new Event('cartUpdated'));
                 alert('장바구니에 추가되었습니다.');
             }
         } catch (error) {
@@ -174,64 +187,52 @@ const Detail = () => {
         router.push(`/mall/product/${id}/qa/write`);
     };
 
-    const toggleShippingDetails = () => {
-        setExpandShipping(!expandShipping);
-    };
-
     if (!product) {
         return <div>로딩중...</div>;
     }
+
     const shippingInfo = {
         delivery: '• 배송비는 전 상품 3000원이 부과됩니다.\n• 주문일로부터 1-3일 이내 출고됩니다.',
         returns:
             '• 상품 수령 후 7일 이내 반품 가능합니다.\n• 제품 하자 시 무료 반품 가능합니다.\n• 변심으로 인한 반품 시 배송비는 고객 부담입니다.',
     };
 
-    if (!product) {
-        return <div>로딩중...</div>;
-    }
-
     return (
-        <div className={styles.container}>
-            <div className={styles.productSection}>
-                <div className={styles.imageSection}>
-                    <img src={product.Image} alt={product.ProductName} style={{ width: '100%', borderRadius: '8px' }} />
-                </div>
-                <div style={{ flex: '1', marginLeft: '50px' }}>
-                    <h1 style={{ fontSize: '32px', fontWeight: 'bold' }}>{product.ProductName}</h1>
-                    <p style={{ fontSize: '20px', fontWeight: 'bold' }}>{product.Price.toLocaleString()}원</p>
-                    {product.Discount > 0 && (
-                        <p style={{ margin: '0px' }}>
-                            할인가: {(product.Price * (1 - product.Discount / 100)).toLocaleString()}원 ({product.Discount}% 할인)
-                        </p>
-                    )}
-                    <div style={{ display: 'flex', gap: '10px', marginTop: '30px' }}>
-                        <Button type="primary">구매하기</Button>
-                        <Button>장바구니</Button>
-                    </div>
-
-                    <div
-                        style={{ display: 'flex', alignItems: 'center', marginTop: '20px', cursor: 'pointer' }}
-                        onClick={() => setIsShippingInfoVisible(!isShippingInfoVisible)}>
-                        <span>무료 배송 및 반품</span>
-                        {isShippingInfoVisible ? <UpOutlined /> : <DownOutlined />}
-                    </div>
-
-                    {isShippingInfoVisible && (
-                        <div style={{ marginTop: '10px' }}>
-                            <p>
-                                <strong>배송 안내</strong>
-                            </p>
-                            <p>{shippingInfo.delivery}</p>
-                            <p>
-                                <strong>반품 안내</strong>
-                            </p>
-                            <p>{shippingInfo.returns}</p>
+        <Container>
+            <ProductSection>
+                <ImageSection>
+                    <img
+                        src={product?.Image}
+                        alt={product?.ProductName}
+                        style={{ width: '100%', borderRadius: '8px' }}
+                    />
+                </ImageSection>
+                <InfoSection>
+                    <ProductTitle>{product?.ProductName}</ProductTitle>
+                    <ProductPrice>{product?.Price.toLocaleString()}원</ProductPrice>
+                    <ButtonGroup>
+                        <BuyButton onClick={buyNow}>구매하기</BuyButton>
+                        <CartButton onClick={addToCart}>장바구니</CartButton>
+                    </ButtonGroup>
+    
+                    <ShippingInfoContainer>
+                        <ShippingInfoTitle>배송 및 반품</ShippingInfoTitle>
+                        <div>
+                            <ShippingSectionTitle>배송 안내</ShippingSectionTitle>
+                            {shippingInfo.delivery.split('\n').map((text, index) => (
+                                <ShippingText key={index}>{text}</ShippingText>
+                            ))}
                         </div>
-                    )}
-                </div>
-            </div>
-
+                        <div>
+                            <ShippingSectionTitle>반품 안내</ShippingSectionTitle>
+                            {shippingInfo.returns.split('\n').map((text, index) => (
+                                <ShippingText key={index}>{text}</ShippingText>
+                            ))}
+                        </div>
+                    </ShippingInfoContainer>
+                </InfoSection>
+            </ProductSection>
+    
             <Tabs defaultActiveKey="1" style={{ marginTop: '40px' }}>
                 <Tabs.TabPane tab="상세정보" key="1">
                     <p>{product.Description}</p>
@@ -250,7 +251,7 @@ const Detail = () => {
                     <ProductQA productId={Number(id)} />
                 </Tabs.TabPane>
             </Tabs>
-        </div>
+        </Container>
     );
 };
 
