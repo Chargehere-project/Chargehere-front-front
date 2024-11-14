@@ -54,6 +54,7 @@ const formatDate = (dateString: string) => {
 };
 
 interface PointItem {
+    Description: ReactNode;
     Amount: number;
     ChargeDate: string;
 }
@@ -81,7 +82,7 @@ interface OrderItem {
     Quantity: number;
     Amount: number;
     OrderDate: string;
-    OrderStatus: 'Pending' | 'Completed' | 'Cancelled';
+    OrderStatus: 'Pending' | 'Completed' | 'Cancelled' | 'DeliveryCompleted' | 'Shipping';
     hasReview: boolean;
     TransactionStatus: 'Pending' | 'Completed';
     OrderListID: number;
@@ -406,14 +407,14 @@ const Profile = () => {
             return <span style={{ color: 'green' }}>결제 완료</span>;
         } else {
             switch (status) {
-                case 'Pending':
-                    return <span style={{ color: 'orange' }}>결제 대기중</span>;
                 case 'Completed':
-                    return <span style={{ color: 'green' }}>배송 완료</span>;
-                case 'Cancelled':
-                    return <span style={{ color: 'red' }}>주문 취소</span>;
+                    return <span style={{ color: 'orange' }}>결제 완료</span>;
+                case 'Shipping':
+                    return <span style={{ color: 'green' }}>배송 중</span>;
+                case 'DeliveryCompleted':
+                    return <span style={{ color: 'red' }}>배송완료</span>;
                 default:
-                    return '알 수 없음';
+                    return status;
             }
         }
     };
@@ -492,14 +493,14 @@ const Profile = () => {
                                     <OrderDate>{new Date(item.OrderDate).toLocaleString()}</OrderDate>
                                     <OrderStatus>{StatusText(item.OrderStatus, item.TransactionStatus)}</OrderStatus>
                                     <ReviewButton>
-                                        {item.OrderStatus === 'Completed' && !item.hasReview ? (
+                                        {item.OrderStatus === 'DeliveryCompleted' && !item.hasReview ? (
                                             <span
                                                 onClick={() =>
                                                     handleReviewClick(item.OrderListID, item.Product.ProductID)
                                                 }>
                                                 리뷰 작성
                                             </span>
-                                        ) : item.OrderStatus === 'Completed' && item.hasReview ? (
+                                        ) : item.OrderStatus === 'DeliveryCompleted' && item.hasReview ? (
                                             <span style={{ color: 'gray' }}>리뷰 작성 완료</span>
                                         ) : (
                                             <span style={{ color: 'gray' }}>-</span>
@@ -516,7 +517,7 @@ const Profile = () => {
                                 pointList.map((item, index) => (
                                     <PointItemContainer key={index}>
                                         <div className="pointAmount">{item.Amount.toLocaleString()} 포인트</div>
-                                        <div className="pointDescription">구매로 인한 적립</div>
+                                        <div className="pointDescription">{item.Description}</div>
                                         <div className="pointDate">{formatDate(item.ChargeDate)}</div>
                                         <div
                                             className={`pointStatus ${
