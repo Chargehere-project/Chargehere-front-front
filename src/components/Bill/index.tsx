@@ -49,6 +49,11 @@ const BillPage = () => {
     const clientKey = 'test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm';
     const customerKey = 'h-BboQRT_1DOGkVEGD5-G';
 
+    const totalPrice = order ? order.totalAmount : 0;
+    const discount = order ? order.discount : 0;
+    const paymentAmount = order ? order.paymentAmount : 0;
+    const fee = totalPrice < 50000 ? 3000 : 0;
+
     useEffect(() => {
         const fetchPaymentWidgets = async () => {
             try {
@@ -268,111 +273,133 @@ const BillPage = () => {
 
     return (
         <BillStyled>
-             <div className= 'billPage'>
-            <h2 className= 'headerTitle'>주문서</h2>
+            <div className="billPage">
+                <h2 className="headerTitle">ORDER</h2>
 
-            <div className= 'mainContent'>
-                <div className= 'leftSection'>
-                    <h3>배송지 정보</h3>
-                    <label>
-                        <input type="radio" value="same" checked={useSameInfo} onChange={handleUseSameInfoChange} /> 회원정보와 동일
-                    </label>
-                    <label>
-                        <input type="radio" value="different" checked={!useSameInfo} onChange={handleUseSameInfoChange} /> 직접 입력
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="이름"
-                        value={recipientData.name}
-                        disabled={useSameInfo}
-                        onChange={(e) => handleRecipientDataChange('name', e.target.value)}
-                    />
-                    <input
-                        type="text"
-                        placeholder="전화번호"
-                        value={recipientData.phone}
-                        disabled={useSameInfo}
-                        onChange={(e) => handleRecipientDataChange('phone', e.target.value)}
-                    />
-                    <input
-                        type="text"
-                        placeholder="주소"
-                        value={recipientData.address}
-                        disabled={useSameInfo}
-                        onChange={(e) => handleRecipientDataChange('address', e.target.value)}
-                    />
-                    <div className= 'pointsSection'>
-                <h3>포인트 사용</h3>
-                <p>사용 가능한 포인트: {points}</p>
-                <input
-                    type="number"
-                    value={pointsToUse}
-                    onChange={(e) => setPointsToUse(Number(e.target.value))}
-                    placeholder="사용할 포인트 입력"
-                />
-                <button onClick={handleUsePoints}>포인트 사용</button>
-            </div>
-
-            <div className= 'couponSection'>
-                <h3>쿠폰 선택</h3>
-                <select onChange={(e) => handleCouponSelection(availableCoupons[e.target.selectedIndex])}>
-                    <option value="">쿠폰 선택</option>
-                    {availableCoupons.map((coupon) => (
-                        <option key={coupon.couponId} value={coupon.couponId}>
-                            {coupon.couponName} - ₩{coupon.discountAmount} 할인 (유효기간: {coupon.expirationDate})
-                        </option>
-                    ))}
-                </select>
-                {selectedCoupon && <p>선택한 쿠폰: {selectedCoupon.couponName}</p>}
-            </div>
-
-                </div>
-
-                <div className= 'rightSection'>
-                    <h3>주문 내역</h3>
-                    {order?.items.map((item) => (
-                        <div key={item.productID} className= 'orderItem'>
-                            <img src={item.image} alt={item.productName} className= 'itemImage' />
-                            <div>{item.productName}</div>
-                            <div>수량: {item.quantity}</div>
-                            <div>가격: ₩{item.price}</div>
+                <div className="mainContent">
+                    <div className="leftSection">
+                        <h3>배송지 정보</h3>
+                        <label>
+                            <input
+                                type="radio"
+                                value="same"
+                                checked={useSameInfo}
+                                onChange={handleUseSameInfoChange}
+                                style={{ cursor: 'pointer' }}
+                            />{' '}
+                            회원정보와 동일
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                value="different"
+                                checked={!useSameInfo}
+                                onChange={handleUseSameInfoChange}
+                                style={{ cursor: 'pointer', marginLeft: '20px' }}
+                            />{' '}
+                            직접 입력
+                        </label>
+                        <input
+                            type="text"
+                            placeholder="이름"
+                            value={recipientData.name}
+                            disabled={useSameInfo}
+                            onChange={(e) => handleRecipientDataChange('name', e.target.value)}
+                        />
+                        <input
+                            type="text"
+                            placeholder="전화번호"
+                            value={recipientData.phone}
+                            disabled={useSameInfo}
+                            onChange={(e) => handleRecipientDataChange('phone', e.target.value)}
+                        />
+                        <input
+                            type="text"
+                            placeholder="주소"
+                            value={recipientData.address}
+                            disabled={useSameInfo}
+                            onChange={(e) => handleRecipientDataChange('address', e.target.value)}
+                        />
+                        <h3 style={{ marginTop: '80px' }}>포인트 사용</h3>
+                        <div className="pointsSection">
+                            <p className="pointsAvailable">사용 가능한 포인트: {points}</p>
+                            <div className="pointsInputWrapper">
+                                <input
+                                    type="number"
+                                    value={pointsToUse}
+                                    onChange={(e) => setPointsToUse(Number(e.target.value))}
+                                    placeholder="사용할 포인트 입력"
+                                />
+                                <button onClick={handleUsePoints}>포인트 사용</button>
+                            </div>
                         </div>
-                    ))}
-                    <div className= 'orderSummary'>
-                        <p>총 주문 금액: ₩{order?.totalAmount}</p>
-                        <p>할인 금액: ₩{order?.discount}</p>
-                        <p>총 결제 금액: ₩{order?.paymentAmount}</p>
+                        <h3 style={{ marginTop: '80px' }}>쿠폰 선택</h3>
+                        <div className="couponSection">
+                            <select onChange={(e) => handleCouponSelection(availableCoupons[e.target.selectedIndex])}>
+                                <option value="">쿠폰 선택</option>
+                                {availableCoupons.map((coupon) => (
+                                    <option key={coupon.couponId} value={coupon.couponId}>
+                                        {coupon.couponName} - ₩{coupon.discountAmount} 할인 (유효기간:{' '}
+                                        {coupon.expirationDate})
+                                    </option>
+                                ))}
+                            </select>
+                            {selectedCoupon && <p>선택한 쿠폰: {selectedCoupon.couponName}</p>}
+                        </div>
+                    </div>
+
+                    <div className="rightSection">
+                        <div className="summaryContainer">
+                            <h2 className="summaryTitle">주문 내역</h2>
+                            <div className="summaryRow">
+                                <span>상품 금액</span>
+                                <span>{totalPrice.toLocaleString()}원</span>
+                            </div>
+                            <div className="summaryRow">
+                                <span>배송비</span>
+                                <span>{fee === 0 ? '무료' : `${fee.toLocaleString()}원`}</span>
+                            </div>
+                            <div className="summaryRow">
+                                <span>할인 금액</span>
+                                <span>{discount.toLocaleString()}원</span>
+                            </div>
+                            <div className="summaryTotal">
+                                <span>총 결제 금액</span>
+                                <span>{(paymentAmount + fee).toLocaleString()}원</span>
+                            </div>
+                        </div>
+                        {order?.items.map((item) => (
+                            <div key={item.productID} className="orderItem">
+                                <img src={item.image} alt={item.productName} className="itemImage" />
+                                <div className="itemDetails">
+                                    <div className="productName">{item.productName}</div>
+                                    <div className="productInfo">
+                                        <p>
+                                            {item.quantity} 개 / {parseInt(item.price as string).toLocaleString()} 원
+                                        </p>
+
+                                        {/* <p>총 가격: {parseInt(item.price * item.quantity).toLocaleString()} 원</p> */}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
+
+                <div className="wrapper" style={{ margin: '20px', padding: '20px', border: '1px solid #ddd' }}>
+                    <div id="payment-method" style={{ marginBottom: '30px', minHeight: '200px' }} />
+                    <div id="agreement" style={{ marginBottom: '30px', minHeight: '100px' }} />
+
+                    <button
+                        className="buttonClass"
+                        disabled={!ready}
+                        onClick={handlePayment}
+>
+                        결제하기
+                    </button>
+                </div>
             </div>
-
-
-            <div className="wrapper" style={{ margin: '20px', padding: '20px', border: '1px solid #ddd' }}>
-                <div id="payment-method" style={{ marginBottom: '30px', minHeight: '200px' }} />
-                <div id="agreement" style={{ marginBottom: '30px', minHeight: '100px' }} />
-
-                <button
-                    className= 'buttonClass'
-                    disabled={!ready}
-                    onClick={handlePayment}
-                    style={{
-                        width: '100%',
-                        padding: '15px',
-                        fontSize: '16px',
-                        backgroundColor: ready ? 'balck' : '#333',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '5px',
-                        cursor: ready ? 'pointer' : 'not-allowed',
-                    }}
-                >
-                    결제하기
-                </button>
-            </div>
-        </div>
-
         </BillStyled>
-       
     );
 };
 

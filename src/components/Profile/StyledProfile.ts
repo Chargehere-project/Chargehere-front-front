@@ -91,7 +91,7 @@ export const EditButton = styled.button`
     font-weight: bold;
 
     &:hover {
-        background-color: #333;
+        background-color: #888;
     }
 `;
 
