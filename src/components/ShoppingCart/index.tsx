@@ -250,7 +250,8 @@ const ShoppingCart = () => {
                                             <div
                                                 className="itemName"
                                                 onClick={() => Router.push(`/mall/product/${item.Product.ProductID}`)}
-                                                style={{ cursor: 'pointer' }}>
+                                                style={{ cursor: 'pointer' }}
+                                            >
                                                 {item.Product.ProductName}
                                             </div>
 
@@ -266,7 +267,8 @@ const ShoppingCart = () => {
                                                             quantityChange(item.CartID, Number(e.target.value))
                                                         }
                                                         onBlur={() => setEditingId(null)}
-                                                        className="quantitySelector">
+                                                        className="quantitySelector"
+                                                    >
                                                         {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
                                                             <option key={num} value={num}>
                                                                 {num}

@@ -103,10 +103,9 @@ const Profile = () => {
     const [couponCount, setCouponCount] = useState<number>(0);
     const [reviewCount, setReviewCount] = useState<number>(0);
     const [orderSummary, setOrderSummary] = useState({
-        pending: 0,
-        inPreparation: 0,
-        shipping: 0,
-        completed: 0,
+        completed: 0,        // 결제 완료
+        shipping: 0,         // 배송 중
+        DeliveryCompleted: 0 // 배송 완료
     });
 
     
@@ -452,21 +451,21 @@ const Profile = () => {
             </InfoRow>
 
             <OrderStatusContainer>
-                <OrderStatusItem>
-                    <span>결제 대기중</span>
-                    <span>{orderSummary.pending}</span>
-                </OrderStatusItem>
-                <Arrow>›</Arrow>
-                <OrderStatusItem>
-                    <span>결제 완료</span>
-                    <span>{orderSummary.inPreparation}</span>
-                </OrderStatusItem>
-                <Arrow>›</Arrow>
-                <OrderStatusItem>
-                    <span>배송 완료</span>
-                    <span>{orderSummary.completed}</span>
-                </OrderStatusItem>
-            </OrderStatusContainer>
+    <OrderStatusItem>
+        <span>결제 완료</span>
+        <span>{orderSummary.completed}</span>  {/* completed로 변경 */}
+    </OrderStatusItem>
+    <Arrow>›</Arrow>
+    <OrderStatusItem>
+        <span>배송 중</span>
+        <span>{orderSummary.shipping}</span>   {/* shipping으로 변경 */}
+    </OrderStatusItem>
+    <Arrow>›</Arrow>
+    <OrderStatusItem>
+        <span>배송 완료</span>
+        <span>{orderSummary.DeliveryCompleted}</span>  {/* DeliveryCompleted로 변경 */}
+    </OrderStatusItem>
+</OrderStatusContainer>
 
             <TabsContainer>
                 <Tabs defaultActiveKey="1">
