@@ -3,13 +3,14 @@ import ProductItem from './ProductItem';
 import SortDropdown from './SortDropdown';
 import { Input, Select } from 'antd';
 import axios from 'axios';
-import { 
-    ProductGrid, 
-    SearchContainer, 
-    SearchIconButton, 
-    SearchInput, 
+import {
+    ProductGrid,
+    SearchContainer,
+    SearchIconButton,
+    SearchInput,
     TopContainer,
-    ProductTitle
+    ProductTitle,
+    ProductContainer,
 } from '../../styles/Product.styles';
 import { SearchIcon } from 'lucide-react';
 
@@ -98,7 +99,7 @@ const Product = () => {
     }
 
     return (
-        <div>
+        <ProductContainer>
             <ProductTitle>PRODUCT</ProductTitle>
             <TopContainer
             >
@@ -159,7 +160,7 @@ const Product = () => {
                         </button>
                     ))}
             </div>
-        </div>
+        </ProductContainer>
     );
 };
 
