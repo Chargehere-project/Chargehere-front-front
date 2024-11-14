@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import axios, { AxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import LoginStyled from './styled';
@@ -22,20 +22,15 @@ const Login = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const response = await api.post('/api/login', {
-        id,
-        password,
-      });
+      const response = await api.post('/api/login', { id, password });
 
       if (response.data.result) {
-        localStorage.setItem('token', response.data.response.token);
-
-        // 세션 확인 테스트
         try {
-          const sessionCheck = await api.get('/api/check-session');
-          console.log('세션 체크:', sessionCheck.data);
-        } catch (sessionError) {
-          console.error('세션 체크 실패:', sessionError);
+          localStorage.setItem('token', response.data.response.token);
+        } catch (storageError) {
+          console.error('토큰 저장 실패:', storageError);
+          setErrorMessage('토큰 저장 중 문제가 발생했습니다.');
+          return;
         }
 
         router.push('/mall');
@@ -43,10 +38,32 @@ const Login = () => {
         setErrorMessage('로그인에 실패했습니다. 아이디와 비밀번호를 확인하세요.');
       }
     } catch (error) {
-      console.error('Login error:', error);
-      setErrorMessage('서버와의 연결에 문제가 발생했습니다.');
+      const axiosError = error as AxiosError;
+      console.error('Login error:', axiosError);
+      if (axiosError.response && axiosError.response.status === 404) {
+        setErrorMessage('로그인 경로를 찾을 수 없습니다.');
+      } else if (axiosError.response && axiosError.response.status === 401) {
+        setErrorMessage('아이디 또는 비밀번호가 잘못되었습니다.');
+      } else {
+        setErrorMessage('서버와의 연결에 문제가 발생했습니다.');
+      }
     }
   };
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const sessionCheck = await api.get('/api/check-session');
+        console.log('세션 체크:', sessionCheck.data);
+      } catch (sessionError) {
+        console.error('세션 체크 실패:', sessionError);
+      }
+    };
+
+    if (localStorage.getItem('token')) {
+      checkSession();
+    }
+  }, []);
 
   const handleLogoClick = () => {
     router.push('/mall');
@@ -58,7 +75,7 @@ const Login = () => {
         <div className="logo-container" onClick={handleLogoClick}>
           <Image src="/main.png" alt="Main Logo" width={300} height={100} />
         </div>
-        <h2 className="title">Login</h2>
+        {/* <h2 className="title">Login</h2> */}
         <form onSubmit={handleSubmit} className="form">
           <div className="form-group">
             <label htmlFor="id" className="form-label">아이디</label>

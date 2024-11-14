@@ -6,6 +6,7 @@ import Router from 'next/router';
 import style from './profile.module.css';
 import { Button, Form, Input, Modal, Space, Tabs } from 'antd';
 import DaumPostcode from 'react-daum-postcode';
+
 import {
     ProfileContainer,
     Title,
@@ -430,7 +431,7 @@ const Profile = () => {
                             <Name>{name}</Name>
                             <LoginID>({loginID})</LoginID>
                         </Username>
-                        <EditButton onClick={() => Router.push('/profile/edit')}>회원정보 수정</EditButton>
+                        <EditButton onClick={() => Router.push('/mall/profile/edit')}>회원정보 수정</EditButton>
                     </UserDetails>
                 </UserInfoContainer>
 

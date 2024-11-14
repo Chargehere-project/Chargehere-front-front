@@ -6,9 +6,8 @@ const Roulette = () => {
    const product = [
        "꽝", '500P', "300P", "꽝", "700P", "최고급 세단",
    ];
-   const colors = [
-       "#DC0936", "#531DE6", "#F7A416", "#EFE61F ", "#60B236",
-       "#209B6C","#209B6C"]
+   const colors = ["#EBCEB1", "#FFF", "#EBCEB1", "#FFF", "#EBCEB1", "#FFF", "#EBCEB1"];
+    const canvasBorderColor = "#8D6E63";
    useEffect(() => {
        const canvas = canvasRef.current;
        if (!canvas) return;
@@ -27,7 +26,7 @@ const Roulette = () => {
            ctx.closePath();
        }
        // 텍스트 스타일 설정
-       ctx.fillStyle = "#fff";
+       ctx.fillStyle = "#593F24";
        ctx.font = "18px Pretendard";
        ctx.textAlign = "center";
        // 텍스트 그리기
@@ -44,6 +43,23 @@ const Roulette = () => {
            });
            ctx.restore();
        }
+
+       //화살표 그리기
+    //    ctx.beginPath();
+    //    ctx.moveTo(250, 30); // 화살표 꼭짓점 (조금 위로 올림)
+    //    ctx.lineTo(230, -10);  // 왼쪽 위로 선 그리기
+    //    ctx.lineTo(270, -10);
+    //    ctx.closePath();
+    //    ctx.fillStyle = '#8D6E63'; // 화살표 색상
+    //    ctx.fill();
+
+       //룰렛 안의 작은 원
+       ctx.beginPath();
+        ctx.arc(cw, ch, 30, 0, Math.PI * 2); // 반지름 30의 원을 중앙에 그림
+        ctx.fillStyle = '#593F24'; // 작은 원의 색상
+        ctx.fill();
+        ctx.closePath();
+
    }, []); // 빈 배열은 컴포넌트가 마운트될 때 한 번만 실행됨을 의미
    const token = () => {
     const token = localStorage.getItem('token');
@@ -149,26 +165,71 @@ const canPlay = () => {
        flexDirection: 'column' as 'column',
        alignItems: 'center',
        gap: '20px',
-       padding: '20px'
+       padding: '40px',
+        position: 'relative' as const, // 화살표 오버레이를 위한 상대적 위치
+        maxWidth: '100%'
    };
    const buttonStyle = {
-       padding: '10px 20px',
-       fontSize: '16px',
-       backgroundColor: '#007BFF',
-       color: 'white',
-       border: 'none',
-       borderRadius: '5px',
-       cursor: 'pointer'
+        padding: '20px 30px', 
+        fontSize: '18px',       
+        backgroundColor: '#333',  
+        border: 'none',
+        borderRadius: '8px',         
+        cursor: 'pointer',
+        boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.2)', 
+        transition: 'background-color 0.3s ease', 
+        '@media (max-width: 488px)': {
+            padding: '10px 20px',
+            fontSize: '16px',
+        },
+        
    };
+   const canvasStyle = {
+        borderRadius: '50%', 
+        border: `8px solid ${canvasBorderColor}`, //테두리 
+        boxShadow: '0px 6px 10px rgba(0, 0, 0, 0.15)', 
+        width: '100%', // 화면에 맞추어 크기 제한
+        maxWidth: '500px', // 최대 크기 설정
+        height: 'auto', // 가로세로 비율 유지
+    '   @media (max-width: 768px)': {
+            maxWidth: '80%',
+        },
+    };
+
+    const arrowStyle = {
+        position: 'absolute' as const,
+        top: '90px', // 원하는 위치로 조정
+        left: '50%', // 캔버스 중앙 정렬
+        transform: 'translateX(-50%)', // 수평 중앙 정렬
+        width: '0',
+        height: '0',
+        borderLeft: '15px solid transparent',
+        borderRight: '15px solid transparent',
+        borderTop: '25px solid #8D6E63',
+        zIndex: 10,
+    };
+
+    const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
+        (e.target as HTMLButtonElement).style.backgroundColor = '#8D6E63';
+    };
+    
+    const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
+        (e.target as HTMLButtonElement).style.backgroundColor = '#593F24';
+    };
    return (
        <div style={containerStyle}>
+        <h2 style={{ color: '#593F24' }}>가을 맞이 룰렛 이벤트</h2>
+        <div style={arrowStyle}></div> {/* 화살표 추가 */}
            <canvas
                ref={canvasRef}
                width="500"
                height="500"
+               style={canvasStyle}
            />
            <button
                onClick={handleRotate}
+               onMouseEnter={handleMouseEnter}
+               onMouseLeave={handleMouseLeave}
                style={buttonStyle}
            >
                룰렛 돌리기
