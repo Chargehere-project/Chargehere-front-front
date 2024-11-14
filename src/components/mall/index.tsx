@@ -4,6 +4,7 @@ import { ArrowUpOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import Swipe from './Swipe';
 import MallStyled from './styled';
+import { jwtDecode } from 'jwt-decode'; 
 
 interface Product {
   ProductID: number;
@@ -35,24 +36,41 @@ const MallIndex = () => {
 
     // 로그인 여부를 확인하는 함수
     const checkUserSession = async () => {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('token');
       if (token) {
-        try {
-          const response = await axios.get<UserSession>(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          setIsLoggedIn(!!response.data.userId); // userId가 존재하면 로그인 상태로 간주
-        } catch (error) {
-          console.error('Error verifying user session', error);
-          setIsLoggedIn(false);
-        }
+          try {
+              // 토큰 디코드하여 userId 가져오기
+              const decoded: any = jwtDecode(token);
+              const userId = decoded.UserID;
+  
+              const response = await axios.post(
+                  `${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify`,
+                  { userId },  // userId를 request body에 포함
+                  {
+                      headers: { 
+                          Authorization: `Bearer ${token}`
+                      }
+                  }
+              );
+              
+              if(response.data.result) {
+                  setIsLoggedIn(true);
+              } else {
+                  setIsLoggedIn(false);
+                  localStorage.removeItem('token');
+              }
+          } catch (error) {
+              console.error('Error verifying user session', error);
+              setIsLoggedIn(false);
+              localStorage.removeItem('token');
+          }
       } else {
-        setIsLoggedIn(false);
+          setIsLoggedIn(false);
       }
-    };
-
-    fetchBestProducts();
-    checkUserSession();
+  };
+  
+  fetchBestProducts();
+  checkUserSession();
   }, []);
 
   // 상품 클릭 시 페이지 이동
@@ -63,7 +81,7 @@ const MallIndex = () => {
   // 출석 체크 누르면 로그인 여부에 따라 페이지
   const handleAttendanceClick = () => {
     if (isLoggedIn) {
-      router.push('/roulette');
+      router.push('/roullette');
     } else {
       router.push('/mall/login');
     }
