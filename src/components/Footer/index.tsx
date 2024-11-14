@@ -27,8 +27,8 @@ const Footer = () => {
                     <a href="/notice" className= 'link'>
                         NOTICE
                     </a>
-                    <a href="/faqs" className= 'link'>
-                        FAQS
+                    <a href="/mall/signup" className= 'link'>
+                        SIGN UP
                     </a>
                 </div>
                 <div className= 'socialIcons'>

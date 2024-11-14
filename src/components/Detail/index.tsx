@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Button, List, Tabs, Form, message } from 'antd';
 import { jwtDecode } from 'jwt-decode';
 import styles from './Detail.module.css';
+import ProductQA from './ProductQA';
 import {
     Container,
     ProductSection,
@@ -57,6 +58,9 @@ const Detail = () => {
     const [product, setProduct] = useState<Product | null>(null);
     const [reviews, setReviews] = useState<Review[]>([]);
     const [qas, setQAs] = useState<QA[]>([]);
+    const [qasCount, setQasCount] = useState<number>(0); // Q&A 개수를 저장할 상태
+    const [expandShipping, setExpandShipping] = useState(false);
+    const [isShippingInfoVisible, setIsShippingInfoVisible] = useState(false);
     const [newQuestion, setNewQuestion] = useState<string>('');
 
     useEffect(() => {
@@ -71,8 +75,10 @@ const Detail = () => {
                     setReviews(reviewResponse.data.data);
                 }
 
-                const qaResponse = await axios.get(`/api/qas?productId=${id}`);
-                setQAs(qaResponse.data);
+                // Q&A 개수를 가져오는 요청
+                const qaCountResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/qas/count?productId=${id}`);
+                setQasCount(qaCountResponse.data.count); // 백엔드에서 'count' 필드로 개수를 반환한다고 가정
+
             } catch (error) {
                 console.error('데이터를 불러오는데 실패했습니다.', error);
             }
@@ -178,7 +184,7 @@ const Detail = () => {
     };
 
     const handleQuestionSubmit = () => {
-        router.push(`/CS/Detail/Qawrite?id=${id}`);
+        router.push(`/mall/product/${id}/qa/write`);
     };
 
     if (!product) {
@@ -204,14 +210,11 @@ const Detail = () => {
                 <InfoSection>
                     <ProductTitle>{product?.ProductName}</ProductTitle>
                     <ProductPrice>{product?.Price.toLocaleString()}원</ProductPrice>
-
                     <ButtonGroup>
-                        <ButtonGroup>
-                            <BuyButton onClick={buyNow}>구매하기</BuyButton>
-                            <CartButton onClick={addToCart}>장바구니</CartButton>
-                        </ButtonGroup>
+                        <BuyButton onClick={buyNow}>구매하기</BuyButton>
+                        <CartButton onClick={addToCart}>장바구니</CartButton>
                     </ButtonGroup>
-
+    
                     <ShippingInfoContainer>
                         <ShippingInfoTitle>배송 및 반품</ShippingInfoTitle>
                         <div>
@@ -229,40 +232,25 @@ const Detail = () => {
                     </ShippingInfoContainer>
                 </InfoSection>
             </ProductSection>
-
-            <TabsContainer>
-                <Tabs defaultActiveKey="1">
-                    <Tabs.TabPane tab="상세정보" key="1">
-                        <p>{product?.Description}</p>
-                    </Tabs.TabPane>
-                    <Tabs.TabPane tab={`사용후기 (${reviews.length})`} key="2">
-                        <List
-                            dataSource={reviews}
-                            renderItem={(review) => (
-                                <List.Item key={review.ReviewID}>
-                                    <List.Item.Meta
-                                        title={<span>평점: {review.Rating}</span>}
-                                        description={review.Content}
-                                    />
-                                </List.Item>
-                            )}
-                        />
-                    </Tabs.TabPane>
-                    <Tabs.TabPane tab={`상품 Q&A (${qas.length})`} key="3">
-                        <List
-                            dataSource={qas}
-                            renderItem={(qa) => (
-                                <List.Item key={qa.QID}>
-                                    <List.Item.Meta
-                                        title={`Q. ${qa.Question}`}
-                                        description={qa.Answer ? `A. ${qa.Answer}` : '답변 대기 중'}
-                                    />
-                                </List.Item>
-                            )}
-                        />
-                    </Tabs.TabPane>
-                </Tabs>
-            </TabsContainer>
+    
+            <Tabs defaultActiveKey="1" style={{ marginTop: '40px' }}>
+                <Tabs.TabPane tab="상세정보" key="1">
+                    <p>{product.Description}</p>
+                </Tabs.TabPane>
+                <Tabs.TabPane tab={`사용후기 (${reviews.length})`} key="2">
+                    <List
+                        dataSource={reviews}
+                        renderItem={(review) => (
+                            <List.Item key={review.ReviewID}>
+                                <List.Item.Meta title={`평점: ${review.Rating}`} description={review.Content} />
+                            </List.Item>
+                        )}
+                    />
+                </Tabs.TabPane>
+                <Tabs.TabPane tab={`상품 Q&A (${qasCount})`} key="3">
+                    <ProductQA productId={Number(id)} />
+                </Tabs.TabPane>
+            </Tabs>
         </Container>
     );
 };

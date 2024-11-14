@@ -81,7 +81,7 @@ const LoginStyled = styled.div`
         transition: background-color 0.3s ease;
 
         &:hover {
-            background-color: #333;
+            background-color: #888;
         }
 
         &:active {

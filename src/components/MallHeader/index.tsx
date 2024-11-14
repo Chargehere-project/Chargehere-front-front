@@ -49,8 +49,9 @@ const MallHeader = () => {
 
     const handleLogout = () => {
         if (window.confirm('로그아웃 하시겠습니까?')) {
-            localStorage.removeItem('token');
-            setIsLoggedIn(false);
+            localStorage.removeItem('token'); // 토큰 제거
+            setIsLoggedIn(false);            // 로그인 상태 해제
+            setCartCount(0);                 // 장바구니 개수 초기화
             Router.push('/');
             alert('로그아웃 되었습니다.');
         }
@@ -104,11 +105,11 @@ const MallHeader = () => {
 
                     <div className="iconContainer">
                         <UserOutlined className="icon" onClick={() => handleNavigation('/mall/profile')} />
-                        <div className="cartIconContainer" onClick={() => handleNavigation(`/mall/cart/${token()}`)}>
+                        <div className="cartIconContainer" onClick={() => handleNavigation(`/mall/cart/${token()}`)} style={{marginTop:'5px'}}>
                             <ShoppingOutlined className="icon" />
                             {cartCount > 0 && <span className="cartCount">{cartCount}</span>}
                         </div>
-                        {isLoggedIn && <LoginOutlined className="icon" onClick={handleLogout} />}
+                        {isLoggedIn && <LoginOutlined className="icon" onClick={handleLogout} style={{fontSize:'24px'}}/>}
                     </div>
                     <button
                         className={`menuButton ${isMenuOpen ? 'menuButtonActive' : ''}`}

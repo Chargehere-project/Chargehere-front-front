@@ -1,5 +1,5 @@
 import React from 'react';
-import Qawrite from '../../../../components/Detail/Qawrite';
+import Qawrite from '../../../../../components/Detail/Qawrite';
 
 const Qawritepage = () => {
     return (
