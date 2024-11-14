@@ -1,5 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
+import {
+    Container,
+    Sidebar,
+    MapContainer,
+    Heading,
+    ChargerList,
+    ChargerItem,
+    ChargerInfo,
+    ChargerName,
+    ChargerAddress,
+    LocationButton,
+    SearchContainer,
+    SearchInput,
+    MyLocationButton
+} from './MapComponentStyles';
 
 interface Charger {
     statId: string;
@@ -21,8 +36,10 @@ interface Charger {
 declare global {
     interface Window {
         kakao: any;
+        closeInfoWindow: () => void;
     }
 }
+
 
 const MapComponent = () => {
     const mapContainer = useRef<HTMLDivElement>(null);
@@ -111,17 +128,56 @@ const MapComponent = () => {
             map: map,
         });
 
+        const infowindowContent = document.createElement('div');
+        infowindowContent.style.cssText = `
+        position: relative; 
+        width: 250px; 
+        padding: 15px; 
+        border-radius: 8px; 
+        background-color: white; 
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.2); 
+        font-size: 14px; 
+        line-height: 1.6; 
+        color: #333;
+    `;
+
+        infowindowContent.innerHTML = `
+        <h3 style="margin: 0; font-size: 16px; font-weight: bold; padding-bottom: 5px; border-bottom: 1px solid #ddd;">
+            ${charger.statNm}
+        </h3>
+        <p style="margin: 8px 0 5px; color: #555;">주소: ${charger.addr}</p>
+        <p style="margin: 5px 0; color: #555;">상태: ${getStatText(charger.stat)}</p>
+        <p style="margin: 5px 0; color: #555;">연락처: ${charger.busiCall || '정보없음'}</p>
+        <p style="margin: 5px 0; color: #555;">이용시간: ${charger.useTime || '정보없음'}</p>
+        ${charger.lastTsdt ? `<p style="margin: 5px 0; color: #555;">마지막 충전: ${charger.lastTsdt}</p>` : ''}
+    `;
+
+        // 검정색 X 닫기 버튼 추가
+        const closeButton = document.createElement('button');
+        closeButton.textContent = 'X';
+        closeButton.style.cssText = `
+        position: absolute; 
+        top: 5px; 
+        right: 5px; 
+        background: none; 
+        border: none; 
+        font-size: 16px; 
+        font-weight: bold;
+        cursor: pointer; 
+        color: black;
+    `;
+
+        closeButton.addEventListener('click', () => {
+            if (currentInfoWindow) {
+                currentInfoWindow.close();
+                currentInfoWindow = null;
+            }
+        });
+
+        infowindowContent.appendChild(closeButton);
+
         const infowindow = new window.kakao.maps.InfoWindow({
-            content: `
-                <div style="padding:10px;">
-                    <h3>${charger.statNm}</h3>
-                    <p>주소: ${charger.addr}</p>
-                    <p>상태: ${getStatText(charger.stat)}</p>
-                    <p>연락처: ${charger.busiCall || '정보없음'}</p>
-                    <p>이용시간: ${charger.useTime || '정보없음'}</p>
-                    ${charger.lastTsdt ? `<p>마지막 충전: ${charger.lastTsdt}</p>` : ''}
-                </div>
-            `,
+            content: infowindowContent,
         });
 
         window.kakao.maps.event.addListener(marker, 'click', () => {
@@ -132,8 +188,38 @@ const MapComponent = () => {
             currentInfoWindow = infowindow;
         });
 
-        charger.marker = marker; // 마커를 충전소 데이터에 추가
+        charger.marker = marker;
     };
+
+    // const moveToMarker = (charger: Charger) => {
+    //     if (!mapInstance.current || !charger.marker) return;
+
+    //     mapInstance.current.setCenter(charger.marker.getPosition());
+    //     charger.marker.setZIndex(1);
+
+    //     if (currentInfoWindow) {
+    //         currentInfoWindow.close();
+    //     }
+
+    //     const infowindow = new window.kakao.maps.InfoWindow({
+    //         content: `
+    //         <div style="position: relative; width: 250px; padding: 15px; border-radius: 8px; background-color: white; box-shadow: 0px 4px 10px rgba(0,0,0,0.2); font-size: 14px; line-height: 1.6; color: #333;">
+    //             <button onclick="closeInfoWindow()" style="position: absolute; top: 5px; right: 5px; background: none; border: none; font-size: 16px; cursor: pointer; color: #999;">✖️</button>
+    //             <h3 style="margin: 0; font-size: 16px; font-weight: bold; padding-bottom: 5px; border-bottom: 1px solid #ddd;">${
+    //                 charger.statNm
+    //             }</h3>
+    //             <p style="margin: 8px 0 5px; color: #555;">주소: ${charger.addr}</p>
+    //             <p style="margin: 5px 0; color: #555;">상태: ${getStatText(charger.stat)}</p>
+    //             <p style="margin: 5px 0; color: #555;">연락처: ${charger.busiCall || '정보없음'}</p>
+    //             <p style="margin: 5px 0; color: #555;">이용시간: ${charger.useTime || '정보없음'}</p>
+    //             ${charger.lastTsdt ? `<p style="margin: 5px 0; color: #555;">마지막 충전: ${charger.lastTsdt}</p>` : ''}
+    //         </div>
+    //     `,
+    //     });
+
+    //     infowindow.open(mapInstance.current, charger.marker);
+    //     currentInfoWindow = infowindow;
+    // };
 
     const getStatText = (stat: string) => {
         switch (stat) {
@@ -184,17 +270,17 @@ const MapComponent = () => {
             const updatedFavorites = isFavorite
                 ? prev.filter((fav) => fav.statId !== charger.statId)
                 : [
-                    ...prev,
-                    // marker 속성을 제외한 데이터를 저장
-                    {
-                        ...charger,
-                        marker: undefined, // marker 속성을 제외
-                    },
-                ];
-    
+                      ...prev,
+                      // marker 속성을 제외한 데이터를 저장
+                      {
+                          ...charger,
+                          marker: undefined, // marker 속성을 제외
+                      },
+                  ];
+
             // 로컬 스토리지에 저장
             localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
-    
+
             return updatedFavorites;
         });
     };
@@ -223,85 +309,46 @@ const MapComponent = () => {
 
         infowindow.open(mapInstance.current, charger.marker);
         currentInfoWindow = infowindow;
-                            // 지도 클릭 시 인포윈도우 닫기
-                            window.kakao.maps.event.addListener(mapInstance.current, 'click', () => {
-                                if (currentInfoWindow) {
-                                    currentInfoWindow.close();
-                                    currentInfoWindow = null;
-                                }
-                            })
+        // 지도 클릭 시 인포윈도우 닫기
+        window.kakao.maps.event.addListener(mapInstance.current, 'click', () => {
+            if (currentInfoWindow) {
+                currentInfoWindow.close();
+                currentInfoWindow = null;
+            }
+        });
     };
 
     return (
-        <div style={{ position: 'relative', width: '100%', height: '100%', backgroundColor: 'white', padding: '20px' }}>
-            <div style={{ display: 'flex', marginBottom: '10px' }}>
-                <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="지역 또는 주소를 입력하세요"
-                    style={{ flex: 1, padding: '8px' }}
-                />
-                <button onClick={getUserLocation} style={{ padding: '8px', marginLeft: '10px' }}>
-                    현재 위치
-                </button>
-            </div>
+        <Container>
+            <Sidebar>
+                <Heading>충전소 목록</Heading>
+                <SearchContainer>
+                    <SearchInput
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="지역 또는 주소를 입력하세요"
+                    />
+                    <MyLocationButton onClick={getUserLocation}>현재 위치</MyLocationButton>
+                </SearchContainer>
 
-            <div
-                ref={mapContainer}
-                style={{
-                    width: '100%',
-                    height: '600px',
-                    border: '1px solid #ccc',
-                    borderRadius: '8px',
-                    marginBottom: '10px',
-                }}
-            />
+                <ChargerList>
+                    {chargerList.map((charger) => (
+                        <ChargerItem key={charger.statId}>
+                            <ChargerInfo>
+                                <ChargerName>{charger.statNm}</ChargerName>
+                                <ChargerAddress>{charger.addr}</ChargerAddress>
+                            </ChargerInfo>
+                            <LocationButton onClick={() => moveToMarker(charger)}>위치 보기</LocationButton>
+                        </ChargerItem>
+                    ))}
+                </ChargerList>
+            </Sidebar>
 
-            <div>
-                <button onClick={() => setActiveTab('chargers')}>충전소 목록</button>
-                <button onClick={() => setActiveTab('favorites')}>즐겨찾기</button>
-            </div>
-
-            <div style={{ overflowY: 'scroll', height: '200px', border: '1px solid #ccc', padding: '10px' }}>
-                {activeTab === 'chargers' ? (
-                    <>
-                        <h3>충전소 목록</h3>
-                        <ul style={{ listStyle: 'none', padding: 0 }}>
-                            {chargerList.map((charger) => (
-                                <li key={charger.statId} style={{ marginBottom: '10px' }}>
-                                    <strong>{charger.statNm}</strong>
-                                    <p>{charger.addr}</p>
-                                    <button onClick={() => toggleFavorite(charger)}>
-                                        {favorites.some((fav) => fav.statId === charger.statId)
-                                            ? '즐겨찾기 해제'
-                                            : '즐겨찾기 추가'}
-                                    </button>
-                                    <button onClick={() => moveToMarker(charger)}>위치 보기</button>
-                                </li>
-                            ))}
-                        </ul>
-                    </>
-                ) : (
-                    <>
-                        <h3>즐겨찾기 목록</h3>
-                        <ul style={{ listStyle: 'none', padding: 0 }}>
-                            {favorites.map((charger) => (
-                                <li key={charger.statId} style={{ marginBottom: '10px' }}>
-                                    <strong>{charger.statNm}</strong>
-                                    <p>{charger.addr}</p>
-                                    <button onClick={() => toggleFavorite(charger)}>
-                                        즐겨찾기 해제
-                                    </button>
-                                    <button onClick={() => moveToMarker(charger)}>위치 보기</button>
-                                </li>
-                            ))}
-                        </ul>
-                    </>
-                )}
-            </div>
-        </div>
+            <MapContainer ref={mapContainer} />
+        </Container>
     );
 };
 
+    
 export default MapComponent;

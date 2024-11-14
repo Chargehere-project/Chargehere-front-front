@@ -77,7 +77,8 @@ export const BuyButton = styled.button`
     transition: background-color 0.3s ease;
 
     &:hover {
-        background-color: #333;
+        background-color: #888;
+        
     }
 
     @media screen and (max-width: 768px) {
@@ -97,8 +98,9 @@ export const CartButton = styled.button`
     transition: background-color 0.3s ease, color 0.3s ease;
 
     &:hover {
-        background-color: black;
+        background-color: #888;
         color: white;
+        border: none;
     }
 
     @media screen and (max-width: 768px) {

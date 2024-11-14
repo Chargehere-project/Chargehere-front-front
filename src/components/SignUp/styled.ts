@@ -136,7 +136,7 @@ const SignupStyled = styled.div`
         }
 
         &:hover {
-            background-color: #333 !important;
+            background-color: #888 !important;
             color: white !important;
         }
     }
@@ -159,7 +159,7 @@ const SignupStyled = styled.div`
         }
 
         &:hover {
-            background-color: #333 !important;
+            background-color: #888 !important;
         }
     }
 
