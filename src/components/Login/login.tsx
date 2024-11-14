@@ -75,7 +75,7 @@ const Login = () => {
         <div className="logo-container" onClick={handleLogoClick}>
           <Image src="/main.png" alt="Main Logo" width={300} height={100} />
         </div>
-        <h2 className="title">Login</h2>
+        {/* <h2 className="title">Login</h2> */}
         <form onSubmit={handleSubmit} className="form">
           <div className="form-group">
             <label htmlFor="id" className="form-label">아이디</label>

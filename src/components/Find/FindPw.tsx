@@ -1,8 +1,22 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, message } from 'antd';
+import { Form, Input, Button, message, Spin } from 'antd';
+import { useRouter } from 'next/router';
+import Image from 'next/image';
 import axios from 'axios';
+import {
+    Container,
+    FormWrapper,
+    title,
+    FormItem,
+    InputField,
+    SubmitButton,
+    SuccessText,
+    ErrorText,
+    FooterText,
+} from './FindIdStyled';
 
 const FindPw = () => {
+    const router = useRouter();
     const [form] = Form.useForm();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -13,10 +27,8 @@ const FindPw = () => {
     const [newPassword, setNewPassword] = useState('');
     const [loading, setLoading] = useState(false);
 
-    // 이메일 인증코드 전송
     const sendVerificationCode = async () => {
         try {
-            // 이름과 이메일을 서버로 보내 사용자 확인
             const checkUserResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/check-user`, {
                 name,
                 email,
@@ -27,7 +39,6 @@ const FindPw = () => {
                 return;
             }
 
-            // 이메일로 인증코드 전송
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/send-mail`, { email });
             if (response.data.result) {
                 setIsCodeSent(true);
@@ -40,7 +51,6 @@ const FindPw = () => {
         }
     };
 
-    // 인증코드 확인
     const verifyCode = () => {
         if (verificationCode === sentCode) {
             setVerified(true);
@@ -50,7 +60,6 @@ const FindPw = () => {
         }
     };
 
-    // 비밀번호 재설정
     const resetPassword = async () => {
         if (!newPassword) {
             message.error('새 비밀번호를 입력해주세요.');
@@ -80,79 +89,68 @@ const FindPw = () => {
     };
 
     return (
-        <Form form={form} style={{ maxWidth: 400 }}>
-            <h2>비밀번호 찾기</h2>
-
-            <Form.Item
-                label="이름"
-                name="name"
-                rules={[{ required: true, message: '이름을 입력해주세요.' }]}
-            >
-                <Input value={name} onChange={(e) => setName(e.target.value)} disabled={verified} />
-            </Form.Item>
-
-            <Form.Item
-                label="이메일"
-                name="email"
-                rules={[
-                    { required: true, message: '이메일을 입력해주세요.' },
-                    { type: 'email', message: '올바른 이메일 형식이 아닙니다.' },
-                ]}
-            >
-                <Input value={email} onChange={(e) => setEmail(e.target.value)} disabled={verified} />
-            </Form.Item>
-
-            {!verified && (
-                <Form.Item>
-                    <Button onClick={sendVerificationCode} disabled={!name || !email || isCodeSent}>
-                        인증코드 전송
-                    </Button>
-                </Form.Item>
-            )}
-
-            {isCodeSent && !verified && (
-                <Form.Item label="인증코드">
-                    <Input
-                        value={verificationCode}
-                        onChange={(e) => setVerificationCode(e.target.value)}
-                        maxLength={6}
+        <Container>
+            <div className="logo-container" onClick={() => router.push('/mall')}>
+                <Image src="/main.png" alt="Main Logo" width={300} height={100} />
+            </div>
+            <FormWrapper>
+                <title>비밀번호 찾기</title>
+                <FormItem>
+                    <label>이름</label>
+                    <InputField
+                        placeholder="이름을 입력하세요"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        disabled={verified}
                     />
-                    <Button onClick={verifyCode}>확인</Button>
-                </Form.Item>
-            )}
-
-            {verified && (
-                <>
-                    <Form.Item
-                        label="새 비밀번호"
-                        name="newPassword"
-                        rules={[
-                            { required: true, message: '비밀번호를 입력해주세요.' },
-                            { min: 8, message: '비밀번호는 최소 8자 이상이어야 합니다.' },
-                            {
-                                pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-                                message: '대문자, 소문자, 숫자, 특수문자를 포함해야 합니다.',
-                            },
-                        ]}
-                    >
-                        <Input.Password
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                            placeholder="새 비밀번호를 입력해주세요"
+                </FormItem>
+                <FormItem>
+                    <label>이메일</label>
+                    <InputField
+                        placeholder="이메일을 입력하세요"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        disabled={verified}
+                    />
+                </FormItem>
+                {!verified && (
+                    <SubmitButton onClick={sendVerificationCode} disabled={!name || !email || isCodeSent}>
+                        인증코드 전송
+                    </SubmitButton>
+                )}
+                {isCodeSent && !verified && (
+                    <FormItem>
+                        <label>인증코드</label>
+                        <InputField
+                            placeholder="인증코드를 입력하세요"
+                            value={verificationCode}
+                            onChange={(e) => setVerificationCode(e.target.value)}
+                            maxLength={6}
                         />
-                    </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" onClick={resetPassword} loading={loading} disabled={!newPassword}>
-                            비밀번호 재설정
-                        </Button>
-                    </Form.Item>
-                </>
-            )}
-
-            <p>
-                아이디를 잊으셨나요? <a href="/mall/findid">아이디 찾기</a>
-            </p>
-        </Form>
+                        <SubmitButton onClick={verifyCode}>확인</SubmitButton>
+                    </FormItem>
+                )}
+                {verified && (
+                    <>
+                        <FormItem>
+                            <label>새 비밀번호</label>
+                            <InputField
+                                type="password"
+                                placeholder="새 비밀번호를 입력해주세요"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                            />
+                        </FormItem>
+                        <SubmitButton onClick={resetPassword} disabled={!newPassword}>
+                            {loading ? <Spin /> : '비밀번호 재설정'}
+                        </SubmitButton>
+                    </>
+                )}
+                <FooterText>
+                    아이디를 잊으셨나요? <a href="/mall/findid">아이디 찾기</a>
+                </FooterText>
+            </FormWrapper>
+        </Container>
     );
 };
 

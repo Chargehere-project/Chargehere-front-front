@@ -113,7 +113,7 @@ const SignUp = () => {
                     <Image src="/main.png" alt="Main Logo" width={300} height={100} />
                 </div>
 
-                <h2 className="title">Signup</h2>
+                {/* <h2 className="title">Signup</h2> */}
 
                 <Form
                     form={form}
