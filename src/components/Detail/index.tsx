@@ -6,6 +6,7 @@ import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import {jwtDecode} from 'jwt-decode';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import styles from './Detail.module.css';
+import ProductQA from './ProductQA';
 
 
 interface Product {
@@ -44,8 +45,7 @@ const Detail = () => {
     const [product, setProduct] = useState<Product | null>(null);
     const [reviews, setReviews] = useState<Review[]>([]);
     const [qas, setQAs] = useState<QA[]>([]);
-    const [newQuestion, setNewQuestion] = useState<string>('');
-
+    const [qasCount, setQasCount] = useState<number>(0); // Q&A 개수를 저장할 상태
     const [expandShipping, setExpandShipping] = useState(false);
     const [isShippingInfoVisible, setIsShippingInfoVisible] = useState(false);
 
@@ -56,16 +56,14 @@ const Detail = () => {
                 const productResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/product/${id}`);
                 setProduct(productResponse.data.data);
 
-                // 해당 상품에 대한 리뷰 가져오기 (URL 수정)
                 const reviewResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/product/${id}`);
                 if (reviewResponse.data.result) {
                     setReviews(reviewResponse.data.data);
                 }
 
-                // 해당 상품에 대한 Q&A 가져오기
-
-                const qaResponse = await axios.get(`/api/qas?productId=${id}`);
-                setQAs(qaResponse.data);
+                // Q&A 개수를 가져오는 요청
+                const qaCountResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/qas/count?productId=${id}`);
+                setQasCount(qaCountResponse.data.count); // 백엔드에서 'count' 필드로 개수를 반환한다고 가정
             } catch (error) {
                 console.error('데이터를 불러오는데 실패했습니다.', error);
             }
@@ -173,7 +171,7 @@ const Detail = () => {
     };
 
     const handleQuestionSubmit = () => {
-        router.push(`/CS/Detail/Qawrite?id=${id}`);
+        router.push(`/mall/product/${id}/qa/write`);
     };
 
     const toggleShippingDetails = () => {
@@ -197,11 +195,7 @@ const Detail = () => {
         <div className={styles.container}>
             <div className={styles.productSection}>
                 <div className={styles.imageSection}>
-                    <img 
-                        src={product.Image} 
-                        alt={product.ProductName} 
-                        style={{ width: '100%', borderRadius: '8px' }} 
-                    />
+                    <img src={product.Image} alt={product.ProductName} style={{ width: '100%', borderRadius: '8px' }} />
                 </div>
                 <div style={{ flex: '1', marginLeft: '50px' }}>
                     <h1 style={{ fontSize: '32px', fontWeight: 'bold' }}>{product.ProductName}</h1>
@@ -212,10 +206,8 @@ const Detail = () => {
                         </p>
                     )}
                     <div style={{ display: 'flex', gap: '10px', marginTop: '30px' }}>
-                        <Button type="primary" onClick={buyNow}>
-                            구매하기
-                        </Button>
-                        <Button onClick={addToCart}>장바구니</Button>
+                        <Button type="primary">구매하기</Button>
+                        <Button>장바구니</Button>
                     </div>
 
                     <div
@@ -254,22 +246,8 @@ const Detail = () => {
                         )}
                     />
                 </Tabs.TabPane>
-                <Tabs.TabPane tab={`상품 Q&A (${qas.length})`} key="3">
-                    <List
-                        dataSource={qas}
-                        renderItem={(qa) => (
-                            <List.Item key={qa.QID}>
-                                <List.Item.Meta title={`Q. ${qa.Question}`} description={qa.Answer || '답변 대기 중'} />
-                            </List.Item>
-                        )}
-                    />
-                    <Form layout="inline" style={{ marginTop: '20px' }}>
-                        <Form.Item>
-                            <Button type="primary" onClick={handleQuestionSubmit}>
-                                질문하기
-                            </Button>
-                        </Form.Item>
-                    </Form>
+                <Tabs.TabPane tab={`상품 Q&A (${qasCount})`} key="3">
+                    <ProductQA productId={Number(id)} />
                 </Tabs.TabPane>
             </Tabs>
         </div>

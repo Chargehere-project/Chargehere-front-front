@@ -1,89 +1,55 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { Button } from 'antd';
 import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
 
-interface Inquiry {
-    InquiryID: number;
+interface QA {
+    QnAID: number;  // QID 대신 QnAID
+    ProductID: number;
     UserID: number;
-    Title: string;
-    Content: string;
-    CreatedAt: string;
-    InquiryReplies: { ReplyID: number; ReplyContent: string; CreatedAt: string }[];
+    Title: string;   // 추가
+    Content: string; // Question 대신 Content
+    Status: string;  // 추가
+    CreatedAt: string; // Date 대신 CreatedAt
+    QnAReplies: { 
+        ReplyContent: string;
+        CreatedAt: string;
+    }[];
+}
+interface ProductQAProps {
+    productId: number;
 }
 
-function InquiryDetail() {
+const ProductQA: React.FC<ProductQAProps> = ({ productId }) => {
     const router = useRouter();
-    const { inquiryId } = router.query;
-    const [inquiry, setInquiry] = useState<Inquiry | null>(null);
-    const [inquiries, setInquiries] = useState<Inquiry[]>([]);
-    const [error, setError] = useState<string | null>(null);
-    const [selectedInquiryId, setSelectedInquiryId] = useState<number | null>(null);
-
+    const [selectedQaId, setSelectedQaId] = useState<number | null>(null);
+    const [qas, setQAs] = useState<QA[]>([]);
 
     useEffect(() => {
-        const fetchInquiries = async () => {
+        const fetchQAs = async () => {
             try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    setError('로그인이 필요합니다.');
-                    return;
-                }
-
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/inquiries`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (response.data.result) {
-                    // 필터링 제거하고 모든 글 표시
-                    setInquiries(response.data.data);
-                }
-            } catch (err) {
-                if (axios.isAxiosError(err)) {
-                    setError('문의 목록을 불러오는데 실패했습니다.');
-                }
-            }
-        };
-
-        fetchInquiries();
-    }, []);
-
-    useEffect(() => {
-        const fetchInquiry = async () => {
-            if (!inquiryId) return;
-
-            try {
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/inquiry/${inquiryId}`, {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/qas/product/${productId}`, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('token')}`,
                     },
                 });
+
                 if (response.data.result) {
-                    setInquiry(response.data.data);
+                    setQAs(response.data.data);
+                    console.log('받아온 QA 데이터:', response.data.data); // 데이터 확인용
                 }
-            } catch (err: unknown) {
-                if (axios.isAxiosError(err)) {
-                    if (err.response && err.response.status === 403) {
-                        setError('해당 문의를 볼 수 있는 권한이 없습니다.');
-                    } else {
-                        setError('서버 오류가 발생했습니다.');
-                    }
-                } else {
-                    setError('알 수 없는 오류가 발생했습니다.');
-                }
+            } catch (error) {
+                console.error('Q&A 목록을 불러오는데 실패했습니다:', error);
             }
         };
 
-        fetchInquiry();
-    }, [inquiryId]);
+        if (productId) {
+            fetchQAs();
+        }
+    }, [productId]);
 
-    const handleWriteClick = () => {
-        router.push('/mall/cs/cwrite');
-    };
-
-    const handleItemClick = async (itemId: number, itemUserId: number) => {
+    const handleItemClick = async (qaId: number, userId: number) => {
         try {
             const token = localStorage.getItem('token');
             if (!token) return;
@@ -91,58 +57,51 @@ function InquiryDetail() {
             const decoded: any = jwtDecode(token);
             const currentUserId = decoded.UserID;
 
-            if (currentUserId !== itemUserId) {
+            if (currentUserId !== userId) {
                 alert('본인이 작성한 글만 확인할 수 있습니다.');
                 return;
             }
 
-            if (selectedInquiryId === itemId) {
-                // 이미 선택된 글을 다시 클릭하면 닫기
-                setSelectedInquiryId(null);
-                setInquiry(null);
+            if (selectedQaId === qaId) {
+                setSelectedQaId(null);
                 return;
             }
 
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/inquiry/${itemId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            if (response.data.result) {
-                setInquiry(response.data.data);
-                setSelectedInquiryId(itemId);
-            }
+            setSelectedQaId(qaId);
         } catch (err) {
-            setError('문의 내용을 불러오는데 실패했습니다.');
+            console.error('문의 내용을 불러오는데 실패했습니다.');
         }
     };
-    if (error) return <p>{error}</p>;
+
+    const handleWriteClick = () => {
+        router.push(`/mall/product/${productId}/qa/write`); // productId 사용
+    };
 
     return (
         <div style={styles.container}>
-            <h1 style={styles.title}>고객센터</h1>
-            {inquiries && inquiries.length > 0 ? (
-                <div style={styles.inquiriesList}>
-                    {inquiries.map((item) => {
+            {qas && qas.length > 0 ? (
+                <div style={styles.qaList}>
+                    {qas.map((item) => {
                         const token = localStorage.getItem('token');
                         const decoded: any = token ? jwtDecode(token) : null;
                         const currentUserId = decoded ? decoded.UserID : null;
                         const isMyInquiry = currentUserId === item.UserID;
-                        const isSelected = selectedInquiryId === item.InquiryID;
-
+                        const isSelected = selectedQaId === item.QnAID;  // QID -> QnAID
+    
                         return (
-                            <div key={item.InquiryID}>
+                            <div key={`qa-container-${item.QnAID}`}>
                                 <div
+                                    key={`qa-item-${item.QnAID}`}
                                     style={{
-                                        ...styles.inquiryItem,
+                                        ...styles.qaItem,
                                         cursor: isMyInquiry ? 'pointer' : 'default',
                                         backgroundColor: isMyInquiry ? (isSelected ? '#f0f7ff' : '#fff') : '#f5f5f5',
                                         opacity: isMyInquiry ? 1 : 0.7,
                                     }}
-                                    onClick={() => handleItemClick(item.InquiryID, item.UserID)}
+                                    onClick={() => handleItemClick(item.QnAID, item.UserID)}
                                 >
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <h3>{item.Title}</h3>
+                                        <h3>{item.Title}</h3>  {/* Title 표시 */}
                                         {!isMyInquiry && (
                                             <span style={styles.otherUserBadge}>
                                                 다른 사용자의 글
@@ -151,19 +110,23 @@ function InquiryDetail() {
                                     </div>
                                     <p>{new Date(item.CreatedAt).toLocaleDateString()}</p>
                                 </div>
-                                {isSelected && inquiry && inquiry.InquiryID === item.InquiryID && (
+                                {isSelected && (
                                     <div
-                                        style={styles.replySection}
+                                        key={`qa-answer-${item.QnAID}`}
+                                        style={styles.answerSection}
                                         className="reply-animation"
                                     >
-                                        <div style={styles.replyContent}>
-                                            <h4 style={styles.replyContentTitle}>문의 내용</h4>
-                                            <p>{inquiry.Content}</p>
-                                            <div style={styles.replySeparator} />
-                                            {inquiry.InquiryReplies && inquiry.InquiryReplies.length > 0 ? (
-                                                inquiry.InquiryReplies.map((reply) => (
-                                                    <div key={reply.ReplyID} style={styles.replyContainer}>
-                                                        <h4 style={styles.replyTitle}>답변</h4>
+                                        <div style={styles.answerContent}>
+                                            <h4 style={styles.answerContentTitle}>문의 내용</h4>
+                                            <p>{item.Content}</p>  {/* Question -> Content */}
+                                            <div style={styles.answerSeparator} />
+                                            {item.QnAReplies && item.QnAReplies.length > 0 ? (
+                                                item.QnAReplies.map((reply, index) => (
+                                                    <div 
+                                                        key={`reply-${item.QnAID}-${index}`} 
+                                                        style={styles.answerContainer}
+                                                    >
+                                                        <h4 style={styles.answerTitle}>답변</h4>
                                                         <p>{reply.ReplyContent}</p>
                                                         <small style={styles.replyDate}>
                                                             {new Date(reply.CreatedAt).toLocaleDateString()}
@@ -171,7 +134,7 @@ function InquiryDetail() {
                                                     </div>
                                                 ))
                                             ) : (
-                                                <p style={styles.noReply}>아직 답변이 없습니다.</p>
+                                                <p style={styles.noAnswer}>아직 답변이 없습니다.</p>
                                             )}
                                         </div>
                                     </div>
@@ -181,17 +144,18 @@ function InquiryDetail() {
                     })}
                 </div>
             ) : (
-                <div style={styles.inquiriesList}>
+                <div style={styles.qaList}>
                     <p style={styles.placeholderContent}>작성된 문의가 없습니다.</p>
                 </div>
             )}
-            <button onClick={handleWriteClick} style={styles.writeButton}>문의하기</button>
+            <button onClick={handleWriteClick} style={styles.writeButton}>
+                문의하기
+            </button>
         </div>
     );
-}
+};
 
-
-
+// CS 스타일과 동일한 스타일 적용
 const styles: { [key: string]: React.CSSProperties } = {
     container: {
         maxWidth: '1500px',
@@ -224,7 +188,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     writeButton: {
         position: 'absolute',
         right: '20px',
-        bottom: '20px',  // bottom 값 유지
+        bottom: '20px', // bottom 값 유지
         padding: '10px 20px',
         backgroundColor: '#0070f3',
         color: '#fff',
@@ -296,7 +260,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         backgroundColor: '#eee',
         padding: '3px 8px',
         borderRadius: '4px',
-    }
+    },
 };
 
-export default InquiryDetail;
+export default ProductQA;
