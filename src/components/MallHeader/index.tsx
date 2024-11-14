@@ -104,11 +104,11 @@ const MallHeader = () => {
 
                     <div className="iconContainer">
                         <UserOutlined className="icon" onClick={() => handleNavigation('/mall/profile')} />
-                        <div className="cartIconContainer" onClick={() => handleNavigation(`/mall/cart/${token()}`)}>
+                        <div className="cartIconContainer" onClick={() => handleNavigation(`/mall/cart/${token()}`)} style={{marginTop:'5px'}}>
                             <ShoppingOutlined className="icon" />
                             {cartCount > 0 && <span className="cartCount">{cartCount}</span>}
                         </div>
-                        {isLoggedIn && <LoginOutlined className="icon" onClick={handleLogout} />}
+                        {isLoggedIn && <LoginOutlined className="icon" onClick={handleLogout} style={{fontSize:'24px'}}/>}
                     </div>
                     <button
                         className={`menuButton ${isMenuOpen ? 'menuButtonActive' : ''}`}

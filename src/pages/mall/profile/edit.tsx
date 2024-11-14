@@ -15,7 +15,10 @@ import {
     InputField,
     AddressInput,
     DetailAddressInput,
-    ButtonContainer, // 수정완료와 취소 버튼을 감쌀 div
+    ButtonContainer,
+    AddressInputWrapper,
+    AddressInputField,
+    StyledButton,
 } from './SignupStyled'; // 스타일 임포트
 
 const ProfileEditPage = () => {
@@ -139,9 +142,9 @@ const ProfileEditPage = () => {
     return (
         <ProfileEditContainer>
             <ProfileEditFormContainer>
-                <LogoContainer onClick={() => Router.push('/mall')}>
+                {/* <LogoContainer onClick={() => Router.push('/mall')}>
                     <Image src="/main.png" alt="Main Logo" width={300} height={100} />
-                </LogoContainer>
+                </LogoContainer> */}
                 <Form form={form} onFinish={handleSubmit}>
                     <Form.Item name="name" label="이름" initialValue={userInfo?.data?.Name}>
                         <InputField />
@@ -201,11 +204,10 @@ const ProfileEditPage = () => {
                         label="주소"
                         initialValue={userInfo?.data?.Address}
                         rules={[{ required: false, message: '주소를 입력하세요' }]}>
-                        <AddressInput
-                            value={address} // 주소가 업데이트 될 때 값 설정
-                            addonAfter={<Button onClick={showPostcodeModal}>주소 검색</Button>}
-                            placeholder="주소를 입력하세요"
-                        />
+                        <AddressInputWrapper>
+                            <AddressInputField value={address} placeholder="주소를 입력하세요" />
+                            <StyledButton onClick={showPostcodeModal}>주소 검색</StyledButton>
+                        </AddressInputWrapper>
                     </Form.Item>
                     <Form.Item
                         name="detailAddress"
