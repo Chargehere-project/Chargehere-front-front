@@ -1,4 +1,5 @@
 import axios from 'axios';
+import React from 'react';
 import Image from 'next/image';
 import { ReactNode, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
@@ -6,6 +7,8 @@ import Router from 'next/router';
 import style from './profile.module.css';
 import { Button, Form, Input, Modal, Space, Tabs } from 'antd';
 import DaumPostcode from 'react-daum-postcode';
+import { ReactNode } from 'react';
+
 
 import {
     ProfileContainer,
@@ -36,11 +39,14 @@ import {
     OrderStatus,
     ReviewButton,
     PointItemContainer,
+    CouponItemContainer,
 } from './StyledProfile';
 
 const { TabPane } = Tabs;
 
 const formatDate = (dateString: string) => {
+    if (!dateString) return '날짜 없음'; // dateString이 없을 경우 기본값 반환
+
     const date = new Date(dateString);
     return date.toLocaleString('ko-KR', {
         year: 'numeric',
@@ -53,10 +59,13 @@ const formatDate = (dateString: string) => {
     });
 };
 
+
+
+
 interface PointItem {
     Description: ReactNode;
     Amount: number;
-    ChargeDate: string;
+    createdAt: string;
 }
 interface Coupon {
     CouponName: string;
@@ -172,8 +181,11 @@ const Profile = () => {
                     }
                 );
 
+                console.log('포인트 내역 응답 데이터:', response.data.data);
+
                 if (response.data.result && response.data.data) {
                     setPointList(response.data.data);
+                    console.log('포인트 내역', response.data.data)
                 }
             } catch (error) {
                 console.error('포인트 내역을 가져오는데 실패했습니다:', error);
@@ -201,6 +213,7 @@ const Profile = () => {
 
         fetchProfileData();
     }, [form]);
+
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -457,21 +470,21 @@ const Profile = () => {
             </InfoRow>
 
             <OrderStatusContainer>
-    <OrderStatusItem>
-        <span>결제 완료</span>
-        <span>{orderSummary.completed}</span>  {/* completed로 변경 */}
-    </OrderStatusItem>
-    <Arrow>›</Arrow>
-    <OrderStatusItem>
-        <span>배송 중</span>
-        <span>{orderSummary.shipping}</span>   {/* shipping으로 변경 */}
-    </OrderStatusItem>
-    <Arrow>›</Arrow>
-    <OrderStatusItem>
-        <span>배송 완료</span>
-        <span>{orderSummary.DeliveryCompleted}</span>  {/* DeliveryCompleted로 변경 */}
-    </OrderStatusItem>
-</OrderStatusContainer>
+                <OrderStatusItem>
+                    <span>결제 완료</span>
+                    <span>{orderSummary.completed}</span> {/* completed로 변경 */}
+                </OrderStatusItem>
+                <Arrow>›</Arrow>
+                <OrderStatusItem>
+                    <span>배송 중</span>
+                    <span>{orderSummary.shipping}</span> {/* shipping으로 변경 */}
+                </OrderStatusItem>
+                <Arrow>›</Arrow>
+                <OrderStatusItem>
+                    <span>배송 완료</span>
+                    <span>{orderSummary.DeliveryCompleted}</span> {/* DeliveryCompleted로 변경 */}
+                </OrderStatusItem>
+            </OrderStatusContainer>
 
             <TabsContainer>
                 <Tabs defaultActiveKey="1">
@@ -519,19 +532,23 @@ const Profile = () => {
                     <TabPane tab="포인트 정보" key="2">
                         <SectionContainer>
                             {pointList.length > 0 ? (
-                                pointList.map((item, index) => (
-                                    <PointItemContainer key={index}>
-                                        <div className="pointAmount">{item.Amount.toLocaleString()} 포인트</div>
-                                        <div className="pointDescription">{item.Description}</div>
-                                        <div className="pointDate">{formatDate(item.ChargeDate)}</div>
-                                        <div
-                                            className={`pointStatus ${
-                                                item.Amount > 0 ? 'point-positive' : 'point-negative'
-                                            }`}>
-                                            {item.Amount > 0 ? '적립' : '차감'}
-                                        </div>
-                                    </PointItemContainer>
-                                ))
+                                pointList.map((item, index) => {
+                                    console.log('Raw CreatedAt Date:', item.createdAt); // 이 부분 추가
+                                    console.log('Formatted Date:', formatDate(item.createdAt)); // 이 부분 추가
+                                    return (
+                                        <PointItemContainer key={index}>
+                                            <div className="pointAmount">{item.Amount.toLocaleString()} 포인트</div>
+                                            <div className="pointDescription">{item.Description}</div>
+                                            <div className="pointDate">{formatDate(item.createdAt)}</div>
+                                            <div
+                                                className={`pointStatus ${
+                                                    item.Amount > 0 ? 'point-positive' : 'point-negative'
+                                                }`}>
+                                                {item.Amount > 0 ? '적립' : '차감'}
+                                            </div>
+                                        </PointItemContainer>
+                                    );
+                                })
                             ) : (
                                 <div>포인트 내역이 없습니다.</div>
                             )}
@@ -549,7 +566,7 @@ const Profile = () => {
                                         <div className={item.isUsed ? 'couponStatusUsed' : 'couponStatusUnused'}>
                                             {item.isUsed ? '사용완료' : '미사용'}
                                         </div>
-                                    </div>
+                                    </CouponItemContainer>
                                 ))
                             ) : (
                                 <div>쿠폰이 없습니다.</div>

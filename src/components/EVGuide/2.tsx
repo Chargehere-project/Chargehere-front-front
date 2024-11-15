@@ -4,7 +4,7 @@ import Link from 'next/link';
 const EVGuide2 = () => {
    return (
        <>
-           <h2>전기차 기초 정보</h2>
+           <h2>전기차 기초 정보2</h2>
            <p style={{ fontSize: '20px' }}>
                전기차는 어떤 모터를 사용할까? 모터의 종류와 원리에 대해 알아보자
            </p>

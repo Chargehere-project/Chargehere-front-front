@@ -16,4 +16,7 @@ module.exports = withTM({
     experimental: {
         esmExternals: 'loose', // ESM 외부 모듈을 완전히 허용
     },
+    images: {
+        domains: ['sogno-bucket.s3.ap-northeast-2.amazonaws.com'], // S3 버킷 도메인 추가
+    },
 });

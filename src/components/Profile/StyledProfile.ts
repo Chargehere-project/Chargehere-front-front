@@ -372,3 +372,39 @@ export const PointItemContainer = styled.div`
         font-weight: bold;
     }
 `;
+
+export const CouponItemContainer = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+
+    .couponName {
+        flex: 1;
+        font-weight: bold;
+        font-size: 16px;
+        color: #333;
+        margin-left: 15px;
+    }
+
+    .couponDuration {
+        flex: 2;
+        font-size: 14px;
+        color: #666;
+        text-align: center;
+    }
+
+    .couponStatus {
+        flex: 1;
+        text-align: right;
+        font-weight: bold;
+        margin-right: 30px;
+        &.unused {
+            color: orange; // 미사용 쿠폰 오렌지색
+        }
+        &.used {
+            color: red; // 사용 완료 쿠폰 빨간색
+        }
+    }
+`;
