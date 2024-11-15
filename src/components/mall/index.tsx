@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { ArrowUpOutlined } from '@ant-design/icons';
+import { ArrowUpOutlined, QrcodeOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 import { useRouter } from 'next/router';
 import Swipe from './Swipe';
 import MallStyled from './styled';
@@ -127,6 +128,14 @@ const MallIndex = () => {
           </div>
           <button onClick={() => router.push('/mall/product')} className='viewMoreButton'>상품 더보기</button>
         </section>
+
+        <Button
+          type="primary"
+          shape="circle"
+          icon={<QrcodeOutlined style={{ fontSize: '25px' }} />} // QR 코드
+          className="qrButton"
+          onClick={() => router.push('/charging')}
+        />
 
         {/* 위로 올리기 버튼 */}
         <button

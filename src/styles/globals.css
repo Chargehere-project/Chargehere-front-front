@@ -14,8 +14,6 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --button-color: #0597F2;
-  --button-hover-color: #BBDDF2;
   --font-family: 'GmarketSans', Arial, Helvetica, sans-serif; /* 새로운 폰트 변수 */
 }
 

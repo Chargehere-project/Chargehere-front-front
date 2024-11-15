@@ -55,26 +55,6 @@ const ShoppingCart = () => {
         fetchCart();
     }, []);
 
-    const quantityChange = async (cartId: number, newQuantity: number) => {
-        try {
-            await axios.post(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/cart/quantity`,
-                { cartId, quantity: newQuantity },
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`,
-                    },
-                }
-            );
-            setCart((prevCart) =>
-                prevCart.map((item) => (item.CartID === cartId ? { ...item, Quantity: newQuantity } : item))
-            );
-            setEditingId(null);
-        } catch (error) {
-            console.error('수량 변경에 실패했습니다.', error);
-            alert('수량 변경에 실패했습니다.');
-        }
-    };
 
     const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.checked) {
@@ -260,26 +240,9 @@ const ShoppingCart = () => {
                                                 <span>원</span>
                                             </div>
                                             <div className="itemQuantity">
-                                                {editingId === item.CartID ? (
-                                                    <select
-                                                        value={item.Quantity}
-                                                        onChange={(e) =>
-                                                            quantityChange(item.CartID, Number(e.target.value))
-                                                        }
-                                                        onBlur={() => setEditingId(null)}
-                                                        className="quantitySelector"
-                                                    >
-                                                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                                                            <option key={num} value={num}>
-                                                                {num}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                ) : (
                                                     <span onClick={() => setEditingId(item.CartID)}>
                                                         {item.Quantity}개
                                                     </span>
-                                                )}
                                             </div>
                                         </div>
                                     </div>
