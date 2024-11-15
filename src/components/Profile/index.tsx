@@ -581,13 +581,13 @@ const Profile = () => {
 
                     <TabPane tab="1:1 문의" key="4">
                         <SectionContainer>
-                            <p>1:1 문의 내용이 여기에 표시됩니다.</p>
+                            <p>1:1 문의는 개발 예정입니다.</p>
                         </SectionContainer>
                     </TabPane>
 
                     <TabPane tab="상품 문의" key="5">
                         <SectionContainer>
-                            <p>상품 문의 내용이 여기에 표시됩니다.</p>
+                            <p>상품 문의는 개발 예정입니다.</p>
                         </SectionContainer>
                     </TabPane>
                 </Tabs>
