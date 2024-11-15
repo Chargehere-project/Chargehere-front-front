@@ -98,39 +98,50 @@ function Rwrite() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
+    
         const userId = getUserId();
-
-        // orderListId와 productId가 존재하는지 확인
+    
+        console.log('Submit시 값들:', {
+            orderListId,
+            userId,
+            productId,
+            rating,
+            content
+        });
+    
         if (!orderListId || !productId || !userId) {
             alert('필요한 정보가 부족합니다.');
             return;
         }
-
+    
         try {
             const reviewData = {
-                OrderListID: orderListId, // URL에서 받은 orderListId 사용
-                UserID: userId,
-                ProductID: productId, // URL에서 받은 productId 사용
-                Rating: rating,
-                Content: content,
+                userId,
+                productId,
+                orderId: orderListId,  // orderListId를 orderId로 전달
+                rating,
+                content,
             };
-
-            console.log('전송할 데이터:', reviewData);
-
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/reviewwrite`, reviewData, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
-            });
-
+    
+            console.log('전송할 리뷰 데이터:', reviewData);
+    
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/reviewwrite`, 
+                reviewData,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    },
+                }
+            );
+    
             if (response.data.result) {
                 alert('리뷰가 성공적으로 등록되었습니다.');
                 router.push('/mall/profile');
             }
-        } catch (error) {
-            console.error('리뷰 등록 실패:', error);
+        } catch (error: any) {
+            console.error('리뷰 등록 실패:', error.response?.data);
             alert('리뷰 등록에 실패했습니다. 다시 시도해주세요.');
         }
     };
