@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Button } from 'antd';
+import { Button, Modal } from 'antd';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 
@@ -58,7 +58,10 @@ const ProductQA: React.FC<ProductQAProps> = ({ productId }) => {
             const currentUserId = decoded.UserID;
 
             if (currentUserId !== userId) {
-                alert('본인이 작성한 글만 확인할 수 있습니다.');
+                Modal.warning({
+                    title: '권한 없음',
+                    content: '본인이 작성한 글만 확인할 수 있습니다.',
+                });
                 return;
             }
 
