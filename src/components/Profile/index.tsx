@@ -6,7 +6,6 @@ import { jwtDecode } from 'jwt-decode';
 import Router from 'next/router';
 import { Button, Form, Input, Modal, Space, Tabs } from 'antd';
 import DaumPostcode from 'react-daum-postcode';
-import { ReactNode } from 'react';
 
 import {
     ProfileContainer,
