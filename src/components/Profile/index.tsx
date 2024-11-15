@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import Router from 'next/router';
 import style from './profile.module.css';
@@ -192,6 +192,7 @@ const Profile = () => {
 
                 if (response.data.result && response.data.data) {
                     setCouponList(response.data.data);
+                    setCouponCount(response.data.data.length);
                 }
             } catch (error) {
                 console.error('쿠폰 목록을 가져오는데 실패했습니다:', error);
@@ -247,6 +248,10 @@ const Profile = () => {
                 // 응답 데이터 콘솔에 출력하여 확인
                 console.log('Order List Response:', response.data);
                 setOrderList(response.data.data);
+                const reviewableOrders = response.data.data.filter(
+                    (                    order: { OrderStatus: string; hasReview: any; }) => order.OrderStatus === 'DeliveryCompleted' && !order.hasReview
+                );
+                setReviewCount(reviewableOrders.length);
             } catch (error) {
                 console.error('구매내역을 가져오는데 실패했습니다:', error);
             }
@@ -539,8 +544,8 @@ const Profile = () => {
                                 couponList.map((item, index) => (
                                     <div key={index}>
                                         <div>{item.Coupon.CouponName}</div>
-                                        <div>시작일자: {item.Coupon.StartDate}</div>
-                                        <div>만료일자: {item.Coupon.ExpirationDate}</div>
+                                        <div>시작일자:{formatDate(item.Coupon.StartDate)}</div>
+                                        <div>만료일자: {formatDate(item.Coupon.ExpirationDate)}</div>
                                         <div className={item.isUsed ? 'couponStatusUsed' : 'couponStatusUnused'}>
                                             {item.isUsed ? '사용완료' : '미사용'}
                                         </div>
