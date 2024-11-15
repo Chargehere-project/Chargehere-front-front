@@ -1,74 +1,31 @@
 import { ArrowUpOutlined, QrcodeOutlined } from '@ant-design/icons';
 import { Button, Modal } from 'antd';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import {jwtDecode} from 'jwt-decode';
-import axios from 'axios';
+import { useState } from 'react';
 import ButtonStyled from './styled';
-
-interface UserSession {
-  UserID: number;
-}
 
 const Buttons = () => {
   const router = useRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    // 로그인 여부를 확인하는 함수
-    const checkUserSession = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          // 토큰 디코드하여 userId 가져오기
-          const decoded: any = jwtDecode(token);
-          const userId = decoded.UserID;
-
-          const response = await axios.post(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify`,
-            { userId }, // userId를 request body에 포함
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-
-          if (response.data.result) {
-            setIsLoggedIn(true);
-          } else {
-            setIsLoggedIn(false);
-            localStorage.removeItem('token');
-          }
-        } catch (error) {
-          console.error('Error verifying user session', error);
-          setIsLoggedIn(false);
-          localStorage.removeItem('token');
-        }
-      } else {
-        setIsLoggedIn(false);
-      }
-    };
-
-    checkUserSession();
-  }, []);
 
   // QR 버튼 클릭 핸들러
   const handleQRButtonClick = () => {
-    if (isLoggedIn) {
-      router.push('/charging');
-    } else {
-      setIsModalOpen(true); // 로그인 필요 모달 열기
+    const token = localStorage.getItem('token');
+    console.log(token,'token');
+    if (token) { 
+      router.push('/charging')      
+    } else { 
+      setIsModalOpen(true)
     }
   };
 
+  // 모달 관련 함수
   const handleModalOk = () => {
     setIsModalOpen(false);
     router.push('/mall/login'); // 로그인 페이지로 이동
   };
-
   const handleModalCancel = () => {
     setIsModalOpen(false); // 모달 닫기
   };
