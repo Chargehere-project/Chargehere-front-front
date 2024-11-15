@@ -13,7 +13,10 @@ import {
     LocationButton,
     SearchContainer,
     SearchInput,
-    MyLocationButton
+    MyLocationButton,
+    SearchWrapper,
+    SearchResultsContainer,
+    SearchResultItem
 } from './MapComponentStyles';
 
 interface Charger {
@@ -40,6 +43,12 @@ declare global {
     }
 }
 
+interface SearchResult {
+    place_name: string;
+    address_name: string;
+    x: string;  // 경도
+    y: string;  // 위도
+}
 
 const MapComponent = () => {
     const mapContainer = useRef<HTMLDivElement>(null);
@@ -50,6 +59,9 @@ const MapComponent = () => {
     const [favorites, setFavorites] = useState<Charger[]>([]);
     const [activeTab, setActiveTab] = useState<'chargers' | 'favorites'>('chargers');
     const [places, setPlaces] = useState<any>(null); // 장소 검색 서비스
+    const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+
     let currentInfoWindow: any = null;
 
     // 로컬 스토리지에서 즐겨찾기 불러오기
@@ -173,7 +185,56 @@ const MapComponent = () => {
         // 주소 검색 먼저 시도
         searchAddressToCoordinate(searchQuery);
     };
+    const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setSearchQuery(value);
+    
+        // 검색어가 2글자 이상일 때만 자동완성 검색 실행
+        if (value.length >= 2 && places) {
+            const searchOption = {
+                size: 5,  // 검색 결과를 5개로 제한
+                location: new window.kakao.maps.LatLng(37.566826, 126.9786567), // 서울 중심점
+                radius: 20000 // 검색 반경 (미터 단위)
+            };
+    
+            places.keywordSearch(value, (results: any, status: any) => {
+                if (status === window.kakao.maps.services.Status.OK) {
+                    // 검색 결과 중 장소명과 주소만 추출하여 저장 (최대 5개)
+                    const filteredResults = results.slice(0, 5).map((result: any) => ({
+                        place_name: result.place_name,
+                        address_name: result.address_name,
+                        x: result.x,
+                        y: result.y
+                    }));
+                    setSearchResults(filteredResults);
+                    setIsSearching(true);
+                }
+            }, searchOption);
+        } else {
+            setSearchResults([]);
+            setIsSearching(false);
+        }
+    };
+    // 검색 결과 항목 클릭 핸들러
+    const handleSearchItemClick = (result: SearchResult) => {
+        const moveLatLng = new window.kakao.maps.LatLng(result.y, result.x);
+        mapInstance.current.setCenter(moveLatLng);
+        mapInstance.current.setLevel(3);
+        
+        // 검색 결과 초기화
+        setSearchResults([]);
+        setIsSearching(false);
+        setSearchQuery(result.place_name);
 
+        // 새 마커 생성
+        new window.kakao.maps.Marker({
+            map: mapInstance.current,
+            position: moveLatLng
+        });
+
+        // 해당 지역의 충전소 데이터 새로 불러오기
+        fetchChargerData(mapInstance.current);
+    };
 
 
     // 충전소 데이터 가져오기
@@ -400,36 +461,56 @@ const MapComponent = () => {
 
     return (
         <Container>
-            <Sidebar>
-                <Heading>충전소 목록</Heading>
-                <SearchContainer>
-                    <form onSubmit={handleSearch}>
+        <Sidebar>
+            <Heading>충전소 목록</Heading>
+            <SearchContainer>
+                <SearchWrapper>
+                    <form onSubmit={(e) => e.preventDefault()}>
                         <SearchInput
                             type="text"
                             value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="지역 또는 주소를 입력하세요"
+                            onChange={handleSearchInputChange}
+                            placeholder="지역, 동, 주소를 입력하세요"
                         />
-                        <button type="submit" >검색</button>
+                        {isSearching && searchResults.length > 0 && (
+                            <SearchResultsContainer>
+                                {searchResults.map((result, index) => (
+                                    <SearchResultItem 
+                                        key={index} 
+                                        onClick={() => handleSearchItemClick(result)}
+                                    >
+                                        <div className="place-name">{result.place_name}</div>
+                                        <div className="address">{result.address_name}</div>
+                                    </SearchResultItem>
+                                ))}
+                            </SearchResultsContainer>
+                        )}
+                        <button type="submit" onClick={() => handleSearchItemClick(searchResults[0])}>
+                            검색
+                        </button>
                     </form>
-                    <MyLocationButton onClick={getUserLocation}>현재 위치</MyLocationButton>
-                </SearchContainer>
+                </SearchWrapper>
+                <MyLocationButton onClick={getUserLocation}>
+                    현재 위치
+                </MyLocationButton>
+            </SearchContainer>
 
-                <ChargerList>
-                    {chargerList.map((charger) => (
-                        <ChargerItem key={charger.statId}>
-                            <ChargerInfo>
-                                <ChargerName>{charger.statNm}</ChargerName>
-                                <ChargerAddress>{charger.addr}</ChargerAddress>
-                            </ChargerInfo>
-                            <LocationButton onClick={() => moveToMarker(charger)}>위치 보기</LocationButton>
-                        </ChargerItem>
-                    ))}
-                </ChargerList>
-            </Sidebar>
-
-            <MapContainer ref={mapContainer} />
-        </Container>
+            <ChargerList>
+                {chargerList.map((charger) => (
+                    <ChargerItem key={charger.statId}>
+                        <ChargerInfo>
+                            <ChargerName>{charger.statNm}</ChargerName>
+                            <ChargerAddress>{charger.addr}</ChargerAddress>
+                        </ChargerInfo>
+                        <LocationButton onClick={() => moveToMarker(charger)}>
+                            위치 보기
+                        </LocationButton>
+                    </ChargerItem>
+                ))}
+            </ChargerList>
+        </Sidebar>
+        <MapContainer ref={mapContainer} />
+    </Container>
     );
 };
 
