@@ -49,6 +49,7 @@ const MapComponent = () => {
     const [chargerList, setChargerList] = useState<Charger[]>([]);
     const [favorites, setFavorites] = useState<Charger[]>([]);
     const [activeTab, setActiveTab] = useState<'chargers' | 'favorites'>('chargers');
+    const [places, setPlaces] = useState<any>(null); // 장소 검색 서비스
     let currentInfoWindow: any = null;
 
     // 로컬 스토리지에서 즐겨찾기 불러오기
@@ -73,8 +74,11 @@ const MapComponent = () => {
                         center: new window.kakao.maps.LatLng(37.54357038203505, 126.9513771249514),
                         level: 5,
                     });
-                    setMap(mapInstance.current);
-                    fetchChargerData(mapInstance.current);
+
+                setPlaces(new window.kakao.maps.services.Places());
+                
+                setMap(mapInstance.current);
+                fetchChargerData(mapInstance.current);
 
                     // 지도 클릭 시 인포윈도우 닫기
                     window.kakao.maps.event.addListener(mapInstance.current, 'click', () => {
@@ -95,6 +99,82 @@ const MapComponent = () => {
             }
         };
     }, []);
+      // 검색 핸들러 추가
+      const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        if (!places || !searchQuery) return;
+
+        // 검색 옵션 추가
+        const searchOption = {
+            location: new window.kakao.maps.LatLng(37.566826, 126.9786567), // 서울 중심점
+            size: 1,  // 검색 결과 개수
+            radius: 20000  // 검색 반경 (미터 단위)
+        };
+
+        places.keywordSearch(searchQuery, (results: any, status: any) => {
+            if (status === window.kakao.maps.services.Status.OK) {
+                console.log('검색 결과:', results); // 검색 결과 확인용
+
+                // 첫 번째 결과의 좌표로 이동
+                const firstResult = results[0];
+                const moveLatLng = new window.kakao.maps.LatLng(firstResult.y, firstResult.x);
+                
+                // 지도 이동 및 줌 레벨 조정
+                mapInstance.current.setCenter(moveLatLng);
+                mapInstance.current.setLevel(3); // 줌 레벨 설정 (낮을수록 더 가깝게)
+
+                // 검색된 위치에 마커 표시 (선택사항)
+                new window.kakao.maps.Marker({
+                    map: mapInstance.current,
+                    position: moveLatLng,
+                    title: firstResult.place_name
+                });
+
+                // 위치 이동 후 해당 지역의 충전소 데이터 새로 불러오기
+                fetchChargerData(mapInstance.current);
+
+            } else {
+                alert('검색 결과를 찾을 수 없습니다.');
+            }
+        }, searchOption);
+    };
+
+    // 주소로 검색하는 함수 추가
+    const searchAddressToCoordinate = (address: string) => {
+        const geocoder = new window.kakao.maps.services.Geocoder();
+
+        geocoder.addressSearch(address, (result: any, status: any) => {
+            if (status === window.kakao.maps.services.Status.OK) {
+                const coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
+                
+                // 지도 이동
+                mapInstance.current.setCenter(coords);
+                mapInstance.current.setLevel(3);
+
+                // 마커 표시
+                new window.kakao.maps.Marker({
+                    map: mapInstance.current,
+                    position: coords
+                });
+
+                // 충전소 데이터 새로 불러오기
+                fetchChargerData(mapInstance.current);
+            }
+        });
+    };
+
+    // 통합 검색 핸들러
+    const handleSearchSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        if (!searchQuery) return;
+
+        // 주소 검색 먼저 시도
+        searchAddressToCoordinate(searchQuery);
+    };
+
+
 
     // 충전소 데이터 가져오기
     const fetchChargerData = async (map: any) => {
@@ -323,12 +403,15 @@ const MapComponent = () => {
             <Sidebar>
                 <Heading>충전소 목록</Heading>
                 <SearchContainer>
-                    <SearchInput
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="지역 또는 주소를 입력하세요"
-                    />
+                    <form onSubmit={handleSearch}>
+                        <SearchInput
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="지역 또는 주소를 입력하세요"
+                        />
+                        <button type="submit" >검색</button>
+                    </form>
                     <MyLocationButton onClick={getUserLocation}>현재 위치</MyLocationButton>
                 </SearchContainer>
 
