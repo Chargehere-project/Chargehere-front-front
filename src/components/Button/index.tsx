@@ -23,7 +23,7 @@ const Buttons = () => {
         const userId = decoded.UserID;
 
         const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/button`,
           { userId },
           {
             headers: {
