@@ -78,13 +78,13 @@ const MallHeader = () => {
 
     const handleLogout = () => {
 
-        if (window.confirm('로그아웃 하시겠습니까?')) {
-            localStorage.removeItem('token'); // 토큰 제거
-            setIsLoggedIn(false); // 로그인 상태 해제
-            setCartCount(0); // 장바구니 개수 초기화
-            Router.push('/');
-            alert('로그아웃 되었습니다.');
-        }
+        // if (window.confirm('로그아웃 하시겠습니까?')) {
+        //     localStorage.removeItem('token'); // 토큰 제거
+        //     setIsLoggedIn(false); // 로그인 상태 해제
+        //     setCartCount(0); // 장바구니 개수 초기화
+        //     Router.push('/');
+        //     alert('로그아웃 되었습니다.');
+        // }
 
         Modal.confirm({
             title: '로그아웃 확인',
