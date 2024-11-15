@@ -3,17 +3,10 @@ import Image from 'next/image';
 import Router from 'next/router';
 import { UserOutlined, ShoppingOutlined, LoginOutlined, MenuOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode';
+// import jwtDecode from 'jwt-decode';
 import HeaderStyled from './styled';
 import { Modal } from 'antd';
 
-interface CustomJwtPayload {
-    userID: string;  // 소문자로 시작하는 경우
-    // 다른 필요한 속성들
-    iat?: number;
-    exp?: number;
-    [key: string]: any;
-}
 const MallHeader = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [cartCount, setCartCount] = useState(0);

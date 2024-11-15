@@ -4,7 +4,6 @@ import Image from 'next/image';
 import { ReactNode, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import Router from 'next/router';
-import style from './profile.module.css';
 import { Button, Form, Input, Modal, Space, Tabs } from 'antd';
 import DaumPostcode from 'react-daum-postcode';
 
