@@ -1,13 +1,12 @@
 import axios from 'axios';
 import React from 'react';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import Router from 'next/router';
 import { Button, Form, Input, Modal, Space, Tabs } from 'antd';
 import DaumPostcode from 'react-daum-postcode';
 import { ReactNode } from 'react';
-
 
 import {
     ProfileContainer,
@@ -58,9 +57,6 @@ const formatDate = (dateString: string) => {
     });
 };
 
-
-
-
 interface PointItem {
     Description: ReactNode;
     Amount: number;
@@ -96,7 +92,6 @@ interface OrderItem {
     OrderListID: number;
 }
 
-
 const Profile = () => {
     const [form] = Form.useForm();
     const [name, setName] = useState<string>('');
@@ -112,12 +107,10 @@ const Profile = () => {
     const [couponCount, setCouponCount] = useState<number>(0);
     const [reviewCount, setReviewCount] = useState<number>(0);
     const [orderSummary, setOrderSummary] = useState({
-        completed: 0,        // 결제 완료
-        shipping: 0,         // 배송 중
-        DeliveryCompleted: 0 // 배송 완료
+        completed: 0, // 결제 완료
+        shipping: 0, // 배송 중
+        DeliveryCompleted: 0, // 배송 완료
     });
-
-    
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -184,7 +177,7 @@ const Profile = () => {
 
                 if (response.data.result && response.data.data) {
                     setPointList(response.data.data);
-                    console.log('포인트 내역', response.data.data)
+                    console.log('포인트 내역', response.data.data);
                 }
             } catch (error) {
                 console.error('포인트 내역을 가져오는데 실패했습니다:', error);
@@ -203,8 +196,8 @@ const Profile = () => {
 
                 if (response.data.result && response.data.data) {
                     setCouponList(response.data.data);
-                    setCouponCount(response.data.data.length); // couponCount 설정
-                } 
+                    setCouponCount(response.data.data.length);
+                }
             } catch (error) {
                 console.error('쿠폰 목록을 가져오는데 실패했습니다:', error);
             }
@@ -212,7 +205,6 @@ const Profile = () => {
 
         fetchProfileData();
     }, [form]);
-
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -260,6 +252,11 @@ const Profile = () => {
                 // 응답 데이터 콘솔에 출력하여 확인
                 console.log('Order List Response:', response.data);
                 setOrderList(response.data.data);
+                const reviewableOrders = response.data.data.filter(
+                    (order: { OrderStatus: string; hasReview: any }) =>
+                        order.OrderStatus === 'DeliveryCompleted' && !order.hasReview
+                );
+                setReviewCount(reviewableOrders.length);
             } catch (error) {
                 console.error('구매내역을 가져오는데 실패했습니다:', error);
             }
@@ -431,7 +428,6 @@ const Profile = () => {
             }
         }
     };
-    
 
     return (
         <ProfileContainer>
@@ -510,7 +506,8 @@ const Profile = () => {
                                             <span
                                                 onClick={() =>
                                                     handleReviewClick(item.OrderListID, item.Product.ProductID)
-                                                }>
+                                                }
+                                            >
                                                 리뷰 작성
                                             </span>
                                         ) : item.OrderStatus === 'DeliveryCompleted' && item.hasReview ? (
@@ -538,7 +535,8 @@ const Profile = () => {
                                             <div
                                                 className={`pointStatus ${
                                                     item.Amount > 0 ? 'point-positive' : 'point-negative'
-                                                }`}>
+                                                }`}
+                                            >
                                                 {item.Amount > 0 ? '적립' : '차감'}
                                             </div>
                                         </PointItemContainer>
@@ -555,13 +553,13 @@ const Profile = () => {
                             {couponList.length > 0 ? (
                                 couponList.map((item, index) => (
                                     <CouponItemContainer key={index}>
-                                        <div className="couponName">{item.Coupon.CouponName}</div>
-                                        <div className="couponDuration">
-                                            기간: {formatDate(item.Coupon.StartDate)} ~{' '}
-                                            {formatDate(item.Coupon.ExpirationDate)}
-                                        </div>
-                                        <div className={`couponStatus ${item.isUsed ? 'used' : 'unused'}`}>
-                                            {item.isUsed ? '사용완료' : '미사용'}
+                                        <div>
+                                            <div>{item.Coupon.CouponName}</div>
+                                            <div>시작일자:{formatDate(item.Coupon.StartDate)}</div>
+                                            <div>만료일자: {formatDate(item.Coupon.ExpirationDate)}</div>
+                                            <div className={item.isUsed ? 'couponStatusUsed' : 'couponStatusUnused'}>
+                                                {item.isUsed ? '사용완료' : '미사용'}
+                                            </div>
                                         </div>
                                     </CouponItemContainer>
                                 ))

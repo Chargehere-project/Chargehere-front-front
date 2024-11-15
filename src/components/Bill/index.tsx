@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import BillStyled from './styled';
 import { loadTossPayments } from '@tosspayments/tosspayments-sdk';
 
@@ -14,6 +14,7 @@ interface OrderItem {
 }
 
 interface Order {
+    fee: number;
     orderListId: string;
     items: OrderItem[];
     totalAmount: number;
@@ -72,9 +73,12 @@ const BillPage = () => {
             if (!widgets || !order) return;
 
             try {
+                const fee = order.totalAmount < 50000 ? 3000 : 0;
+                const finalPaymentAmount = Math.round(order.paymentAmount);
+
                 await widgets.setAmount({
                     currency: 'KRW',
-                    value: Math.round(order.paymentAmount),
+                    value: finalPaymentAmount,
                 });
 
                 await Promise.all([
@@ -101,12 +105,17 @@ const BillPage = () => {
     const fetchOrderData = async () => {
         try {
             if (!id) return;
+
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/order/${id}`);
             if (response.data.result) {
+                const totalAmount = parseFloat(response.data.data.totalAmount);
+                const fee = 3000; // 배송비 계산
+
                 const fetchedOrder = {
                     ...response.data.data,
-                    totalAmount: parseFloat(response.data.data.totalAmount) + 3000,
-                    paymentAmount: parseFloat(response.data.data.totalAmount) + 3000,
+                    totalAmount, // 상품 금액
+                    paymentAmount: totalAmount + fee, // 상품 금액 + 배송비
+                    fee, // 배송비 추가
                 };
                 setOrder(fetchedOrder);
             }
@@ -159,11 +168,24 @@ const BillPage = () => {
             const userId = decoded.UserID;
 
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/usercoupon`, { userId });
-            if (response.data.result && response.data.data) {
-                setAvailableCoupons(Array.isArray(response.data.data) ? response.data.data : [response.data.data]);
+
+            if (!response.data.result || !response.data.data) {
+                console.error('쿠폰 데이터가 없습니다:', response.data);
+                return;
             }
+
+            const formattedCoupons = response.data.data.map(
+                (coupon: { CouponID: any; Coupon: { CouponName: any; DiscountAmount: any; ExpirationDate: any } }) => ({
+                    couponId: coupon.CouponID,
+                    couponName: coupon.Coupon.CouponName,
+                    discountAmount: coupon.Coupon.DiscountAmount,
+                    expirationDate: coupon.Coupon.ExpirationDate,
+                })
+            );
+
+            setAvailableCoupons(formattedCoupons);
         } catch (error) {
-            console.error('쿠폰 조회 중 오류 발생:', error);
+            console.error('쿠폰 조회 중 오류:', error);
         }
     };
 
@@ -233,23 +255,35 @@ const BillPage = () => {
             return;
         }
 
-        const newPaymentAmount = order.totalAmount - pointsToUse;
+        const newPaymentAmount = order.totalAmount + order.fee - pointsToUse - (selectedCoupon?.discountAmount || 0); // 배송비 포함
         setOrder({
             ...order,
             paymentAmount: newPaymentAmount,
-            discount: pointsToUse + (selectedCoupon?.discountAmount || 0),
+            discount: pointsToUse + (selectedCoupon?.discountAmount || 0), // 포인트 + 쿠폰 할인 금액
         });
     };
 
-    const handleCouponSelection = (coupon: Coupon) => {
+    const handleCouponSelection = (coupon: Coupon | undefined) => {
         if (!order) return;
 
+        // 쿠폰 선택 해제 시
+        if (!coupon) {
+            setSelectedCoupon(null); // 선택된 쿠폰 초기화
+            setOrder({
+                ...order,
+                paymentAmount: order.totalAmount + order.fee - pointsToUse, // 배송비 포함
+                discount: pointsToUse, // 포인트만 할인 적용
+            });
+            return;
+        }
+
+        // 쿠폰 선택 시
         setSelectedCoupon(coupon);
-        const newPaymentAmount = order.totalAmount - pointsToUse - coupon.discountAmount;
+        const newPaymentAmount = order.totalAmount + order.fee - pointsToUse - coupon.discountAmount; // 배송비 포함
         setOrder({
             ...order,
             paymentAmount: newPaymentAmount,
-            discount: pointsToUse + coupon.discountAmount,
+            discount: pointsToUse + coupon.discountAmount, // 포인트 + 쿠폰 할인 금액
         });
     };
 
@@ -335,7 +369,16 @@ const BillPage = () => {
                         </div>
                         <h3 style={{ marginTop: '80px' }}>쿠폰 선택</h3>
                         <div className="couponSection">
-                            <select onChange={(e) => handleCouponSelection(availableCoupons[e.target.selectedIndex])}>
+                            <select
+                                onChange={(e) => {
+                                    // 첫 번째 옵션("쿠폰 선택")을 선택했을 때는 undefined 반환
+                                    const selectedCoupon =
+                                        e.target.selectedIndex === 0
+                                            ? undefined
+                                            : availableCoupons[e.target.selectedIndex - 1]; // -1을 해줘야 실제 쿠폰 배열의 인덱스와 맞음
+                                    handleCouponSelection(selectedCoupon);
+                                }}
+                            >
                                 <option value="">쿠폰 선택</option>
                                 {availableCoupons.map((coupon) => (
                                     <option key={coupon.couponId} value={coupon.couponId}>
@@ -365,7 +408,7 @@ const BillPage = () => {
                             </div>
                             <div className="summaryTotal">
                                 <span>총 결제 금액</span>
-                                <span>{(paymentAmount + fee).toLocaleString()}원</span>
+                                <span>{paymentAmount.toLocaleString()}원</span>
                             </div>
                         </div>
                         {order?.items.map((item) => (
@@ -390,11 +433,7 @@ const BillPage = () => {
                     <div id="payment-method" style={{ marginBottom: '30px', minHeight: '200px' }} />
                     <div id="agreement" style={{ marginBottom: '30px', minHeight: '100px' }} />
 
-                    <button
-                        className="buttonClass"
-                        disabled={!ready}
-                        onClick={handlePayment}
->
+                    <button className="buttonClass" disabled={!ready} onClick={handlePayment}>
                         결제하기
                     </button>
                 </div>
