@@ -68,6 +68,7 @@ interface Coupon {
 }
 
 interface CouponItem {
+    IsUsed: boolean;
     Coupon: Coupon;
     isUsed: boolean;
 }
@@ -556,8 +557,8 @@ const Profile = () => {
                                             <div>{item.Coupon.CouponName}</div>
                                             <div>시작일자:{formatDate(item.Coupon.StartDate)}</div>
                                             <div>만료일자: {formatDate(item.Coupon.ExpirationDate)}</div>
-                                            <div className={item.isUsed ? 'couponStatusUsed' : 'couponStatusUnused'}>
-                                                {item.isUsed ? '사용완료' : '미사용'}
+                                            <div className={item.IsUsed ? 'couponStatusUsed' : 'couponStatusUnused'}>
+                                                {item.IsUsed ? '사용완료' : '미사용'}
                                             </div>
                                         </div>
                                     </CouponItemContainer>
