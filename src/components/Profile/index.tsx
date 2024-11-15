@@ -81,6 +81,7 @@ interface Product {
 }
 
 interface OrderItem {
+    OrderList: any;
     OrderID: number;
     Product: Product;
     Quantity: number;
@@ -155,8 +156,10 @@ const Profile = () => {
                     }
                 );
 
-                // 응답 데이터 콘솔에 출력하여 확인
-                console.log('Order List Response:', response.data);
+                // 서버 응답 데이터 구조 확인
+                console.log('서버 응답 전체:', response.data);
+                console.log('주문 데이터 첫번째 항목:', response.data.data[0]);
+
                 setOrderList(response.data.data);
             } catch (error) {
                 console.error('구매내역을 가져오는데 실패했습니다:', error);
@@ -391,11 +394,17 @@ const Profile = () => {
     }, [form]);
 
     const handleReviewClick = (orderListId: number, productId: number) => {
-        console.log('리뷰 페이지로 이동:', orderListId, productId);
+        // 디버깅용 로그 추가
+        console.log('리뷰 클릭 데이터:', {
+            orderListId,
+            productId,
+            전체주문: orderList, // 현재 상태의 전체 데이터 확인
+        });
+
         if (orderListId && productId) {
             Router.push(`./review/write?orderListId=${orderListId}&productId=${productId}`);
         } else {
-            console.error('orderListId 또는 productId가 부족합니다');
+            console.error(`orderListId(${orderListId}) 또는 productId(${productId})가 없습니다`);
         }
     };
 
@@ -504,9 +513,10 @@ const Profile = () => {
                                     <ReviewButton>
                                         {item.OrderStatus === 'DeliveryCompleted' && !item.hasReview ? (
                                             <span
-                                                onClick={() =>
-                                                    handleReviewClick(item.OrderListID, item.Product.ProductID)
-                                                }
+                                                onClick={() => {
+                                                    console.log('리뷰 클릭 아이템:', item);
+                                                    handleReviewClick(item.OrderListID, item.Product.ProductID); // OrderListID 사용
+                                                }}
                                             >
                                                 리뷰 작성
                                             </span>
