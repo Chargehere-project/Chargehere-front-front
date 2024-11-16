@@ -10,27 +10,33 @@ import axios from 'axios';
 
 const MainSwipe = () => {
     const router = useRouter();
-    const [banner1Url, setBanner1Url] = useState('/main_banner1.png'); // 기본 배너 1 이미지
-    const [banner2Url, setBanner2Url] = useState('/main_banner2.png'); // 기본 배너 2 이미지
+    const [banner1Url, setBanner1Url] = useState('/main_banner1.png');
+    const [banner2Url, setBanner2Url] = useState('/main_banner2.png');
+
+    // S3에서 최신 배너 이미지를 가져오는 함수
+    const fetchBanners = async () => {
+        try {
+            // 첫 번째 배너 가져오기
+            const response1 = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/getBanners`, {
+                params: { category: 'banner_shop', index: 0 },
+            });
+            if (response1.data.banner) {
+                setBanner1Url(response1.data.banner);
+            }
+
+            // 두 번째 배너 가져오기
+            const response2 = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/getBanners`, {
+                params: { category: 'banner_shop', index: 1 },
+            });
+            if (response2.data.banner) {
+                setBanner2Url(response2.data.banner);
+            }
+        } catch (error) {
+            console.error('Failed to fetch banners from S3:', error);
+        }
+    };
 
     useEffect(() => {
-        // S3에서 배너 이미지를 가져오는 함수
-        const fetchBanners = async () => {
-            try {
-                const response1 = await axios.get('/api/admin/files/banner1');
-                const response2 = await axios.get('/api/admin/files/banner2');
-
-                if (response1.data.fileUrl) {
-                    setBanner1Url(response1.data.fileUrl);
-                }
-                if (response2.data.fileUrl) {
-                    setBanner2Url(response2.data.fileUrl);
-                }
-            } catch (error) {
-                console.error('Failed to fetch banners from S3:', error);
-            }
-        };
-
         fetchBanners();
     }, []);
 
