@@ -19,7 +19,7 @@ import {
     AddressInputWrapper,
     AddressInputField,
     StyledButton,
-} from './SignupStyled'; // 스타일 임포트
+} from '../../../styles/SignupStyled'; // 스타일 임포트
 
 const ProfileEditPage = () => {
     const [form] = Form.useForm();
