@@ -2,83 +2,137 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import styled from 'styled-components';
 
+const Container = styled.div`
+    width: 90%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 20px 40px;
+    paddingBottom: 80px;
+    backgroundColor: '#f9f9f9';
+    position: relative;
+
+    @media screen and (max-width: 1024px) {
+        width: 95%;
+        padding: 20px;
+    }
+
+    @media screen and (max-width: 768px) {
+        width: 100%;
+        padding: 10px;
+    }
+`;
+
+const Title = styled.h1`
+    fontSize: 36px;
+    fontWeight: bold;
+    color: #555;
+    padding: 40px 0 20px;
+    paddingLeft: -100px;
+    marginTop: 20px;
+    textAlign: left;
+
+    @media screen and (max-width: 1024px) {
+        fontSize: 32px;
+        paddingLeft: -50px;
+    }
+
+    @media screen and (max-width: 768px) {
+        fontSize: 28px;
+        paddingLeft: -30px;
+        padding: 20px 0;
+    }
+
+    @media screen and (max-width: 480px) {
+        fontSize: 24px;
+        paddingLeft: -20px;
+        textAlign: center;
+    }
+`;
+
 const RetroContainer = styled.div`
-  width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #ffffff;
-  border: 1px solid #cccccc;
-  font-family: "돋움", Dotum, Arial, sans-serif;
+    width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    font-family: "돋움", Dotum, Arial, sans-serif;
 
-  h2 {
-    font-size: 20px;
-    color: #004080;
-    border-bottom: 2px solid #004080;
-    padding-bottom: 10px;
-    margin-bottom: 15px;
-    cursor: pointer;
-  }
-
-  .post-meta {
-    font-size: 12px;
-    color: #666666;
-    background-color: #f5f5f5;
-    padding: 5px 10px;
-    border: 1px solid #dddddd;
-    margin: 10px 0;
-  }
-
-  .post-content {
-    font-size: 12px;
-    line-height: 1.6;
-    color: #333333;
-    margin: 20px 0;
-
-    p {
-      margin: 15px 0;
-      text-align: justify;
-      font-size: 15px;
+    @media screen and (max-width: 1024px) {
+        width: 90%;
     }
-  }
 
-  .image-container {
-    text-align: center;
-    background-color: #f9f9f9;
-    padding: 10px;
-    border: 1px solid #dddddd;
-    margin: 15px 0;
-  }
-
-  .navigation-button {
-    text-align: right;
-    margin-top: 30px;
-    padding-top: 15px;
-    border-top: 1px solid #dddddd;
-
-    a {
-      display: inline-block;
-      padding: 5px 15px;
-      background-color: #6699cc;
-      color: #ffffff;
-      text-decoration: none;
-      font-size: 12px;
-      border: 1px solid #336699;
-
-      &:hover {
-        background-color: #336699;
-      }
+    @media screen and (max-width: 768px) {
+        width: 95%;
+        padding: 15px;
     }
-  }
 
-  .title-text {
-    font-size: 16px;
-    color: #333333;
-    font-weight: bold;
-    background-color: #f0f0f0;
-    padding: 8px;
-    border-left: 5px solid #004080;
-    margin: 15px 0;
-  }
+    @media screen and (max-width: 480px) {
+        width: 100%;
+        padding: 10px;
+        border: none;
+    }
+
+    h2 {
+        font-size: 20px;
+        color: #004080;
+        border-bottom: 2px solid #004080;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+        cursor: pointer;
+
+        @media screen and (max-width: 768px) {
+            font-size: 18px;
+        }
+
+        @media screen and (max-width: 480px) {
+            font-size: 16px;
+        }
+    }
+
+    .post-content {
+        font-size: 12px;
+        line-height: 1.6;
+        color: #333333;
+        margin: 20px 0;
+
+        p {
+            margin: 15px 0;
+            text-align: justify;
+            font-size: 15px;
+
+            @media screen and (max-width: 768px) {
+                font-size: 14px;
+            }
+
+            @media screen and (max-width: 480px) {
+                font-size: 13px;
+                text-align: left;
+            }
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    }
+
+    /* 이미지 컨테이너 반응형 처리 */
+    .image-container {
+        text-align: center;
+        background-color: #f9f9f9;
+        padding: 10px;
+        border: 1px solid #dddddd;
+        margin: 15px 0;
+
+        @media screen and (max-width: 768px) {
+            padding: 5px;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    }
 `;
 
 const EVGuide = () => {
@@ -89,6 +143,8 @@ const EVGuide = () => {
   };
 
     return (
+      <Container>
+            <Title>EV GUIDE</Title>
         <RetroContainer>
         <h2 onClick={() => toggleContentVisibility(1)}>전기차 기초 정보</h2>
       {visibleContent === 1 && (
@@ -173,6 +229,7 @@ const EVGuide = () => {
                 </div>
       )}
             </RetroContainer>
+            </Container>
     );
 };
 
