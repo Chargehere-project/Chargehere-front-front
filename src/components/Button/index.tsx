@@ -16,61 +16,62 @@ const Buttons = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    // 로그인 여부를 확인하는 함수
-    const checkUserSession = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          // 토큰 디코드하여 userId 가져오기
-          const decoded: any = jwtDecode(token);
-          const userId = decoded.UserID;
+  // 로그인 여부를 확인하는 함수
+  const checkUserSession = async () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token);
+        const userId = decoded.UserID;
 
-          const response = await axios.post(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify`,
-            { userId }, // userId를 request body에 포함
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-
-          if (response.data.result) {
-            setIsLoggedIn(true);
-          } else {
-            setIsLoggedIn(false);
-            localStorage.removeItem('token');
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify`,
+          { userId },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
-        } catch (error) {
-          console.error('Error verifying user session', error);
+        );
+
+        if (response.data.result) {
+          setIsLoggedIn(true);
+        } else {
           setIsLoggedIn(false);
           localStorage.removeItem('token');
         }
-      } else {
+      } catch (error) {
+        console.error('Error verifying user session', error);
         setIsLoggedIn(false);
+        localStorage.removeItem('token');
       }
-    };
+    } else {
+      setIsLoggedIn(false);
+    }
+  };
 
+  useEffect(() => {
     checkUserSession();
-  }, []);
+  }, [router.asPath]); // 라우터 경로가 변경될 때마다 체크
 
   // QR 버튼 클릭 핸들러
-  const handleQRButtonClick = () => {
+  const handleQRButtonClick = async () => {
+    await checkUserSession(); // 클릭 시에도 로그인 상태 확인
+    
     if (isLoggedIn) {
       router.push('/charging');
     } else {
-      setIsModalOpen(true); // 로그인 필요 모달 열기
+      setIsModalOpen(true);
     }
   };
 
   const handleModalOk = () => {
     setIsModalOpen(false);
-    router.push('/mall/login'); // 로그인 페이지로 이동
+    router.push('/mall/login');
   };
 
   const handleModalCancel = () => {
-    setIsModalOpen(false); // 모달 닫기
+    setIsModalOpen(false);
   };
 
   return (
@@ -80,7 +81,7 @@ const Buttons = () => {
         shape="circle"
         icon={<QrcodeOutlined style={{ fontSize: '25px' }} />}
         className="qrButton"
-        onClick={handleQRButtonClick} // 모달 표시
+        onClick={handleQRButtonClick}
         loading={isLoading}
       />
       <Button
