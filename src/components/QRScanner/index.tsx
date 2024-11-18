@@ -68,16 +68,33 @@ const QRScanner = () => {
     }, [isQRModalVisible]);
 
     return (
-        <div style={{ textAlign: 'center', padding: '20px' }}>
-            <Button 
-                type="primary" 
-                icon={<ScanOutlined />} 
+        <div 
+            style={{
+                position: 'relative',
+                width: '100%',
+                height: '100vh',
+                backgroundImage: 'url("/intro.jpg")', 
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexDirection: 'column',
+            }}
+        >
+            <h1 style={{ position: 'relative', zIndex:'10', fontSize: '3rem', marginBottom: '20px', opacity: 0, animation: 'fadeIn 2s forwards', color: 'white', textAlign: 'center', }} >
+                    빠르게 충전하고 싶을 때, ChargeHere
+                </h1>
+            <Button
+                type="primary"
+                icon={<ScanOutlined />}
                 onClick={() => setIsQRModalVisible(true)}
                 size="large"
                 style={{
                     height: '50px',
                     width: '200px',
                     fontSize: '16px',
+                    animation: 'fadeInButton 2.5s forwards'
                 }}
             >
                 QR 스캔으로 충전하기
@@ -94,9 +111,9 @@ const QRScanner = () => {
                     <p style={{ textAlign: 'center', marginBottom: '20px' }}>
                         충전기에 부착된 QR 코드를 스캔해주세요
                     </p>
-                    <div 
-                        id="reader" 
-                        style={{ 
+                    <div
+                        id="reader"
+                        style={{
                             width: '100%',
                             maxWidth: '400px',
                             margin: '0 auto',
