@@ -7,8 +7,8 @@ const Container = styled.div`
     max-width: 1500px;
     margin: 0 auto;
     padding: 20px 40px;
-    paddingBottom: 80px;
-    backgroundColor: '#f9f9f9';
+    padding-bottom: 80px;  // paddingBottom -> padding-bottom
+    background-color: #f9f9f9;  // backgroundColor -> background-color
     position: relative;
 
     @media screen and (max-width: 1024px) {
@@ -23,29 +23,29 @@ const Container = styled.div`
 `;
 
 const Title = styled.h1`
-    fontSize: 36px;
-    fontWeight: bold;
+    font-size: 36px;  // fontSize -> font-size
+    font-weight: bold;  // fontWeight -> font-weight
     color: #555;
     padding: 40px 0 20px;
-    paddingLeft: -100px;
-    marginTop: 20px;
-    textAlign: left;
+    padding-left: -100px;  // paddingLeft -> padding-left
+    margin-top: 20px;  // marginTop -> margin-top
+    text-align: left;  // textAlign -> text-align
 
     @media screen and (max-width: 1024px) {
-        fontSize: 32px;
-        paddingLeft: -50px;
+        font-size: 32px;
+        padding-left: -50px;
     }
 
     @media screen and (max-width: 768px) {
-        fontSize: 28px;
-        paddingLeft: -30px;
+        font-size: 28px;
+        padding-left: -30px;
         padding: 20px 0;
     }
 
     @media screen and (max-width: 480px) {
-        fontSize: 24px;
-        paddingLeft: -20px;
-        textAlign: center;
+        font-size: 24px;
+        padding-left: -20px;
+        text-align: center;
     }
 `;
 
