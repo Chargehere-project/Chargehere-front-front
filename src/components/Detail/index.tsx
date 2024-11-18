@@ -75,9 +75,10 @@ const Detail = () => {
                 }
 
                 // Q&A 개수를 가져오는 요청
-                const qaCountResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/qas/count?productId=${id}`);
+                const qaCountResponse = await axios.get(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/qas/count?productId=${id}`
+                );
                 setQasCount(qaCountResponse.data.count); // 백엔드에서 'count' 필드로 개수를 반환한다고 가정
-
             } catch (error) {
                 console.error('데이터를 불러오는데 실패했습니다.', error);
             }
@@ -120,6 +121,8 @@ const Detail = () => {
             );
 
             if (response.data.result) {
+                // 장바구니 업데이트 이벤트 발생
+                window.dispatchEvent(new Event('cartUpdated'));
                 alert('장바구니에 추가되었습니다.');
             }
         } catch (error) {
@@ -213,7 +216,7 @@ const Detail = () => {
                         <BuyButton onClick={buyNow}>구매하기</BuyButton>
                         <CartButton onClick={addToCart}>장바구니</CartButton>
                     </ButtonGroup>
-    
+
                     <ShippingInfoContainer>
                         <ShippingInfoTitle>배송 및 반품</ShippingInfoTitle>
                         <div>
@@ -231,7 +234,7 @@ const Detail = () => {
                     </ShippingInfoContainer>
                 </InfoSection>
             </ProductSection>
-    
+
             <Tabs defaultActiveKey="1" style={{ marginTop: '40px' }}>
                 <Tabs.TabPane tab="상세정보" key="1">
                     <p>{product.Description}</p>

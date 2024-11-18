@@ -51,12 +51,12 @@ const MainSwipe = () => {
                     pagination={{ clickable: true }}
                     modules={[Pagination, Autoplay]}
                     className="swiper">
-                    <SwiperSlide onClick={() => router.push('/event/1')}>
+                    <SwiperSlide onClick={() => router.push('/map')}>
                         <div className="slideImageContainer">
                             <Image src={banner1Url} alt="Slide 1" fill className="slideImage" priority />
                         </div>
                     </SwiperSlide>
-                    <SwiperSlide onClick={() => router.push('/event/2')}>
+                    <SwiperSlide onClick={() => router.push('/mall/product')}>
                         <div className="slideImageContainer">
                             <Image src={banner2Url} alt="Slide 2" fill className="slideImage" priority />
                         </div>
