@@ -20,7 +20,6 @@ function InquiryDetail() {
     const [error, setError] = useState<string | null>(null);
     const [selectedInquiryId, setSelectedInquiryId] = useState<number | null>(null);
 
-
     useEffect(() => {
         const fetchInquiries = async () => {
             try {
@@ -120,7 +119,7 @@ function InquiryDetail() {
 
     return (
         <div style={styles.container}>
-            <h1 style={styles.title}>고객센터</h1>
+            <h1 style={styles.title}>CS</h1>
             {inquiries && inquiries.length > 0 ? (
                 <div style={styles.inquiriesList}>
                     {inquiries.map((item) => {
@@ -141,21 +140,20 @@ function InquiryDetail() {
                                     }}
                                     onClick={() => handleItemClick(item.InquiryID, item.UserID)}
                                 >
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                        }}
+                                    >
                                         <h3>{item.Title}</h3>
-                                        {!isMyInquiry && (
-                                            <span style={styles.otherUserBadge}>
-                                                다른 사용자의 글
-                                            </span>
-                                        )}
+                                        {!isMyInquiry && <span style={styles.otherUserBadge}>다른 사용자의 글</span>}
                                     </div>
                                     <p>{new Date(item.CreatedAt).toLocaleDateString()}</p>
                                 </div>
                                 {isSelected && inquiry && inquiry.InquiryID === item.InquiryID && (
-                                    <div
-                                        style={styles.replySection}
-                                        className="reply-animation"
-                                    >
+                                    <div style={styles.replySection} className="reply-animation">
                                         <div style={styles.replyContent}>
                                             <h4 style={styles.replyContentTitle}>문의 내용</h4>
                                             <p>{inquiry.Content}</p>
@@ -185,28 +183,29 @@ function InquiryDetail() {
                     <p style={styles.placeholderContent}>작성된 문의가 없습니다.</p>
                 </div>
             )}
-            <button onClick={handleWriteClick} style={styles.writeButton}>문의하기</button>
+            <button onClick={handleWriteClick} style={styles.writeButton}>
+                문의하기
+            </button>
         </div>
     );
 }
-
-
 
 const styles: { [key: string]: React.CSSProperties } = {
     container: {
         maxWidth: '1500px',
         margin: '0 auto',
-        padding: '20px',
+        padding: '20px 60px',
         paddingBottom: '80px', // 하단 여백 추가
         backgroundColor: '#f9f9f9',
         borderRadius: '8px',
         position: 'relative',
     },
     title: {
-        fontSize: '24px',
+        fontSize: '36px',
         fontWeight: 'bold',
-        textAlign: 'center' as 'center',
-        marginBottom: '20px',
+        color: '#555',
+        padding: '40px 0',
+        textAlign: 'left' as 'left'
     },
     inquiriesList: {
         marginBottom: '20px',
@@ -215,6 +214,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         overflow: 'hidden',
         backgroundColor: '#fff',
     },
+    
     inquiryItem: {
         padding: '15px',
         borderBottom: '1px solid #ddd',
@@ -224,7 +224,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     writeButton: {
         position: 'absolute',
         right: '20px',
-        bottom: '20px',  // bottom 값 유지
+        bottom: '20px', // bottom 값 유지
         padding: '10px 20px',
         backgroundColor: '#0070f3',
         color: '#fff',
@@ -296,7 +296,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         backgroundColor: '#eee',
         padding: '3px 8px',
         borderRadius: '4px',
-    }
+    },
 };
 
 export default InquiryDetail;

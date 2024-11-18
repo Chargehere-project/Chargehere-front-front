@@ -492,7 +492,6 @@ const MapComponent = () => {
         infowindow.open(mapInstance.current, charger.marker);
         currentInfoWindow = infowindow;
     };
-
     return (
         <Container>
         <Sidebar>
