@@ -92,3 +92,49 @@ export const MyLocationButton = styled.button`
         background-color: #888 !important;
     }
 `;
+// MapComponentStyles.ts에 추가
+export const SearchWrapper = styled.div`
+    position: relative;
+    width: 100%;
+    z-index: 100;
+`;
+
+export const SearchResultsContainer = styled.div`
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+`;
+
+export const SearchResultItem = styled.div`
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    background: white;
+
+    &:hover {
+        background-color: #f5f5f5;
+    }
+
+    .place-name {
+        font-weight: bold;
+        margin-bottom: 4px;
+    }
+
+    .address {
+        font-size: 0.9em;
+        color: #666;
+    }
+
+    &:last-child {
+        border-bottom: none;
+    }
+`;

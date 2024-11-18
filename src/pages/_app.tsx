@@ -6,6 +6,7 @@ import type { AppProps } from 'next/app';
 import Footer from '@/components/Footer';
 import MallHeader from '@/components/MallHeader';
 import { useRouter } from 'next/router';
+import Button from '@/components/Button'
 
 export default function App({ Component, pageProps }: AppProps) {
     const router = useRouter();
@@ -34,6 +35,8 @@ export default function App({ Component, pageProps }: AppProps) {
         fetchFavicon();
     }, []);
 
+    const path2 = router.pathname.startsWith('/order')
+
     return (
         <div className="app-container">
             <Head>
@@ -44,6 +47,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 <Component {...pageProps} />
             </div>
             {path ? null : <Footer />}
+            {path2 ? null : <Button  />}
         </div>
     );
 }

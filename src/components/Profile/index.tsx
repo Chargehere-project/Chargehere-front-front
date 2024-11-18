@@ -1,14 +1,11 @@
 import axios from 'axios';
 import React from 'react';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import Router from 'next/router';
-import style from './profile.module.css';
 import { Button, Form, Input, Modal, Space, Tabs } from 'antd';
 import DaumPostcode from 'react-daum-postcode';
-import { ReactNode } from 'react';
-
 
 import {
     ProfileContainer,
@@ -59,9 +56,6 @@ const formatDate = (dateString: string) => {
     });
 };
 
-
-
-
 interface PointItem {
     Description: ReactNode;
     Amount: number;
@@ -74,6 +68,7 @@ interface Coupon {
 }
 
 interface CouponItem {
+    IsUsed: boolean;
     Coupon: Coupon;
     isUsed: boolean;
 }
@@ -86,6 +81,7 @@ interface Product {
 }
 
 interface OrderItem {
+    OrderList: any;
     OrderID: number;
     Product: Product;
     Quantity: number;
@@ -96,7 +92,6 @@ interface OrderItem {
     TransactionStatus: 'Pending' | 'Completed';
     OrderListID: number;
 }
-
 
 const Profile = () => {
     const [form] = Form.useForm();
@@ -113,12 +108,10 @@ const Profile = () => {
     const [couponCount, setCouponCount] = useState<number>(0);
     const [reviewCount, setReviewCount] = useState<number>(0);
     const [orderSummary, setOrderSummary] = useState({
-        completed: 0,        // 결제 완료
-        shipping: 0,         // 배송 중
-        DeliveryCompleted: 0 // 배송 완료
+        completed: 0, // 결제 완료
+        shipping: 0, // 배송 중
+        DeliveryCompleted: 0, // 배송 완료
     });
-
-    
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -163,8 +156,10 @@ const Profile = () => {
                     }
                 );
 
-                // 응답 데이터 콘솔에 출력하여 확인
-                console.log('Order List Response:', response.data);
+                // 서버 응답 데이터 구조 확인
+                console.log('서버 응답 전체:', response.data);
+                console.log('주문 데이터 첫번째 항목:', response.data.data[0]);
+
                 setOrderList(response.data.data);
             } catch (error) {
                 console.error('구매내역을 가져오는데 실패했습니다:', error);
@@ -185,7 +180,7 @@ const Profile = () => {
 
                 if (response.data.result && response.data.data) {
                     setPointList(response.data.data);
-                    console.log('포인트 내역', response.data.data)
+                    console.log('포인트 내역', response.data.data);
                 }
             } catch (error) {
                 console.error('포인트 내역을 가져오는데 실패했습니다:', error);
@@ -204,8 +199,8 @@ const Profile = () => {
 
                 if (response.data.result && response.data.data) {
                     setCouponList(response.data.data);
-                    setCouponCount(response.data.data.length); // couponCount 설정
-                } 
+                    setCouponCount(response.data.data.length);
+                }
             } catch (error) {
                 console.error('쿠폰 목록을 가져오는데 실패했습니다:', error);
             }
@@ -213,7 +208,6 @@ const Profile = () => {
 
         fetchProfileData();
     }, [form]);
-
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -261,6 +255,11 @@ const Profile = () => {
                 // 응답 데이터 콘솔에 출력하여 확인
                 console.log('Order List Response:', response.data);
                 setOrderList(response.data.data);
+                const reviewableOrders = response.data.data.filter(
+                    (order: { OrderStatus: string; hasReview: any }) =>
+                        order.OrderStatus === 'DeliveryCompleted' && !order.hasReview
+                );
+                setReviewCount(reviewableOrders.length);
             } catch (error) {
                 console.error('구매내역을 가져오는데 실패했습니다:', error);
             }
@@ -395,11 +394,17 @@ const Profile = () => {
     }, [form]);
 
     const handleReviewClick = (orderListId: number, productId: number) => {
-        console.log('리뷰 페이지로 이동:', orderListId, productId);
+        // 디버깅용 로그 추가
+        console.log('리뷰 클릭 데이터:', {
+            orderListId,
+            productId,
+            전체주문: orderList, // 현재 상태의 전체 데이터 확인
+        });
+
         if (orderListId && productId) {
             Router.push(`./review/write?orderListId=${orderListId}&productId=${productId}`);
         } else {
-            console.error('orderListId 또는 productId가 부족합니다');
+            console.error(`orderListId(${orderListId}) 또는 productId(${productId})가 없습니다`);
         }
     };
 
@@ -432,7 +437,6 @@ const Profile = () => {
             }
         }
     };
-    
 
     return (
         <ProfileContainer>
@@ -509,9 +513,11 @@ const Profile = () => {
                                     <ReviewButton>
                                         {item.OrderStatus === 'DeliveryCompleted' && !item.hasReview ? (
                                             <span
-                                                onClick={() =>
-                                                    handleReviewClick(item.OrderListID, item.Product.ProductID)
-                                                }>
+                                                onClick={() => {
+                                                    console.log('리뷰 클릭 아이템:', item);
+                                                    handleReviewClick(item.OrderListID, item.Product.ProductID); // OrderListID 사용
+                                                }}
+                                            >
                                                 리뷰 작성
                                             </span>
                                         ) : item.OrderStatus === 'DeliveryCompleted' && item.hasReview ? (
@@ -539,7 +545,8 @@ const Profile = () => {
                                             <div
                                                 className={`pointStatus ${
                                                     item.Amount > 0 ? 'point-positive' : 'point-negative'
-                                                }`}>
+                                                }`}
+                                            >
                                                 {item.Amount > 0 ? '적립' : '차감'}
                                             </div>
                                         </PointItemContainer>
@@ -556,13 +563,13 @@ const Profile = () => {
                             {couponList.length > 0 ? (
                                 couponList.map((item, index) => (
                                     <CouponItemContainer key={index}>
-                                        <div className="couponName">{item.Coupon.CouponName}</div>
-                                        <div className="couponDuration">
-                                            기간: {formatDate(item.Coupon.StartDate)} ~{' '}
-                                            {formatDate(item.Coupon.ExpirationDate)}
-                                        </div>
-                                        <div className={`couponStatus ${item.isUsed ? 'used' : 'unused'}`}>
-                                            {item.isUsed ? '사용완료' : '미사용'}
+                                        <div>
+                                            <div>{item.Coupon.CouponName}</div>
+                                            <div>시작일자:{formatDate(item.Coupon.StartDate)}</div>
+                                            <div>만료일자: {formatDate(item.Coupon.ExpirationDate)}</div>
+                                            <div className={item.IsUsed ? 'couponStatusUsed' : 'couponStatusUnused'}>
+                                                {item.IsUsed ? '사용완료' : '미사용'}
+                                            </div>
                                         </div>
                                     </CouponItemContainer>
                                 ))
@@ -574,13 +581,13 @@ const Profile = () => {
 
                     <TabPane tab="1:1 문의" key="4">
                         <SectionContainer>
-                            <p>1:1 문의 내용이 여기에 표시됩니다.</p>
+                            <p>1:1 문의는 개발 예정입니다.</p>
                         </SectionContainer>
                     </TabPane>
 
                     <TabPane tab="상품 문의" key="5">
                         <SectionContainer>
-                            <p>상품 문의 내용이 여기에 표시됩니다.</p>
+                            <p>상품 문의는 개발 예정입니다.</p>
                         </SectionContainer>
                     </TabPane>
                 </Tabs>

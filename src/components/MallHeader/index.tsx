@@ -6,6 +6,14 @@ import axios from 'axios';
 import {jwtDecode} from 'jwt-decode';
 import HeaderStyled from './styled';
 import { Modal } from 'antd';
+interface CustomJwtPayload {
+    userId: string;  // 소문자로 시작하는 경우
+    // 다른 필요한 속성들
+    iat?: number;
+    exp?: number;
+    [key: string]: any;
+}
+
 
 const MallHeader = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -14,17 +22,18 @@ const MallHeader = () => {
     const [logoUrl, setLogoUrl] = useState<string>('/main.png'); // 기본 로고 설정
 
     // 사용자 토큰에서 UserID 가져오기
-    const token = () => {
-        const token = localStorage.getItem('token');
-        if (!token) return null;
-        try {
-            const decoded: any = jwtDecode(token);
-            return decoded.UserID;
-        } catch (error) {
-            console.error('토큰 디코드 에러:', error);
-            return null;
-        }
-    };
+   const token = () => {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    
+    try {
+        const decoded = jwtDecode<CustomJwtPayload>(token); // 제네릭 타입 지정
+        return decoded.UserID; // userId 반환
+    } catch (error) {
+        console.error('토큰 디코드 에러:', error);
+        return null;
+    }
+};
 
     // S3에서 로고 URL 가져오기
     const fetchLogo = async () => {
@@ -69,13 +78,13 @@ const MallHeader = () => {
 
     const handleLogout = () => {
 
-        if (window.confirm('로그아웃 하시겠습니까?')) {
-            localStorage.removeItem('token'); // 토큰 제거
-            setIsLoggedIn(false); // 로그인 상태 해제
-            setCartCount(0); // 장바구니 개수 초기화
-            Router.push('/');
-            alert('로그아웃 되었습니다.');
-        }
+        // if (window.confirm('로그아웃 하시겠습니까?')) {
+        //     localStorage.removeItem('token'); // 토큰 제거
+        //     setIsLoggedIn(false); // 로그인 상태 해제
+        //     setCartCount(0); // 장바구니 개수 초기화
+        //     Router.push('/');
+        //     alert('로그아웃 되었습니다.');
+        // }
 
         Modal.confirm({
             title: '로그아웃 확인',

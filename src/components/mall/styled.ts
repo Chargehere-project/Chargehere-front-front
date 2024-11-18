@@ -159,17 +159,7 @@ const MallStyled = styled.div`
         background-color: #333;
     }
 
-    .scrollTopButton {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background-color: #333;
-        color: #fff;
-        border: none;
-        padding: 10px;
-        border-radius: 50%;
-        cursor: pointer;
-    }
+   
 
     /* 태블릿 (1024px 이하) */
     @media screen and (max-width: 1024px) {
