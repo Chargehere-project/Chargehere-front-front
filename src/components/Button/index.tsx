@@ -2,51 +2,50 @@ import { ArrowUpOutlined, QrcodeOutlined } from '@ant-design/icons';
 import { Button, Modal } from 'antd';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import {jwtDecode} from 'jwt-decode';
-import axios from 'axios';
 import ButtonStyled from './styled';
-
-interface UserSession {
-  UserID: number;
-}
+import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
 
 const Buttons = () => {
   const router = useRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   // 로그인 여부를 확인하는 함수
   const checkUserSession = async () => {
     const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const decoded: any = jwtDecode(token);
-        const userId = decoded.UserID;
+    if (!token) {
+      setIsLoading(false);
+      return false;
+    }
 
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify`,
-          { userId },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+    try {
+      const decoded: any = jwtDecode(token);
+      const userId = decoded.UserID;
 
-        if (response.data.result) {
-          setIsLoggedIn(true);
-        } else {
-          setIsLoggedIn(false);
-          localStorage.removeItem('token');
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify`,
+        { userId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      } catch (error) {
-        console.error('Error verifying user session', error);
-        setIsLoggedIn(false);
+      );
+
+      if (response.data.result) {
+        setIsLoading(false);
+        return true;
+      } else {
         localStorage.removeItem('token');
+        setIsLoading(false);
+        return false;
       }
-    } else {
-      setIsLoggedIn(false);
+    } catch (error) {
+      console.error('Error verifying user session', error);
+      localStorage.removeItem('token');
+      setIsLoading(false);
+      return false;
     }
   };
 
@@ -56,15 +55,18 @@ const Buttons = () => {
 
   // QR 버튼 클릭 핸들러
   const handleQRButtonClick = async () => {
-    await checkUserSession(); // 클릭 시에도 로그인 상태 확인
+    setIsLoading(true);
+    const isAuthenticated = await checkUserSession();
     
-    if (isLoggedIn) {
+    if (isAuthenticated) {
       router.push('/charging');
     } else {
       setIsModalOpen(true);
     }
+    setIsLoading(false);
   };
 
+  // 모달 관련 함수
   const handleModalOk = () => {
     setIsModalOpen(false);
     router.push('/mall/login');

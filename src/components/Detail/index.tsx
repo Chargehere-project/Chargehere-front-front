@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { Button, List, Tabs, Form, message } from 'antd';
 import { jwtDecode } from 'jwt-decode';
-import styles from './Detail.module.css';
 import ProductQA from './ProductQA';
 import {
     Container,
