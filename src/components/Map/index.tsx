@@ -287,35 +287,69 @@ const MapComponent = () => {
     const moveToMarker = (charger: Charger) => {
         if (!mapInstance.current || !charger.marker) return;
 
+        // 지도 중심을 해당 마커로 이동
         mapInstance.current.setCenter(charger.marker.getPosition());
         charger.marker.setZIndex(1);
 
+        // 기존 인포윈도우 닫기
         if (currentInfoWindow) {
             currentInfoWindow.close();
         }
 
-        const infowindow = new window.kakao.maps.InfoWindow({
-            content: `
-                <div style="padding:10px;">
-                    <h3>${charger.statNm}</h3>
-                    <p>주소: ${charger.addr}</p>
-                    <p>상태: ${getStatText(charger.stat)}</p>
-                    <p>연락처: ${charger.busiCall || '정보없음'}</p>
-                    <p>이용시간: ${charger.useTime || '정보없음'}</p>
-                    ${charger.lastTsdt ? `<p>마지막 충전: ${charger.lastTsdt}</p>` : ''}
-                </div>
-            `,
-        });
+        // 새로운 인포윈도우 생성
+        const infowindowContent = document.createElement('div');
+        infowindowContent.style.cssText = `
+        position: relative; 
+        width: 250px; 
+        padding: 15px; 
+        border-radius: 8px; 
+        background-color: white; 
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.2); 
+        font-size: 14px; 
+        line-height: 1.6; 
+        color: #333;
+    `;
+        infowindowContent.innerHTML = `
+        <h3 style="margin: 0; font-size: 16px; font-weight: bold; padding-bottom: 5px; border-bottom: 1px solid #ddd;">
+            ${charger.statNm}
+        </h3>
+        <p style="margin: 8px 0 5px; color: #555;">주소: ${charger.addr}</p>
+        <p style="margin: 5px 0; color: #555;">상태: ${getStatText(charger.stat)}</p>
+        <p style="margin: 5px 0; color: #555;">연락처: ${charger.busiCall || '정보없음'}</p>
+        <p style="margin: 5px 0; color: #555;">이용시간: ${charger.useTime || '정보없음'}</p>
+        ${charger.lastTsdt ? `<p style="margin: 5px 0; color: #555;">마지막 충전: ${charger.lastTsdt}</p>` : ''}
+    `;
 
-        infowindow.open(mapInstance.current, charger.marker);
-        currentInfoWindow = infowindow;
-        // 지도 클릭 시 인포윈도우 닫기
-        window.kakao.maps.event.addListener(mapInstance.current, 'click', () => {
+        // 닫기 버튼 추가
+        const closeButton = document.createElement('button');
+        closeButton.textContent = 'X';
+        closeButton.style.cssText = `
+        position: absolute; 
+        top: 5px; 
+        right: 5px; 
+        background: none; 
+        border: none; 
+        font-size: 16px; 
+        font-weight: bold;
+        cursor: pointer; 
+        color: black;
+    `;
+        closeButton.addEventListener('click', () => {
             if (currentInfoWindow) {
                 currentInfoWindow.close();
                 currentInfoWindow = null;
             }
         });
+
+        infowindowContent.appendChild(closeButton);
+
+        const infowindow = new window.kakao.maps.InfoWindow({
+            content: infowindowContent,
+        });
+
+        // 인포윈도우 열기
+        infowindow.open(mapInstance.current, charger.marker);
+        currentInfoWindow = infowindow;
     };
 
     return (
