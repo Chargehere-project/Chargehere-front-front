@@ -54,7 +54,6 @@ const Login = () => {
     const checkSession = async () => {
       try {
         const sessionCheck = await api.get('/api/check-session');
-        console.log('세션 체크:', sessionCheck.data);
       } catch (sessionError) {
         console.error('세션 체크 실패:', sessionError);
       }

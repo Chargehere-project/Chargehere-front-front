@@ -7,21 +7,20 @@ import { useRouter } from 'next/router';
 const QRScanner = () => {
     const [isQRModalVisible, setIsQRModalVisible] = useState(false);
     const router = useRouter();
-    const qrCodeScannerRef = useRef<Html5Qrcode | null>(null); // Html5Qrcode 인스턴스 관리
+    const qrCodeScannerRef = useRef<Html5Qrcode | null>(null);
+    const [isAnimationReady, setIsAnimationReady] = useState(false); // 애니메이션 상태
 
     const startScanner = async () => {
         try {
             const readerElementId = "reader";
 
-            // DOM 요소가 존재하는지 확인
             const readerElement = document.getElementById(readerElementId);
             if (!readerElement) {
                 throw new Error(`HTML Element with id=${readerElementId} not found`);
             }
 
-            // QR 코드 스캐너 인스턴스 생성 및 시작
             const html5QrCode = new Html5Qrcode(readerElementId);
-            qrCodeScannerRef.current = html5QrCode; // 인스턴스를 ref에 저장
+            qrCodeScannerRef.current = html5QrCode;
 
             await html5QrCode.start(
                 { facingMode: "environment" },
@@ -30,9 +29,8 @@ const QRScanner = () => {
                     qrbox: { width: 250, height: 250 },
                 },
                 async (decodedText) => {
-                    console.log("QR 코드 인식 성공:", decodedText);
-                    await html5QrCode.stop(); // 스캐너 중지
-                    qrCodeScannerRef.current = null; // 인스턴스 초기화
+                    await html5QrCode.stop();
+                    qrCodeScannerRef.current = null;
                     message.success('충전기 인증 완료');
                     setIsQRModalVisible(false);
                     router.push('/charging/complete');
@@ -53,15 +51,15 @@ const QRScanner = () => {
     };
 
     useEffect(() => {
+        setTimeout(() => setIsAnimationReady(true), 300);
+
         if (isQRModalVisible) {
-            // 모달이 열렸을 때만 스캐너 시작
-            setTimeout(startScanner, 300); // DOM이 완전히 렌더링될 시간을 줌
+            setTimeout(startScanner, 300);
         }
 
-        // cleanup function
         return () => {
             if (qrCodeScannerRef.current) {
-                qrCodeScannerRef.current.stop().catch(console.error); // 인스턴스 중지
+                qrCodeScannerRef.current.stop().catch(console.error);
                 qrCodeScannerRef.current = null;
             }
         };
@@ -82,9 +80,20 @@ const QRScanner = () => {
                 flexDirection: 'column',
             }}
         >
-            <h1 style={{ position: 'relative', zIndex:'10', fontSize: '3rem', marginBottom: '20px', opacity: 0, animation: 'fadeIn 2s forwards', color: 'white', textAlign: 'center', }} >
-                    빠르게 충전하고 싶을 때, ChargeHere
-                </h1>
+            <h1
+                style={{
+                    position: 'relative',
+                    zIndex: '10',
+                    fontSize: '3rem',
+                    marginBottom: '20px',
+                    opacity: isAnimationReady ? 1 : 0,
+                    transition: 'opacity 2s',
+                    color: 'white',
+                    textAlign: 'center',
+                }}
+            >
+                빠르게 충전하고 싶을 때, ChargeHere
+            </h1>
             <Button
                 type="primary"
                 icon={<ScanOutlined />}
@@ -94,7 +103,7 @@ const QRScanner = () => {
                     height: '50px',
                     width: '200px',
                     fontSize: '16px',
-                    animation: 'fadeInButton 2.5s forwards'
+                    animation: 'fadeInButton 2.5s forwards',
                 }}
             >
                 QR 스캔으로 충전하기

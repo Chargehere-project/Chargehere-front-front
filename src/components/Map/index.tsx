@@ -126,7 +126,6 @@ const MapComponent = () => {
 
         places.keywordSearch(searchQuery, (results: any, status: any) => {
             if (status === window.kakao.maps.services.Status.OK) {
-                console.log('검색 결과:', results); // 검색 결과 확인용
 
                 // 첫 번째 결과의 좌표로 이동
                 const firstResult = results[0];
