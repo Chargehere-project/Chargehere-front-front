@@ -146,3 +146,4 @@ export const ShippingText = styled.p`
 export const TabsContainer = styled.div`
     margin-top: 40px;
 `;
+

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import { Button, List, Tabs, Form, message } from 'antd';
+import { Button, List, Tabs, message } from 'antd';
 import { jwtDecode } from 'jwt-decode';
 import ProductQA from './ProductQA';
 import {
@@ -28,6 +28,7 @@ interface Product {
     Price: number;
     Discount: number;
     Description: string;
+    DetailInfo: string; // S3 URL for the product detail HTML
 }
 
 interface Review {
@@ -58,9 +59,7 @@ const Detail = () => {
     const [reviews, setReviews] = useState<Review[]>([]);
     const [qas, setQAs] = useState<QA[]>([]);
     const [qasCount, setQasCount] = useState<number>(0); // Q&A 개수를 저장할 상태
-    const [expandShipping, setExpandShipping] = useState(false);
-    const [isShippingInfoVisible, setIsShippingInfoVisible] = useState(false);
-    const [newQuestion, setNewQuestion] = useState<string>('');
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -70,17 +69,17 @@ const Detail = () => {
                 setProduct(productResponse.data.data);
 
                 const reviewResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/product/${id}`);
-                if (reviewResponse.data.result) {
-                    setReviews(reviewResponse.data.data);
-                }
+                setReviews(reviewResponse.data.data);
 
-                // Q&A 개수를 가져오는 요청
                 const qaCountResponse = await axios.get(
                     `${process.env.NEXT_PUBLIC_API_URL}/api/qas/count?productId=${id}`
                 );
-                setQasCount(qaCountResponse.data.count); // 백엔드에서 'count' 필드로 개수를 반환한다고 가정
+                setQasCount(qaCountResponse.data.count);
             } catch (error) {
                 console.error('데이터를 불러오는데 실패했습니다.', error);
+                message.error('데이터를 불러오는 데 실패했습니다.');
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -189,7 +188,7 @@ const Detail = () => {
         router.push(`/mall/product/${id}/qa/write`);
     };
 
-    if (!product) {
+    if (loading || !product) {
         return <div>로딩중...</div>;
     }
 
@@ -197,6 +196,22 @@ const Detail = () => {
         delivery: '• 배송비는 전 상품 3000원이 부과됩니다.\n• 주문일로부터 1-3일 이내 출고됩니다.',
         returns:
             '• 상품 수령 후 7일 이내 반품 가능합니다.\n• 제품 하자 시 무료 반품 가능합니다.\n• 변심으로 인한 반품 시 배송비는 고객 부담입니다.',
+    };
+
+    // S3 URL에서 HTML 파일을 가져와서 렌더링하는 부분
+    const renderProductDetail = () => {
+        if (!product?.DetailInfo) return null;
+
+        // S3에서 HTML 파일 URL을 가져와서 iframe으로 표시
+        return (
+            <div style={{ width: '100%', height: '1880px', }}>
+                <iframe
+                    src={product.DetailInfo}
+                    style={{ width: '100%', height: '100%', border: 'none', }}
+                    title="Product Detail"
+                />
+            </div>
+        );
     };
 
     return (
@@ -236,8 +251,20 @@ const Detail = () => {
             </ProductSection>
 
             <Tabs defaultActiveKey="1" style={{ marginTop: '40px' }}>
-                <Tabs.TabPane tab="상세정보" key="1">
-                    <p>{product.Description}</p>
+                <Tabs.TabPane
+                    tab="상세정보"
+                    key="1"
+                    style={{
+                        padding: '60px',
+                        // backgroundColor: '#f9f9f9',
+                        borderRadius: '8px',
+                        height:'100%',
+                        maxHeight: '2000px',
+                        overflowY: 'auto',
+                        textAlign: 'center',
+                        margin: '0 auto',
+                    }}>
+                    {renderProductDetail()}
                 </Tabs.TabPane>
                 <Tabs.TabPane tab={`사용후기 (${reviews.length})`} key="2">
                     <List
