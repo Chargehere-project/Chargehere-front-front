@@ -156,10 +156,6 @@ const Profile = () => {
                     }
                 );
 
-                // 서버 응답 데이터 구조 확인
-                console.log('서버 응답 전체:', response.data);
-                console.log('주문 데이터 첫번째 항목:', response.data.data[0]);
-
                 setOrderList(response.data.data);
             } catch (error) {
                 console.error('구매내역을 가져오는데 실패했습니다:', error);
@@ -176,11 +172,8 @@ const Profile = () => {
                     }
                 );
 
-                console.log('포인트 내역 응답 데이터:', response.data.data);
-
                 if (response.data.result && response.data.data) {
                     setPointList(response.data.data);
-                    console.log('포인트 내역', response.data.data);
                 }
             } catch (error) {
                 console.error('포인트 내역을 가져오는데 실패했습니다:', error);
@@ -253,7 +246,6 @@ const Profile = () => {
                 );
 
                 // 응답 데이터 콘솔에 출력하여 확인
-                console.log('Order List Response:', response.data);
                 setOrderList(response.data.data);
                 const reviewableOrders = response.data.data.filter(
                     (order: { OrderStatus: string; hasReview: any }) =>
@@ -324,7 +316,6 @@ const Profile = () => {
             residence: fullAddress,
         });
         setIsModalOpen(false);
-        console.log('Selected address:', fullAddress); // 디버깅용
     };
     const handleUpdateProfile = async (values: any) => {
         const token = localStorage.getItem('token');
@@ -394,32 +385,12 @@ const Profile = () => {
     }, [form]);
 
     const handleReviewClick = (orderListId: number, productId: number) => {
-        // 디버깅용 로그 추가
-        console.log('리뷰 클릭 데이터:', {
-            orderListId,
-            productId,
-            전체주문: orderList, // 현재 상태의 전체 데이터 확인
-        });
-
         if (orderListId && productId) {
             Router.push(`./review/write?orderListId=${orderListId}&productId=${productId}`);
         } else {
             console.error(`orderListId(${orderListId}) 또는 productId(${productId})가 없습니다`);
         }
     };
-
-    // const StatusText = (status: string) => {
-    //     switch (status) {
-    //         case 'Pending':
-    //             return <span className={style.statusPending}>배송중</span>;
-    //         case 'Completed':
-    //             return <span className={style.statusCompleted}>배송완료</span>;
-    //         case 'Cancelled':
-    //             return <span className={style.statusCancelled}>주문 취소</span>;
-    //         default:
-    //             return '알 수 없음';
-    //     }
-    // };
 
     const StatusText = (status: string, transactionStatus?: string) => {
         if (transactionStatus === 'Completed') {
@@ -514,7 +485,6 @@ const Profile = () => {
                                         {item.OrderStatus === 'DeliveryCompleted' && !item.hasReview ? (
                                             <span
                                                 onClick={() => {
-                                                    console.log('리뷰 클릭 아이템:', item);
                                                     handleReviewClick(item.OrderListID, item.Product.ProductID); // OrderListID 사용
                                                 }}
                                             >
@@ -535,8 +505,6 @@ const Profile = () => {
                         <SectionContainer>
                             {pointList.length > 0 ? (
                                 pointList.map((item, index) => {
-                                    console.log('Raw CreatedAt Date:', item.createdAt); // 이 부분 추가
-                                    console.log('Formatted Date:', formatDate(item.createdAt)); // 이 부분 추가
                                     return (
                                         <PointItemContainer key={index}>
                                             <div className="pointAmount">{item.Amount.toLocaleString()} 포인트</div>

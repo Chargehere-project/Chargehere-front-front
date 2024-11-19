@@ -37,7 +37,6 @@ const ProductQA: React.FC<ProductQAProps> = ({ productId }) => {
 
                 if (response.data.result) {
                     setQAs(response.data.data);
-                    console.log('받아온 QA 데이터:', response.data.data); // 데이터 확인용
                 }
             } catch (error) {
                 console.error('Q&A 목록을 불러오는데 실패했습니다:', error);

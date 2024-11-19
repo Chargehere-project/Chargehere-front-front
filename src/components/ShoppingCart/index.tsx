@@ -45,7 +45,6 @@ const ShoppingCart = () => {
                         },
                     }
                 );
-                console.log('Cart Data:', response.data.data); // 응답 데이터 확인
                 setCart(response.data.data);
             } catch (error) {
                 console.error('장바구니 내역을 가져오는데 실패했습니다.');

@@ -29,7 +29,6 @@ const NoticePage = () => {
       setIsLoading(true);
       try {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/notices`);
-        console.log('API 응답:', response.data);
         setNotices(response.data.data);
       } catch (error) {
         console.error('공지사항을 불러오는 중 오류가 발생했습니다.', error);

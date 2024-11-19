@@ -46,12 +46,9 @@ function Rwrite() {
     const [previewImage, setPreviewImage] = useState<string | null>(null); // 미리보기 이미지 상태
     const [fileInputKey, setFileInputKey] = useState<number>(0); // 파일 업로드 input의 key 값으로 상태 변경
 
-    console.log('Received orderListId:', orderListId, 'Received productId:', productId);
 
     useEffect(() => {
         if (orderListId && productId) {
-            console.log('orderListId:', orderListId);
-            console.log('productId:', productId);
         }
     }, [router.query]);
 
@@ -100,14 +97,7 @@ function Rwrite() {
         e.preventDefault();
     
         const userId = getUserId();
-    
-        console.log('Submit시 값들:', {
-            orderListId,
-            userId,
-            productId,
-            rating,
-            content
-        });
+
     
         if (!orderListId || !productId || !userId) {
             alert('필요한 정보가 부족합니다.');
@@ -123,7 +113,6 @@ function Rwrite() {
                 content,
             };
     
-            console.log('전송할 리뷰 데이터:', reviewData);
     
             const response = await axios.post(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/reviewwrite`, 
