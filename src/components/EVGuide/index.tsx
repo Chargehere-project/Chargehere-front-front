@@ -1,138 +1,126 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import styled from 'styled-components';
+import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 
 const Container = styled.div`
-    width: 90%;
-    max-width: 1500px;
-    margin: 0 auto;
-    padding: 20px 40px;
-    paddingBottom: 80px;
-    backgroundColor: '#f9f9f9';
-    position: relative;
+  width: 90%;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 20px 60px;
+  padding-bottom: 80px;
+  position: relative;
 
-    @media screen and (max-width: 1024px) {
-        width: 95%;
-        padding: 20px;
-    }
+  @media screen and (max-width: 1024px) {
+    width: 95%;
+    padding: 20px;
+  }
 
-    @media screen and (max-width: 768px) {
-        width: 100%;
-        padding: 10px;
-    }
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    padding: 10px;
+  }
 `;
 
 const Title = styled.h1`
-    fontSize: 36px;
-    fontWeight: bold;
-    color: #555;
-    padding: 40px 0 20px;
-    paddingLeft: -100px;
-    marginTop: 20px;
-    textAlign: left;
+  font-size: 36px;
+  font-weight: bold;
+  color: #555;
+  padding: 40px 0 20px;
+  margin-top: 20px;
+  text-align: left;
 
-    @media screen and (max-width: 1024px) {
-        fontSize: 32px;
-        paddingLeft: -50px;
-    }
+  @media screen and (max-width: 1024px) {
+    font-size: 32px;
+  }
 
-    @media screen and (max-width: 768px) {
-        fontSize: 28px;
-        paddingLeft: -30px;
-        padding: 20px 0;
-    }
+  @media screen and (max-width: 768px) {
+    font-size: 28px;
+    padding: 20px 0;
+  }
 
-    @media screen and (max-width: 480px) {
-        fontSize: 24px;
-        paddingLeft: -20px;
-        textAlign: center;
-    }
+  @media screen and (max-width: 480px) {
+    font-size: 24px;
+    text-align: center;
+  }
 `;
 
 const RetroContainer = styled.div`
-    width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #ffffff;
-    border: 1px solid #cccccc;
-    font-family: "돋움", Dotum, Arial, sans-serif;
+  width: 1500px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #cccccc;
+  margin-top: 55px;
 
-    @media screen and (max-width: 1024px) {
-        width: 90%;
-    }
+  @media screen and (max-width: 1024px) {
+    width: 90%;
+  }
+
+  @media screen and (max-width: 768px) {
+    width: 95%;
+    padding: 15px;
+  }
+
+  @media screen and (max-width: 480px) {
+    width: 100%;
+    padding: 10px;
+    border: none;
+  }
+
+  h2 {
+    font-size: 20px;
+    color: #004080;
+    border-bottom: 2px solid #004080;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
     @media screen and (max-width: 768px) {
-        width: 95%;
-        padding: 15px;
+      font-size: 18px;
     }
 
     @media screen and (max-width: 480px) {
-        width: 100%;
-        padding: 10px;
-        border: none;
+      font-size: 16px;
+    }
+  }
+
+  .post-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+    padding: 0 10px;
+    opacity: 0;
+    transition: opacity 0.4s ease-out, max-height 0.4s ease-out;
+
+    &.expanded {
+      max-height: 9999px;
+      opacity: 1;
+      padding: 20px 10px;
     }
 
-    h2 {
-        font-size: 20px;
-        color: #004080;
-        border-bottom: 2px solid #004080;
-        padding-bottom: 10px;
-        margin-bottom: 15px;
-        cursor: pointer;
-
-        @media screen and (max-width: 768px) {
-            font-size: 18px;
-        }
-
-        @media screen and (max-width: 480px) {
-            font-size: 16px;
-        }
+    img {
+      max-width: 100%;
+      height: auto;
     }
 
-    .post-content {
-        font-size: 12px;
-        line-height: 1.6;
-        color: #333333;
-        margin: 20px 0;
+    p {
+      margin: 15px 0;
+      text-align: justify;
+      font-size: 15px;
 
-        p {
-            margin: 15px 0;
-            text-align: justify;
-            font-size: 15px;
+      @media screen and (max-width: 768px) {
+        font-size: 14px;
+      }
 
-            @media screen and (max-width: 768px) {
-                font-size: 14px;
-            }
-
-            @media screen and (max-width: 480px) {
-                font-size: 13px;
-                text-align: left;
-            }
-        }
-
-        img {
-            max-width: 100%;
-            height: auto;
-        }
+      @media screen and (max-width: 480px) {
+        font-size: 13px;
+        text-align: left;
+      }
     }
-
-    /* 이미지 컨테이너 반응형 처리 */
-    .image-container {
-        text-align: center;
-        background-color: #f9f9f9;
-        padding: 10px;
-        border: 1px solid #dddddd;
-        margin: 15px 0;
-
-        @media screen and (max-width: 768px) {
-            padding: 5px;
-        }
-
-        img {
-            max-width: 100%;
-            height: auto;
-        }
-    }
+  }
 `;
 
 const EVGuide = () => {
@@ -142,18 +130,20 @@ const EVGuide = () => {
     setVisibleContent((prev) => (prev === index ? null : index));
   };
 
-    return (
-      <Container>
-            <Title>EV GUIDE</Title>
-        <RetroContainer>
-        <h2 onClick={() => toggleContentVisibility(1)}>전기차 기초 정보</h2>
-      {visibleContent === 1 && (
-        <div className="post-content">
-
-                    <p style={{ fontSize: '20px' }}>아파트 주차장에 설치된 전기차 급속충전기 얼마나 사용할까요</p>
-                    <p>2022.05.14</p>
-                    <Image src="/guide1.jpg" alt="Example Image" width={500} height={300} />
-                    <p>
+  return (
+    <Container>
+      <Title>EV GUIDE</Title>
+      <RetroContainer>
+        {/* 첫 번째 글 */}
+        <h2 onClick={() => toggleContentVisibility(1)}>
+          전기차 기초 정보
+          {visibleContent === 1 ? <MinusOutlined /> : <PlusOutlined />}
+        </h2>
+        <div className={`post-content ${visibleContent === 1 ? 'expanded' : ''}`}>
+          <p style={{ fontSize: '20px' }}>아파트 주차장에 설치된 전기차 급속충전기 얼마나 사용할까요</p>
+          <p>2022.05.14</p>
+          <Image src="/guide1.jpg" alt="Example Image" width={500} height={300} />
+          <p>
                         요즘 아파트의 주차장은 지상보다는 지하 많이 있습니다. 또한 아파트 주차장은 입주민을 위한 공간이기도
                         합니다. 제가 아르바이트로 배달 일을 하고 있어 다양한 아파트 지하주차장을 가보곤 하는데요. 최근 전기차
                         충전소가 설치된 아파트 주차장을 보면 전기차 보급이 그만큼 늘었고 그에 따른 충전 환경도 점점 늘어간다는
@@ -180,18 +170,17 @@ const EVGuide = () => {
                         1~2대뿐인데 전기차 충전하는 구역이 5기가 설치되어 있다면 관리사무소에서 탄력적으로 운영해도 될 거라
                         봅니다. 원칙적으로는 주차하면 안 되겠지만 부득이한 경우에는 일부 공유할 수 있다고 봅니다.
                     </p>
+        </div>
 
-                    </div>
-            )}
-
-            
-      {/* 두 번째 글 */}
-              <h2 onClick={() => toggleContentVisibility(2)}>전기차의 원리</h2>
-              {visibleContent === 2 && (
-                <div className="post-content">
-                  <p style={{ fontSize: '20px' }}>전기차는 어떤 모터를 사용할까? 모터의 종류와 원리에 대해 알아보자</p>
-                  <p>2023.04.18</p>
-                  <Image src="/guide4.jpg" alt="Example Image" width={500} height={300} />
+        {/* 두 번째 글 */}
+        <h2 onClick={() => toggleContentVisibility(2)}>
+          전기차의 원리
+          {visibleContent === 2 ? <MinusOutlined /> : <PlusOutlined />}
+        </h2>
+        <div className={`post-content ${visibleContent === 2 ? 'expanded' : ''}`}>
+          <p style={{ fontSize: '20px' }}>전기차는 어떤 모터를 사용할까? 모터의 종류와 원리에 대해 알아보자</p>
+          <p>2023.04.18</p>
+          <Image src="/guide4.jpg" alt="Example Image" width={500} height={300} />
                   <p>
                       1. DC 모터: DC 모터는 고정자로 자석을 사용하고, 회전자로 코일을 사용하여 브러쉬를 이용하여 전류의 방향을
                       전환합니다. 플레밍의 왼손 법칙으로 중학교/고등학교 때 나오는 내용입니다. DC 모터는 회로가 단순하고
@@ -226,11 +215,11 @@ const EVGuide = () => {
                       최근에 전기차 연구는 대부분 PMSM을 기반으로 해서 연구가 진행되고 있고요, 자석의 배치, 물성 조합, 제어
                       방식, 권선 감는 방식, 냉각, 고정자 치 설계 등 세부적으로 다양한 연구가 진행되고 있습니다.
                   </p>
-                </div>
-      )}
-            </RetroContainer>
-            </Container>
-    );
+
+        </div>
+      </RetroContainer>
+    </Container>
+  );
 };
 
 export default EVGuide;

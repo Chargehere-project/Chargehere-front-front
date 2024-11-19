@@ -195,8 +195,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         maxWidth: '1500px',
         margin: '0 auto',
         padding: '20px 60px',
-        paddingBottom: '80px', // 하단 여백 추가
-        backgroundColor: '#f9f9f9',
+        paddingBottom: '80px',
         borderRadius: '8px',
         position: 'relative',
     },
