@@ -5,7 +5,7 @@ import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 
 const Container = styled.div`
   width: 90%;
-  max-width: 1500px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 20px 60px;
   padding-bottom: 80px;
@@ -46,7 +46,7 @@ const Title = styled.h1`
 `;
 
 const RetroContainer = styled.div`
-  width: 1500px;
+  width: 1000px;
   margin: 0 auto;
   padding: 20px;
   border: 1px solid #cccccc;
